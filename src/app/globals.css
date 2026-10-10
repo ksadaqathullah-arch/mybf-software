@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #FBFDFD;
+    --foreground: #030405;
+    
+    --card: #FFFFFF;
+    --card-foreground: #030405;
+    
+    --popover: #FFFFFF;
+    --popover-foreground: #030405;
+    
+    --primary: #035AFC;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #0246C7;
+    
+    --secondary: #FBC206;
+    --secondary-foreground: #030405;
+    --secondary-hover: #E5B005;
+    
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    
+    --accent: #EBF2FF;
+    --accent-foreground: #035AFC;
+    
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    
+    --border: #E2E8F0;
+    --input: #E2E8F0;
+    --ring: #035AFC;
+    
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #030405;
+    --foreground: #FBFDFD;
+    
+    --card: #0A0F1D;
+    --card-foreground: #FBFDFD;
+    
+    --popover: #0A0F1D;
+    --popover-foreground: #FBFDFD;
+    
+    --primary: #035AFC;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #2671FC;
+    
+    --secondary: #FBC206;
+    --secondary-foreground: #030405;
+    --secondary-hover: #FFD233;
+    
+    --muted: #111827;
+    --muted-foreground: #94A3B8;
+    
+    --accent: #111D38;
+    --accent-foreground: #3B82F6;
+    
+    --destructive: #7F1D1D;
+    --destructive-foreground: #FCA5A5;
+    
+    --border: #1E293B;
+    --input: #1E293B;
+    --ring: #035AFC;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  min-height: 100vh;
+}
+
+/* Custom scrollbars for clean dashboards */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
