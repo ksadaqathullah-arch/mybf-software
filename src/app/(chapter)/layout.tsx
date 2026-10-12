@@ -2,14 +2,14 @@
 
 import * as React from 'react';
 import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard, Award, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard } from 'lucide-react';
 
 const CHAPTER_NAV_ITEMS: NavItem[] = [
-  { label: 'Executive Dashboard', href: '/chapter/manjeri', icon: LayoutDashboard },
-  { label: 'Pending Applications', href: '/chapter/manjeri', icon: FileCheck, badge: '3' },
-  { label: 'Chapter Roster', href: '/chapter/manjeri', icon: Users },
-  { label: 'Activities & Meetings', href: '/chapter/manjeri', icon: Calendar },
-  { label: 'Chapter Finance', href: '/chapter/manjeri', icon: CreditCard },
+  { id: 'chapter-dashboard', label: 'Executive Dashboard', href: '/chapter/manjeri', icon: LayoutDashboard },
+  { id: 'chapter-applications', label: 'Pending Applications', href: '/chapter/manjeri/applications', icon: FileCheck, badge: '3' },
+  { id: 'chapter-roster', label: 'Chapter Roster', href: '/chapter/manjeri/members', icon: Users },
+  { id: 'chapter-meetings', label: 'Activities & Meetings', href: '/chapter/manjeri/meetings', icon: Calendar },
+  { id: 'chapter-finance', label: 'Chapter Finance', href: '/chapter/manjeri/finance', icon: CreditCard },
 ];
 
 export default function ChapterLayout({

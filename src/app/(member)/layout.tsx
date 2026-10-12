@@ -2,14 +2,14 @@
 
 import * as React from 'react';
 import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Award, Building2, Calendar, Users, Settings, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Award, Building2, Calendar, CreditCard } from 'lucide-react';
 
 const MEMBER_NAV_ITEMS: NavItem[] = [
-  { label: 'Overview', href: '/member', icon: LayoutDashboard },
-  { label: 'Digital ID Pass', href: '/member/membership/id-card', icon: Award, badge: 'VERIFIED' },
-  { label: 'My Chapter', href: '/chapters/manjeri', icon: Building2 },
-  { label: 'Events & Summits', href: '/events', icon: Calendar },
-  { label: 'Dues & Receipts', href: '/member', icon: CreditCard },
+  { id: 'member-overview', label: 'Overview', href: '/member', icon: LayoutDashboard },
+  { id: 'member-id-card', label: 'Digital ID Pass', href: '/member/membership/id-card', icon: Award, badge: 'VERIFIED' },
+  { id: 'member-chapter', label: 'My Chapter', href: '/chapters/manjeri', icon: Building2 },
+  { id: 'member-events', label: 'Events & Summits', href: '/events', icon: Calendar },
+  { id: 'member-dues', label: 'Dues & Receipts', href: '/member/payments', icon: CreditCard },
 ];
 
 export default function MemberLayout({

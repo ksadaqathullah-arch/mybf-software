@@ -5,24 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import {
-  Users,
-  Building2,
-  Calendar,
-  CreditCard,
-  Shield,
-  FileText,
-  LogOut,
-  ChevronRight,
-  Menu,
-  X,
-  LayoutDashboard,
-  Award,
-  Settings,
-  Bell,
-} from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 
 export interface NavItem {
+  id: string;
   label: string;
   href: string;
   icon: React.ElementType;
@@ -113,11 +99,16 @@ export function PortalShell({
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+            const isRootPortalPath =
+              ['/member', '/district-admin', '/super-admin'].includes(item.href) ||
+              item.href.startsWith('/chapter/');
+            const isActive = isRootPortalPath
+              ? pathname === item.href
+              : pathname === item.href || pathname?.startsWith(`${item.href}/`);
 
             return (
               <Link
-                key={item.href}
+                key={item.id}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
