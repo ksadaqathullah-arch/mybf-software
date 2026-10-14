@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building2, User, Phone, Mail, Briefcase, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
-import { MEMBERSHIP_CATEGORIES } from '@/features/memberships/constants/categories';
+import {
+  MEMBER_CATEGORIES,
+  CURRENT_POSITIONS,
+  getMemberCategoryLabel,
+  getCurrentPositionLabel,
+  type MemberCategoryValue,
+  type CurrentPositionValue,
+} from '@/features/memberships/constants/member-classifications';
 import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
 
 export default function RegisterPage() {
@@ -16,7 +23,8 @@ export default function RegisterPage() {
     email: '',
     primaryPhone: '',
     chapterId: INITIAL_16_CHAPTERS[0].slug,
-    categoryCode: MEMBERSHIP_CATEGORIES[0].code,
+    memberCategory: MEMBER_CATEGORIES[0].value as MemberCategoryValue,
+    currentPosition: CURRENT_POSITIONS[0].value as CurrentPositionValue,
     occupation: '',
     companyName: '',
     businessSector: 'Information Technology',
@@ -65,7 +73,21 @@ export default function RegisterPage() {
           </div>
           <div className="flex justify-between">
             <span>Selected Chapter:</span>
-            <strong className="text-slate-900 dark:text-white">{formData.chapterId.toUpperCase()}</strong>
+            <strong className="text-slate-900 dark:text-white">
+              {INITIAL_16_CHAPTERS.find((c) => c.slug === formData.chapterId)?.name || formData.chapterId}
+            </strong>
+          </div>
+          <div className="flex justify-between">
+            <span>Member Category:</span>
+            <strong className="text-slate-900 dark:text-white">
+              {getMemberCategoryLabel(formData.memberCategory)}
+            </strong>
+          </div>
+          <div className="flex justify-between">
+            <span>Current Position:</span>
+            <strong className="text-slate-900 dark:text-white">
+              {getCurrentPositionLabel(formData.currentPosition)}
+            </strong>
           </div>
           <div className="flex justify-between">
             <span>Status:</span>
@@ -88,10 +110,15 @@ export default function RegisterPage() {
   return (
     <Card className="border-slate-200 dark:border-slate-800 shadow-2xl">
       <CardHeader className="text-center p-6 sm:p-8 pb-4">
-        <Badge variant="primary" className="mx-auto mb-2">Join MYBF Community</Badge>
+        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
+          <Badge variant="primary">Join MYBF Community</Badge>
+          <Badge variant="success" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            100% Free NGO Membership
+          </Badge>
+        </div>
         <CardTitle className="text-2xl font-bold">Membership Application</CardTitle>
         <CardDescription className="text-xs">
-          Connect your business with 16 chapters across Malappuram district
+          Connect your business with 16 chapters across Malappuram district • Zero application or annual fees
         </CardDescription>
       </CardHeader>
 
@@ -105,10 +132,11 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="reg-full-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Full Name *
                 </label>
                 <input
+                  id="reg-full-name"
                   type="text"
                   required
                   value={formData.fullName}
@@ -119,10 +147,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="reg-phone" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Mobile Number (10 Digits) *
                 </label>
                 <input
+                  id="reg-phone"
                   type="tel"
                   required
                   pattern="[6-9][0-9]{9}"
@@ -135,10 +164,11 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label htmlFor="reg-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Email Address *
               </label>
               <input
+                id="reg-email"
                 type="email"
                 required
                 value={formData.email}
@@ -149,45 +179,77 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Chapter & Category Selection */}
+          {/* Chapter & Member Classification */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              2. Chapter & Membership Tier
+              2. Chapter & Member Classification
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="reg-chapter" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Select Chapter (16 Chapters) *
                 </label>
                 <select
+                  id="reg-chapter"
+                  required
                   value={formData.chapterId}
                   onChange={(e) => setFormData({ ...formData, chapterId: e.target.value })}
                   className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
                 >
                   {INITIAL_16_CHAPTERS.map((ch) => (
                     <option key={ch.slug} value={ch.slug}>
-                      {ch.name} ({ch.taluk})
+                      {ch.name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Membership Tier *
-                </label>
-                <select
-                  value={formData.categoryCode}
-                  onChange={(e) => setFormData({ ...formData, categoryCode: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
-                >
-                  {MEMBERSHIP_CATEGORIES.map((cat) => (
-                    <option key={cat.code} value={cat.code}>
-                      {cat.name} (₹{cat.annualFeeINR}/yr)
-                    </option>
-                  ))}
-                </select>
+              {/* Side-by-side dropdowns on desktop, stacked on mobile */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label htmlFor="reg-member-category" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Member Category / Interest *
+                  </label>
+                  <select
+                    id="reg-member-category"
+                    required
+                    value={formData.memberCategory}
+                    onChange={(e) => setFormData({ ...formData, memberCategory: e.target.value as MemberCategoryValue })}
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                  >
+                    {MEMBER_CATEGORIES.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-slate-400">
+                    {MEMBER_CATEGORIES.find((c) => c.value === formData.memberCategory)?.description}
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  <label htmlFor="reg-current-position" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Current Position *
+                  </label>
+                  <select
+                    id="reg-current-position"
+                    required
+                    value={formData.currentPosition}
+                    onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value as CurrentPositionValue })}
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                  >
+                    {CURRENT_POSITIONS.map((pos) => (
+                      <option key={pos.value} value={pos.value}>
+                        {pos.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-slate-400">
+                    {CURRENT_POSITIONS.find((p) => p.value === formData.currentPosition)?.description}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -200,10 +262,11 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="reg-occupation" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Occupation / Role *
                 </label>
                 <input
+                  id="reg-occupation"
                   type="text"
                   required
                   value={formData.occupation}
@@ -214,10 +277,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="reg-company" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Company / Firm Name
                 </label>
                 <input
+                  id="reg-company"
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}

@@ -9,7 +9,8 @@ export default function MemberIdCardPage() {
   const sampleCard = {
     membershipNumber: 'MYBF-0000000001',
     fullName: 'Mohammed Anas',
-    categoryName: 'Youth Entrepreneur',
+    memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
+    currentPosition: 'BUSINESS_OWNER',
     chapterName: 'Manjeri Chapter',
     status: 'ACTIVE' as const,
     issuedAt: 'Jan 2026',

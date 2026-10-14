@@ -1,5 +1,22 @@
 import { z } from 'zod';
 
+export const MEMBER_CATEGORY_VALUES = [
+  'STUDENT',
+  'ASPIRING_ENTREPRENEUR',
+  'ENTREPRENEUR_BUSINESS_OWNER',
+  'OTHER',
+] as const;
+
+export const CURRENT_POSITION_VALUES = [
+  'STUDENT',
+  'EMPLOYEE',
+  'WORKER',
+  'BUSINESS_OWNER',
+  'ENTREPRENEUR',
+  'SELF_EMPLOYED',
+  'OTHER',
+] as const;
+
 export const memberRegistrationSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters').max(100),
   email: z.string().email('Please enter a valid email address'),
@@ -8,8 +25,17 @@ export const memberRegistrationSchema = z.object({
     .regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number'),
   dateOfBirth: z.string().optional(),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional(),
-  chapterId: z.string().uuid('Please select an active chapter in Malappuram'),
-  categoryId: z.string().uuid('Please select an eligible membership category'),
+  chapterId: z.string().min(1, 'Please select an active chapter in Malappuram'),
+  
+  // Independent Member Classification (Replaces legacy tier/fee classification)
+  memberCategory: z.enum(MEMBER_CATEGORY_VALUES, {
+    message: 'Please select a valid Member Category / Interest',
+  }),
+  currentPosition: z.enum(CURRENT_POSITION_VALUES, {
+    message: 'Please select your Current Position',
+  }),
+  // Optional backward-compatible reference (deprecated)
+  categoryId: z.string().optional(),
   
   // Professional & Business Details
   occupation: z.string().min(2, 'Please state your occupation or profession'),
@@ -50,3 +76,15 @@ export const chapterTransferSchema = z.object({
 });
 
 export type ChapterTransferInput = z.infer<typeof chapterTransferSchema>;
+
+export const updateMemberClassificationSchema = z.object({
+  memberCategory: z.enum(MEMBER_CATEGORY_VALUES, {
+    message: 'Please select a valid Member Category / Interest',
+  }),
+  currentPosition: z.enum(CURRENT_POSITION_VALUES, {
+    message: 'Please select your Current Position',
+  }),
+});
+
+export type UpdateMemberClassificationInput = z.infer<typeof updateMemberClassificationSchema>;
+

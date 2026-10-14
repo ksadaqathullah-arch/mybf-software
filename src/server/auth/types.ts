@@ -26,6 +26,8 @@ export interface AuthActor {
 export type DomainAction =
   | 'member.create'
   | 'member.read_own'
+  | 'member.update_own'
+  | 'member.update_classification'
   | 'member.read_chapter'
   | 'member.read_district'
   | 'member.read_all'

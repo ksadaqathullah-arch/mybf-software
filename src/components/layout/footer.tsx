@@ -31,7 +31,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-1.5 text-xs">
               <li><Link href="/chapters/manjeri" className="hover:text-[#035AFC]">Manjeri Chapter</Link></li>
-              <li><Link href="/chapters/malappuram-central" className="hover:text-[#035AFC]">Malappuram Central</Link></li>
+              <li><Link href="/chapters/malappuram" className="hover:text-[#035AFC]">Malappuram Chapter</Link></li>
               <li><Link href="/chapters/perinthalmanna" className="hover:text-[#035AFC]">Perinthalmanna</Link></li>
               <li><Link href="/chapters/tirur" className="hover:text-[#035AFC]">Tirur</Link></li>
               <li><Link href="/chapters/kottakkal" className="hover:text-[#035AFC]">Kottakkal</Link></li>

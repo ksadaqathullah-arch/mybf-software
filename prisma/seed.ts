@@ -3,22 +3,22 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const FOUNDING_CHAPTERS = [
-  { code: 'CHP-01-MANJERI', name: 'Manjeri Chapter', slug: 'manjeri' },
-  { code: 'CHP-02-MLP-CENTRAL', name: 'Malappuram Central Chapter', slug: 'malappuram-central' },
-  { code: 'CHP-03-PERINTHALMANNA', name: 'Perinthalmanna Chapter', slug: 'perinthalmanna' },
-  { code: 'CHP-04-TIRUR', name: 'Tirur Chapter', slug: 'tirur' },
-  { code: 'CHP-05-KOTTAKKAL', name: 'Kottakkal Chapter', slug: 'kottakkal' },
-  { code: 'CHP-06-PONNANI', name: 'Ponnani Chapter', slug: 'ponnani' },
-  { code: 'CHP-07-NILAMBUR', name: 'Nilambur Chapter', slug: 'nilambur' },
-  { code: 'CHP-08-KONDOTTY', name: 'Kondotty Chapter', slug: 'kondotty' },
-  { code: 'CHP-09-PARAPPANANGADI', name: 'Parappanangadi Chapter', slug: 'parappanangadi' },
-  { code: 'CHP-10-TANUR', name: 'Tanur Chapter', slug: 'tanur' },
+  { code: 'CHP-01-KONDOTTY', name: 'Kondotty Chapter', slug: 'kondotty' },
+  { code: 'CHP-02-ERANAD', name: 'Eranad Chapter', slug: 'eranad' },
+  { code: 'CHP-03-NILAMBUR', name: 'Nilambur Chapter', slug: 'nilambur' },
+  { code: 'CHP-04-WANDOOR', name: 'Wandoor Chapter', slug: 'wandoor' },
+  { code: 'CHP-05-MANJERI', name: 'Manjeri Chapter', slug: 'manjeri' },
+  { code: 'CHP-06-PERINTHALMANNA', name: 'Perinthalmanna Chapter', slug: 'perinthalmanna' },
+  { code: 'CHP-07-MANKADA', name: 'Mankada Chapter', slug: 'mankada' },
+  { code: 'CHP-08-MALAPPURAM', name: 'Malappuram Chapter', slug: 'malappuram' },
+  { code: 'CHP-09-VENGARA', name: 'Vengara Chapter', slug: 'vengara' },
+  { code: 'CHP-10-VALLIKKUNNU', name: 'Vallikkunnu Chapter', slug: 'vallikkunnu' },
   { code: 'CHP-11-TIRURANGADI', name: 'Tirurangadi Chapter', slug: 'tirurangadi' },
-  { code: 'CHP-12-EDAPPAL', name: 'Edappal Chapter', slug: 'edappal' },
-  { code: 'CHP-13-VALANCHERY', name: 'Valanchery Chapter', slug: 'valanchery' },
-  { code: 'CHP-14-WANDOOR', name: 'Wandoor Chapter', slug: 'wandoor' },
-  { code: 'CHP-15-AREACODE', name: 'Areacode Chapter', slug: 'areacode' },
-  { code: 'CHP-16-CHANGARAMKULAM', name: 'Changaramkulam Chapter', slug: 'changaramkulam' },
+  { code: 'CHP-12-TANUR', name: 'Tanur Chapter', slug: 'tanur' },
+  { code: 'CHP-13-TIRUR', name: 'Tirur Chapter', slug: 'tirur' },
+  { code: 'CHP-14-KOTTAKKAL', name: 'Kottakkal Chapter', slug: 'kottakkal' },
+  { code: 'CHP-15-THAVANUR', name: 'Thavanur Chapter', slug: 'thavanur' },
+  { code: 'CHP-16-PONNANI', name: 'Ponnani Chapter', slug: 'ponnani' },
 ];
 
 export const MALAPPURAM_TALUKS = [
@@ -36,7 +36,7 @@ export const MEMBERSHIP_CATEGORIES = [
     code: 'YOUTH_ENTREPRENEUR',
     name: 'Youth Entrepreneur',
     description: 'Aimed at young founders, co-founders and early-stage startup directors under 35.',
-    annualFeeINR: 3000,
+    annualFeeINR: 0,
     minAge: 18,
     maxAge: 35,
   },
@@ -44,7 +44,7 @@ export const MEMBERSHIP_CATEGORIES = [
     code: 'ESTABLISHED_BIZ',
     name: 'Established Business Owner',
     description: 'For business owners with operational enterprises looking to expand and network.',
-    annualFeeINR: 5000,
+    annualFeeINR: 0,
     minAge: 25,
     maxAge: 65,
   },
@@ -52,7 +52,7 @@ export const MEMBERSHIP_CATEGORIES = [
     code: 'PROFESSIONAL',
     name: 'Professional Member',
     description: 'Practicing Chartered Accountants, Legal Counsel, Architects, Consultants and Doctors.',
-    annualFeeINR: 4000,
+    annualFeeINR: 0,
     minAge: 21,
     maxAge: 70,
   },
@@ -60,7 +60,7 @@ export const MEMBERSHIP_CATEGORIES = [
     code: 'STUDENT_INNOVATOR',
     name: 'Student Innovator',
     description: 'Higher education students with innovative prototypes, startup ideas, or research projects.',
-    annualFeeINR: 1000,
+    annualFeeINR: 0,
     minAge: 17,
     maxAge: 26,
   },
@@ -114,18 +114,34 @@ async function main() {
 
   // 3. Seed 16 Chapters
   for (const ch of FOUNDING_CHAPTERS) {
-    await prisma.chapter.upsert({
-      where: { code: ch.code },
-      update: {},
-      create: {
-        organizationId: org.id,
-        districtId: district.id,
-        code: ch.code,
-        name: ch.name,
-        slug: ch.slug,
-        description: `${ch.name} of Malappuram Youth Business Forum.`,
+    const existing = await prisma.chapter.findFirst({
+      where: {
+        OR: [{ code: ch.code }, { slug: ch.slug }],
       },
     });
+
+    if (existing) {
+      await prisma.chapter.update({
+        where: { id: existing.id },
+        data: {
+          code: ch.code,
+          name: ch.name,
+          slug: ch.slug,
+          description: `${ch.name} of Malappuram Youth Business Forum.`,
+        },
+      });
+    } else {
+      await prisma.chapter.create({
+        data: {
+          organizationId: org.id,
+          districtId: district.id,
+          code: ch.code,
+          name: ch.name,
+          slug: ch.slug,
+          description: `${ch.name} of Malappuram Youth Business Forum.`,
+        },
+      });
+    }
   }
 
   // 4. Seed Membership Categories

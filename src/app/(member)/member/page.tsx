@@ -1,20 +1,34 @@
+'use client';
+
+import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DigitalIdCard } from '@/features/membership-id-cards/components/digital-id-card';
-import { Building2, Calendar, Award, ArrowRight, ShieldCheck, TrendingUp, Users } from 'lucide-react';
+import { MemberClassificationCard } from '@/features/memberships/components/member-classification-card';
+import { Building2, Award, ArrowRight, ShieldCheck } from 'lucide-react';
+import type { MemberCategoryValue, CurrentPositionValue } from '@/features/memberships/constants/member-classifications';
 
 export default function MemberDashboardPage() {
-  const sampleCard = {
-    membershipNumber: 'MYBF-0000000001',
+  const [memberProfile, setMemberProfile] = React.useState({
     fullName: 'Mohammed Anas',
-    categoryName: 'Youth Entrepreneur',
+    membershipNumber: 'MYBF-0000000001',
     chapterName: 'Manjeri Chapter',
+    memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER' as MemberCategoryValue,
+    currentPosition: 'BUSINESS_OWNER' as CurrentPositionValue,
     status: 'ACTIVE' as const,
     issuedAt: 'Jan 2026',
     validUntil: 'Dec 2027',
     verificationToken: 'sample-live-verification-token-389172',
+  });
+
+  const handleClassificationSave = (category: MemberCategoryValue, position: CurrentPositionValue) => {
+    setMemberProfile((prev) => ({
+      ...prev,
+      memberCategory: category,
+      currentPosition: position,
+    }));
   };
 
   return (
@@ -24,12 +38,12 @@ export default function MemberDashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Welcome, {sampleCard.fullName}
+              Welcome, {memberProfile.fullName}
             </h1>
             <Badge variant="success">ACTIVE</Badge>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Permanent Member ID: <span className="font-mono font-bold text-[#035AFC]">{sampleCard.membershipNumber}</span> • Manjeri Chapter
+            Permanent Member ID: <span className="font-mono font-bold text-[#035AFC]">{memberProfile.membershipNumber}</span> • {memberProfile.chapterName}
           </p>
         </div>
 
@@ -40,11 +54,18 @@ export default function MemberDashboardPage() {
         </Link>
       </div>
 
+      {/* Member Classification Profile Section */}
+      <MemberClassificationCard
+        initialCategory={memberProfile.memberCategory}
+        initialPosition={memberProfile.currentPosition}
+        onSave={handleClassificationSave}
+      />
+
       {/* Main Grid: Card + Quick Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Digital ID Card Preview */}
         <div className="lg:col-span-5 flex flex-col items-center">
-          <DigitalIdCard card={sampleCard} />
+          <DigitalIdCard card={memberProfile} />
           <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="h-4 w-4 text-emerald-400" />
             <span>Cryptographic pass recognized at all 16 chapters</span>
@@ -53,7 +74,7 @@ export default function MemberDashboardPage() {
 
         {/* Member Metrics & Chapter Link */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">Assigned Chapter</span>
@@ -64,16 +85,16 @@ export default function MemberDashboardPage() {
 
             <Card>
               <CardHeader className="p-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Annual Fee Status</span>
-                <CardTitle className="text-sm mt-1 text-emerald-600">Settled (Paid)</CardTitle>
-                <p className="text-[11px] text-slate-500">Valid to Dec 2027</p>
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Membership Standing</span>
+                <CardTitle className="text-sm mt-1 text-emerald-600">Active Member</CardTitle>
+                <p className="text-[11px] text-slate-500">100% Free NGO Pass</p>
               </CardHeader>
             </Card>
 
-            <Card className="col-span-2 sm:col-span-1">
+            <Card>
               <CardHeader className="p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">Event Attendance</span>
-                <CardTitle className="text-sm mt-1">4 Summits</CardTitle>
+                <CardTitle className="text-sm mt-1 text-slate-900 dark:text-white">4 Summits</CardTitle>
                 <p className="text-[11px] text-slate-500">100% Verified Scans</p>
               </CardHeader>
             </Card>

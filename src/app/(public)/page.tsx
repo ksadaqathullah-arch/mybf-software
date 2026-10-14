@@ -16,7 +16,7 @@ import {
   GraduationCap,
 } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
-import { MEMBERSHIP_CATEGORIES } from '@/features/memberships/constants/categories';
+import { MEMBER_CATEGORIES } from '@/features/memberships/constants/member-classifications';
 
 export default function HomePage() {
   return (
@@ -93,9 +93,9 @@ export default function HomePage() {
               <p className="text-[11px] text-slate-400">Zero Unverified Members</p>
             </div>
             <div className="space-y-1 pt-6 lg:pt-0">
-              <div className="text-3xl sm:text-4xl font-extrabold text-emerald-500">₹0 Dues Leak</div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Audited Financials</div>
-              <p className="text-[11px] text-slate-400">Reconciled Webhook Ledgers</p>
+              <div className="text-3xl sm:text-4xl font-extrabold text-emerald-500">100% Free</div>
+              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Non-Profit NGO</div>
+              <p className="text-[11px] text-slate-400">Zero Membership Fees or Dues</p>
             </div>
           </div>
         </div>
@@ -241,22 +241,22 @@ export default function HomePage() {
             Structured for Diverse Business Profiles
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Every category has tailored eligibility criteria, annual dues, and community networking privileges.
+            Every category provides independent vocational classification, community networking, and democratic representation.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {MEMBERSHIP_CATEGORIES.map((cat) => (
-            <Card key={cat.code} className="flex flex-col justify-between hover:shadow-lg transition-all">
+          {MEMBER_CATEGORIES.map((cat) => (
+            <Card key={cat.value} className="flex flex-col justify-between hover:shadow-lg transition-all">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Badge variant="secondary" className="text-[10px]">
-                    ₹{cat.annualFeeINR.toLocaleString('en-IN')}/yr
+                    INTEREST FOCUS
                   </Badge>
-                  <span className="text-xs text-slate-400">Age {cat.minAge}-{cat.maxAge}</span>
+                  <span className="text-xs text-[#035AFC] font-bold">MYBF</span>
                 </div>
-                <CardTitle className="text-lg mt-3">{cat.name}</CardTitle>
-                <CardDescription className="text-xs">{cat.description}</CardDescription>
+                <CardTitle className="text-lg mt-3">{cat.label}</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">{cat.description}</CardDescription>
               </CardHeader>
               <CardFooter>
                 <Link href="/register" className="w-full">

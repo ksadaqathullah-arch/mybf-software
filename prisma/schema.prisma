@@ -292,6 +292,23 @@ enum MembershipStatus {
   DEACTIVATED
 }
 
+enum MemberCategory {
+  STUDENT
+  ASPIRING_ENTREPRENEUR
+  ENTREPRENEUR_BUSINESS_OWNER
+  OTHER
+}
+
+enum CurrentPosition {
+  STUDENT
+  EMPLOYEE
+  WORKER
+  BUSINESS_OWNER
+  ENTREPRENEUR
+  SELF_EMPLOYED
+  OTHER
+}
+
 model MemberProfile {
   id             String        @id @default(uuid())
   userId         String        @unique
@@ -305,6 +322,10 @@ model MemberProfile {
   alternatePhone String?
   email          String
   bloodGroup     String?
+
+  // Independent Member Classifications
+  memberCategory  MemberCategory?
+  currentPosition CurrentPosition?
   
   // Professional & Business Details
   occupation     String?
@@ -339,6 +360,8 @@ model MemberProfile {
   @@index([organizationId])
   @@index([primaryPhone])
   @@index([email])
+  @@index([memberCategory])
+  @@index([currentPosition])
   @@map("member_profiles")
 }
 
@@ -347,7 +370,12 @@ model MembershipApplication {
   userId          String
   organizationId  String
   chapterId       String
-  categoryId      String
+  categoryId      String?
+  
+  // Independent Member Classifications
+  memberCategory  MemberCategory?
+  currentPosition CurrentPosition?
+
   status          ApplicationStatus @default(SUBMITTED)
   submittedAt     DateTime          @default(now())
   reviewedById    String?
@@ -358,14 +386,16 @@ model MembershipApplication {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  user            User               @relation(fields: [userId], references: [id], onDelete: Restrict)
-  organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
-  chapter         Chapter            @relation(fields: [chapterId], references: [id], onDelete: Restrict)
-  category        MembershipCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  user            User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter         Chapter             @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  category        MembershipCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   approvalActions MembershipApprovalAction[]
 
   @@index([chapterId, status])
   @@index([userId])
+  @@index([memberCategory])
+  @@index([currentPosition])
   @@map("membership_applications")
 }
 
@@ -389,7 +419,7 @@ model Membership {
   memberProfileId  String
   organizationId   String
   chapterId        String
-  categoryId       String
+  categoryId       String?
   // Immutable sequential code formatted as MYBF-0000000001 (10 digits, unencoded chapter)
   membershipNumber String           @unique
   sequenceNumber   BigInt           @unique
@@ -404,7 +434,7 @@ model Membership {
   memberProfile    MemberProfile       @relation(fields: [memberProfileId], references: [id], onDelete: Restrict)
   organization     Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   chapter          Chapter             @relation(fields: [chapterId], references: [id], onDelete: Restrict)
-  category         MembershipCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category         MembershipCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   idCards          MembershipIdCard[]
 
   @@index([organizationId, status])

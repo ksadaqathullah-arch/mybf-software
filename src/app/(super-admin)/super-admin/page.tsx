@@ -30,7 +30,7 @@ export default function SuperAdminDashboardPage() {
       actor: 'gateway.razorpay.webhook',
       action: 'PAYMENT_SETTLED_WEBHOOK',
       resource: 'PaymentIntent',
-      target: 'order_8923baf912 (₹3,000)',
+      target: 'order_8923baf912 (Summit Ticket ₹3,000)',
       timestamp: 'Today, 12:44:50 GMT+5:30',
       ip: '52.66.192.4',
     },

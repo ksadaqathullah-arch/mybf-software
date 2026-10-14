@@ -6,7 +6,6 @@ const MEMBER_NAV_ITEMS = [
   { id: 'member-id-card', label: 'Digital ID Pass', href: '/member/membership/id-card' },
   { id: 'member-chapter', label: 'My Chapter', href: '/chapters/manjeri' },
   { id: 'member-events', label: 'Events & Summits', href: '/events' },
-  { id: 'member-dues', label: 'Dues & Receipts', href: '/member/payments' },
 ];
 
 const CHAPTER_NAV_ITEMS = [
@@ -56,6 +55,19 @@ describe('Portal Navigation Item Uniqueness & Key Stability', () => {
         const hrefs = items.map((i) => i.href);
         const uniqueHrefs = new Set(hrefs);
         expect(uniqueHrefs.size).toBe(hrefs.length);
+      });
+    });
+  });
+
+  describe('Member Portal Zero Fee Policy Enforcement', () => {
+    it('contains no membership fee, dues, billing, or payment links in member navigation', () => {
+      const prohibitedKeywords = ['due', 'dues', 'fee', 'payment', 'billing', 'receipt', 'invoice'];
+      MEMBER_NAV_ITEMS.forEach((item) => {
+        prohibitedKeywords.forEach((keyword) => {
+          expect(item.id.toLowerCase()).not.toContain(keyword);
+          expect(item.label.toLowerCase()).not.toContain(keyword);
+          expect(item.href.toLowerCase()).not.toContain(keyword);
+        });
       });
     });
   });

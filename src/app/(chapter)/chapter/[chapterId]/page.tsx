@@ -1,21 +1,20 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Users,
   FileCheck,
-  Calendar,
-  CreditCard,
-  Building2,
-  ShieldCheck,
-  Check,
-  X,
-  Clock,
+  Landmark,
   Award,
+  Calendar,
 } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
+import {
+  ChapterReviewQueue,
+  type ChapterApplicationItem,
+} from '@/features/memberships/components/chapter-review-queue';
 
 export function generateStaticParams() {
   return INITIAL_16_CHAPTERS.map((ch) => ({
@@ -35,13 +34,14 @@ export default async function ChapterExecutivePage({
     notFound();
   }
 
-  const samplePendingApplications = [
+  const samplePendingApplications: ChapterApplicationItem[] = [
     {
       id: 'app-1',
       fullName: 'Sufiyan K.P',
       email: 'sufiyan@manjeri-textiles.com',
       phone: '9847112233',
-      category: 'Youth Entrepreneur',
+      memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
+      currentPosition: 'BUSINESS_OWNER',
       submittedAt: 'Today, 11:30 AM',
       businessSector: 'Textiles & Retail',
     },
@@ -50,9 +50,30 @@ export default async function ChapterExecutivePage({
       fullName: 'Dr. Fathima Zahra',
       email: 'fathima.dental@gmail.com',
       phone: '9744221100',
-      category: 'Professional Member',
+      memberCategory: 'ASPIRING_ENTREPRENEUR',
+      currentPosition: 'EMPLOYEE',
       submittedAt: 'Yesterday, 04:15 PM',
       businessSector: 'Healthcare & Dentistry',
+    },
+    {
+      id: 'app-3',
+      fullName: 'Rashid K.',
+      email: 'rashid.tech@gmail.com',
+      phone: '9846001122',
+      memberCategory: 'STUDENT',
+      currentPosition: 'STUDENT',
+      submittedAt: '2 days ago',
+      businessSector: 'Computer Engineering & IoT',
+    },
+    {
+      id: 'app-4',
+      fullName: 'Hameed C.V',
+      email: 'hameed@malabarconsult.in',
+      phone: '9447334455',
+      memberCategory: 'OTHER',
+      currentPosition: 'SELF_EMPLOYED',
+      submittedAt: '3 days ago',
+      businessSector: 'Tax Consultancy & Advisory',
     },
   ];
 
@@ -103,7 +124,7 @@ export default async function ChapterExecutivePage({
               <span className="text-xs text-slate-500 font-semibold uppercase">Pending Reviews</span>
               <FileCheck className="h-4 w-4 text-[#FBC206]" />
             </div>
-            <div className="text-2xl font-extrabold text-[#FBC206] mt-1">2 Applications</div>
+            <div className="text-2xl font-extrabold text-[#FBC206] mt-1">{samplePendingApplications.length} Applications</div>
             <p className="text-[11px] text-slate-500">Awaiting chapter sign-off</p>
           </CardHeader>
         </Card>
@@ -122,76 +143,20 @@ export default async function ChapterExecutivePage({
         <Card>
           <CardHeader className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-semibold uppercase">Chapter Fund Balance</span>
-              <CreditCard className="h-4 w-4 text-emerald-500" />
+              <span className="text-xs text-slate-500 font-semibold uppercase">NGO Activity Budget</span>
+              <Landmark className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-extrabold text-emerald-600 mt-1">₹4,26,000</div>
-            <p className="text-[11px] text-slate-500">Audited dual ledger</p>
+            <p className="text-[11px] text-slate-500">Approved community initiatives</p>
           </CardHeader>
         </Card>
       </div>
 
-      {/* Maker-Checker Application Review Queue */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-6 pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Membership Review Queue (Maker-Checker)</CardTitle>
-              <CardDescription className="text-xs">
-                Chapter officers verify identity and trade legitimacy before permanent ID pass generation.
-              </CardDescription>
-            </div>
-            <Badge variant="warning">2 ACTION REQUIRED</Badge>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-6 pt-2">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="border-b border-slate-100 dark:border-slate-800 text-slate-400 font-semibold uppercase text-[10px]">
-                <tr>
-                  <th className="py-3 px-2">Applicant</th>
-                  <th className="py-3 px-2">Category</th>
-                  <th className="py-3 px-2">Business / Firm</th>
-                  <th className="py-3 px-2">Submitted</th>
-                  <th className="py-3 px-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {samplePendingApplications.map((app) => (
-                  <tr key={app.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
-                    <td className="py-3.5 px-2">
-                      <div className="font-bold text-slate-900 dark:text-white">{app.fullName}</div>
-                      <div className="text-[11px] text-slate-400">{app.email} • {app.phone}</div>
-                    </td>
-                    <td className="py-3.5 px-2">
-                      <Badge variant="primary" className="text-[10px]">{app.category}</Badge>
-                    </td>
-                    <td className="py-3.5 px-2 text-slate-600 dark:text-slate-300">
-                      {app.businessSector}
-                    </td>
-                    <td className="py-3.5 px-2 text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> {app.submittedAt}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-2 text-right">
-                      <div className="inline-flex items-center gap-1.5">
-                        <Button variant="primary" size="sm" className="h-7 text-xs px-2.5">
-                          <Check className="h-3.5 w-3.5 mr-1" /> Approve
-                        </Button>
-                        <Button variant="outline" size="sm" className="h-7 text-xs px-2.5 text-red-500">
-                          <X className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Maker-Checker Application Review Queue with Combined Filters */}
+      <ChapterReviewQueue
+        initialApplications={samplePendingApplications}
+        chapterName={chapter.name}
+      />
     </div>
   );
 }

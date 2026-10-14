@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 export const createPaymentIntentSchema = z.object({
-  purpose: z.enum(['MEMBERSHIP_FEE', 'EVENT_TICKET', 'SPONSORSHIP']),
+  // Disallow membership fees: MYBF membership is 100% free. Payments are strictly for event tickets and sponsorships.
+  purpose: z.enum(['EVENT_TICKET', 'SPONSORSHIP']),
   amountINR: z.number().int().positive('Payment amount must be greater than zero'),
   chapterId: z.string().uuid().optional(),
   idempotencyKey: z.string().min(16, 'Idempotency key must be a unique secure string'),

@@ -1,14 +1,20 @@
 import 'server-only';
 import { db } from '@/server/db';
-import { MemberRegistrationInput, ApplicationReviewInput, ChapterTransferInput } from '../schemas/membership.schema';
+import {
+  MemberRegistrationInput,
+  ApplicationReviewInput,
+  ChapterTransferInput,
+  UpdateMemberClassificationInput,
+} from '../schemas/membership.schema';
 import { assertAuthorized } from '@/server/auth/policy';
 import { AuthActor } from '@/server/auth/types';
 import { generateVerificationToken } from '@/features/membership-id-cards/server/card-crypto';
 import { formatMemberId } from '@/lib/utils';
+import type { Prisma } from '@prisma/client';
 
 export class MembershipService {
   /**
-   * Submit a new membership application with duplicate detection
+   * Submit a new membership application with duplicate detection and independent classifications
    */
   static async submitApplication(input: MemberRegistrationInput, userId: string) {
     // 1. Duplicate check on verified mobile and email
@@ -24,8 +30,14 @@ export class MembershipService {
       );
     }
 
-    const chapter = await db.chapter.findUnique({
-      where: { id: input.chapterId },
+    const chapter = await db.chapter.findFirst({
+      where: {
+        OR: [
+          { id: input.chapterId },
+          { slug: input.chapterId },
+          { code: input.chapterId },
+        ],
+      },
       include: { organization: true },
     });
 
@@ -33,7 +45,7 @@ export class MembershipService {
       throw new Error('Selected chapter not found in Malappuram.');
     }
 
-    // 2. Execute transaction: Create profile & application
+    // 2. Execute transaction: Create profile & application with independent classifications
     return await db.$transaction(async (tx) => {
       const profile = await tx.memberProfile.create({
         data: {
@@ -45,11 +57,13 @@ export class MembershipService {
           email: input.email,
           dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : null,
           gender: input.gender,
+          memberCategory: input.memberCategory,
+          currentPosition: input.currentPosition,
           occupation: input.occupation,
           companyName: input.companyName,
           businessSector: input.businessSector,
           yearsInBusiness: input.yearsInBusiness,
-          isStudent: input.isStudent,
+          isStudent: input.isStudent || input.memberCategory === 'STUDENT' || input.currentPosition === 'STUDENT',
           institutionName: input.institutionName,
           courseName: input.courseName,
           addressLine: input.addressLine,
@@ -64,9 +78,11 @@ export class MembershipService {
           userId,
           organizationId: chapter.organizationId,
           chapterId: chapter.id,
-          categoryId: input.categoryId,
+          memberCategory: input.memberCategory,
+          currentPosition: input.currentPosition,
+          categoryId: input.categoryId ?? null,
           status: 'SUBMITTED',
-          payloadJson: { ...input },
+          payloadJson: { ...input } as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -141,7 +157,7 @@ export class MembershipService {
         }
 
         const validUntil = new Date();
-        validUntil.setFullYear(validUntil.getFullYear() + 1); // 1-year annual validity
+        validUntil.setFullYear(validUntil.getFullYear() + 5); // 5-year NGO charter term, independent of fees (continuous free renewal)
 
         // Create permanent Membership
         const membership = await tx.membership.create({
@@ -149,13 +165,27 @@ export class MembershipService {
             memberProfileId: profile.id,
             organizationId: application.organizationId,
             chapterId: application.chapterId,
-            categoryId: application.categoryId,
+            categoryId: application.categoryId ?? null,
             sequenceNumber: BigInt(nextSequence),
             membershipNumber,
             status: 'ACTIVE',
             validUntil,
           },
         });
+
+        // Ensure profile has classifications synced from application if missing
+        if (
+          (!profile.memberCategory && application.memberCategory) ||
+          (!profile.currentPosition && application.currentPosition)
+        ) {
+          await tx.memberProfile.update({
+            where: { id: profile.id },
+            data: {
+              memberCategory: profile.memberCategory ?? application.memberCategory,
+              currentPosition: profile.currentPosition ?? application.currentPosition,
+            },
+          });
+        }
 
         // Issue Initial Digital ID Card with cryptographic token
         const verificationToken = generateVerificationToken(membershipNumber, 1);
@@ -194,6 +224,168 @@ export class MembershipService {
 
       throw new Error(`Unsupported review action: ${input.action}`);
     });
+  }
+
+  /**
+   * Update member classification
+   * Allows members to self-update their classification or authorized admins to update historical records.
+   */
+  static async updateMemberClassification(
+    actor: AuthActor,
+    memberProfileId: string,
+    input: UpdateMemberClassificationInput
+  ) {
+    const profile = await db.memberProfile.findUnique({
+      where: { id: memberProfileId },
+    });
+
+    if (!profile) {
+      throw new Error('Member profile not found.');
+    }
+
+    assertAuthorized({
+      actor,
+      action: 'member.update_classification',
+      resource: 'membership',
+      recordOwnerId: profile.userId,
+      chapterId: profile.chapterId,
+      organizationId: profile.organizationId,
+    });
+
+    return await db.memberProfile.update({
+      where: { id: memberProfileId },
+      data: {
+        memberCategory: input.memberCategory,
+        currentPosition: input.currentPosition,
+        isStudent: input.memberCategory === 'STUDENT' || input.currentPosition === 'STUDENT',
+      },
+    });
+  }
+
+  /**
+   * Get member classification distribution statistics
+   * Aggregates by MemberCategory and CurrentPosition, including unclassified historical records.
+   */
+  static async getClassificationDistribution(
+    actor: AuthActor,
+    filters?: {
+      organizationId?: string;
+      chapterId?: string;
+      taluk?: string;
+      startDate?: Date;
+      endDate?: Date;
+      memberCategory?: string;
+      currentPosition?: string;
+    }
+  ) {
+    const isSuperAdmin = actor.roles.includes('SUPER_ADMIN');
+    const isDistrictAdmin = actor.roles.includes('DISTRICT_ADMIN');
+    const isOrgAdmin = actor.roles.includes('ORGANIZATION_ADMIN');
+    const isChapterLeader = actor.roles.some((r) =>
+      ['CHAPTER_PRESIDENT', 'CHAPTER_SECRETARY', 'CHAPTER_TREASURER', 'CHAPTER_COORDINATOR', 'MEMBERSHIP_OFFICER'].includes(r)
+    );
+
+    const where: Prisma.MemberProfileWhereInput = {};
+
+    if (!isSuperAdmin) {
+      where.organizationId = actor.organizationId || undefined;
+    } else if (filters?.organizationId) {
+      where.organizationId = filters.organizationId;
+    }
+
+    if (isChapterLeader && !isDistrictAdmin && !isOrgAdmin && !isSuperAdmin) {
+      where.chapterId = actor.chapterId || undefined;
+    } else if (filters?.chapterId) {
+      where.chapterId = filters.chapterId;
+    }
+
+    if (filters?.taluk) {
+      where.taluk = filters.taluk;
+    }
+
+    if (filters?.startDate || filters?.endDate) {
+      where.createdAt = {};
+      if (filters.startDate) where.createdAt.gte = filters.startDate;
+      if (filters.endDate) where.createdAt.lte = filters.endDate;
+    }
+
+    if (filters?.memberCategory) {
+      where.memberCategory = filters.memberCategory as Prisma.EnumMemberCategoryNullableFilter;
+    }
+
+    if (filters?.currentPosition) {
+      where.currentPosition = filters.currentPosition as Prisma.EnumCurrentPositionNullableFilter;
+    }
+
+    const totalMembers = await db.memberProfile.count({ where });
+
+    const categoryGroup = await db.memberProfile.groupBy({
+      by: ['memberCategory'],
+      where,
+      _count: { id: true },
+    });
+
+    const positionGroup = await db.memberProfile.groupBy({
+      by: ['currentPosition'],
+      where,
+      _count: { id: true },
+    });
+
+    const categoryCounts: Record<string, number> = {
+      STUDENT: 0,
+      ASPIRING_ENTREPRENEUR: 0,
+      ENTREPRENEUR_BUSINESS_OWNER: 0,
+      OTHER: 0,
+      UNCLASSIFIED: 0,
+    };
+
+    for (const item of categoryGroup) {
+      if (item.memberCategory) {
+        categoryCounts[item.memberCategory] = item._count.id;
+      } else {
+        categoryCounts.UNCLASSIFIED += item._count.id;
+      }
+    }
+
+    const positionCounts: Record<string, number> = {
+      STUDENT: 0,
+      EMPLOYEE: 0,
+      WORKER: 0,
+      BUSINESS_OWNER: 0,
+      ENTREPRENEUR: 0,
+      SELF_EMPLOYED: 0,
+      OTHER: 0,
+      UNCLASSIFIED: 0,
+    };
+
+    for (const item of positionGroup) {
+      if (item.currentPosition) {
+        positionCounts[item.currentPosition] = item._count.id;
+      } else {
+        positionCounts.UNCLASSIFIED += item._count.id;
+      }
+    }
+
+    return {
+      totalMembers,
+      categoryDistribution: [
+        { key: 'STUDENT', label: 'Students', count: categoryCounts.STUDENT },
+        { key: 'ASPIRING_ENTREPRENEUR', label: 'Interested in Starting a Business', count: categoryCounts.ASPIRING_ENTREPRENEUR },
+        { key: 'ENTREPRENEUR_BUSINESS_OWNER', label: 'Entrepreneurs / Business Owners', count: categoryCounts.ENTREPRENEUR_BUSINESS_OWNER },
+        { key: 'OTHER', label: 'Other', count: categoryCounts.OTHER },
+        { key: 'UNCLASSIFIED', label: 'Unclassified (Historical)', count: categoryCounts.UNCLASSIFIED },
+      ],
+      positionDistribution: [
+        { key: 'STUDENT', label: 'Students', count: positionCounts.STUDENT },
+        { key: 'EMPLOYEE', label: 'Employees', count: positionCounts.EMPLOYEE },
+        { key: 'WORKER', label: 'Workers', count: positionCounts.WORKER },
+        { key: 'BUSINESS_OWNER', label: 'Business Owners', count: positionCounts.BUSINESS_OWNER },
+        { key: 'ENTREPRENEUR', label: 'Entrepreneurs', count: positionCounts.ENTREPRENEUR },
+        { key: 'SELF_EMPLOYED', label: 'Self-Employed', count: positionCounts.SELF_EMPLOYED },
+        { key: 'OTHER', label: 'Other', count: positionCounts.OTHER },
+        { key: 'UNCLASSIFIED', label: 'Unclassified (Historical)', count: positionCounts.UNCLASSIFIED },
+      ],
+    };
   }
 
   /**

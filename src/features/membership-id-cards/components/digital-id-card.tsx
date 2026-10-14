@@ -2,8 +2,12 @@
 
 import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, QrCode, Building2, Calendar, Award } from 'lucide-react';
+import { ShieldCheck, QrCode, Building2, Calendar, Award, Briefcase } from 'lucide-react';
 import { DigitalIdCardPayload } from '../types/card.types';
+import {
+  getMemberCategoryLabel,
+  getCurrentPositionLabel,
+} from '@/features/memberships/constants/member-classifications';
 
 interface DigitalIdCardProps {
   card: DigitalIdCardPayload;
@@ -11,7 +15,7 @@ interface DigitalIdCardProps {
 }
 
 export function DigitalIdCard({ card, className }: DigitalIdCardProps) {
-  const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/id/${card.verificationToken}`;
+  const verifyUrl = `/verify/id/${card.verificationToken}`;
 
   return (
     <div
@@ -77,7 +81,18 @@ export function DigitalIdCard({ card, className }: DigitalIdCardProps) {
 
           <div className="flex items-center space-x-1.5 text-xs text-blue-100">
             <Award className="h-3.5 w-3.5 text-[#FBC206] shrink-0" />
-            <span className="truncate font-medium">{card.categoryName}</span>
+            <span className="truncate font-medium">
+              {card.memberCategory
+                ? getMemberCategoryLabel(card.memberCategory)
+                : (card.categoryName || 'Not provided')}
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-1.5 text-xs text-blue-100">
+            <Briefcase className="h-3.5 w-3.5 text-[#FBC206] shrink-0" />
+            <span className="truncate font-medium">
+              {getCurrentPositionLabel(card.currentPosition)}
+            </span>
           </div>
         </div>
       </div>
@@ -95,13 +110,19 @@ export function DigitalIdCard({ card, className }: DigitalIdCardProps) {
           </div>
         </div>
 
-        {/* Simulated QR Code box */}
-        <div className="flex flex-col items-center">
+        {/* QR Code link */}
+        <a
+          href={verifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center hover:opacity-90 transition-opacity"
+          title="Verify ID pass"
+        >
           <div className="h-14 w-14 rounded-lg bg-white p-1 shadow-inner flex items-center justify-center">
             <QrCode className="h-12 w-12 text-[#030405]" />
           </div>
           <span className="mt-1 text-[9px] text-[#FBC206] font-mono">SCAN TO VERIFY</span>
-        </div>
+        </a>
       </div>
     </div>
   );

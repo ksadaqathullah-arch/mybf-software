@@ -59,8 +59,12 @@ export default async function PublicIdVerificationPage({
 
               <div className="space-y-3 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Membership Category:</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">Youth Entrepreneur</span>
+                  <span className="text-slate-500">Member Category / Interest:</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Entrepreneur / Business Owner</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Current Position:</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Business Owner</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">District:</span>

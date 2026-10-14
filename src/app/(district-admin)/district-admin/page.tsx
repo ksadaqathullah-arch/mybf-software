@@ -2,19 +2,10 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Building2,
-  Users,
-  MapPin,
-  CreditCard,
-  TrendingUp,
-  Download,
-  ShieldCheck,
-  ArrowRight,
-  Filter,
-} from 'lucide-react';
+import { Download } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
+import { DistrictClassificationAnalytics } from '@/features/memberships/components/district-classification-analytics';
 
 export default function DistrictAdminDashboardPage() {
   return (
@@ -73,12 +64,15 @@ export default function DistrictAdminDashboardPage() {
 
         <Card>
           <CardHeader className="p-5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">District Fee Collections</span>
-            <div className="text-3xl font-extrabold text-emerald-600 mt-1">₹74.4 Lakh</div>
-            <p className="text-[11px] text-slate-500">Reconciled via webhook ledger</p>
+            <span className="text-[10px] font-bold text-slate-400 uppercase">Community Programs</span>
+            <div className="text-3xl font-extrabold text-emerald-600 mt-1">48 Summits</div>
+            <p className="text-[11px] text-slate-500">100% Free NGO community events</p>
           </CardHeader>
         </Card>
       </div>
+
+      {/* Member Classification Intelligence & Dual Distributions */}
+      <DistrictClassificationAnalytics />
 
       {/* Geographical Taluk Breakdown */}
       <Card className="border-slate-200 dark:border-slate-800 shadow-sm">

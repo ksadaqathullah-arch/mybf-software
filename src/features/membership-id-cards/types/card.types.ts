@@ -4,7 +4,9 @@ export interface PublicCardVerificationResult {
   isValid: boolean;
   membershipNumber: string;
   fullName: string;
-  categoryName: string;
+  categoryName?: string;
+  memberCategory?: string | null;
+  currentPosition?: string | null;
   chapterName: string;
   status: CardStatus;
   validUntil: string;
@@ -16,7 +18,9 @@ export interface PublicCardVerificationResult {
 export interface DigitalIdCardPayload {
   membershipNumber: string;
   fullName: string;
-  categoryName: string;
+  categoryName?: string;
+  memberCategory?: string | null;
+  currentPosition?: string | null;
   chapterName: string;
   photoUrl?: string | null;
   status: CardStatus;

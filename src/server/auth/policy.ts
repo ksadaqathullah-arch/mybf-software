@@ -90,7 +90,12 @@ export function authorize(context: AuthorizationContext): AuthorizationResult {
 
   // 6. Own-record ownership check (e.g. member updating own profile, viewing own card)
   if (recordOwnerId && recordOwnerId === actor.userId) {
-    if (action === 'member.read_own' || action === 'member.transfer_request') {
+    if (
+      action === 'member.read_own' ||
+      action === 'member.transfer_request' ||
+      action === 'member.update_own' ||
+      action === 'member.update_classification'
+    ) {
       return {
         allowed: true,
         evaluatedScope: 'OWN_RECORD',
