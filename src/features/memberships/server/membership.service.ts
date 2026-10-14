@@ -5,7 +5,9 @@ import {
   ApplicationReviewInput,
   ChapterTransferInput,
   UpdateMemberClassificationInput,
+  UpdateYouthProfileInput,
 } from '../schemas/membership.schema';
+import { getTalentCategory } from '../constants/youth-discovery';
 import { assertAuthorized } from '@/server/auth/policy';
 import { AuthActor } from '@/server/auth/types';
 import { generateVerificationToken } from '@/features/membership-id-cards/server/card-crypto';
@@ -45,8 +47,23 @@ export class MembershipService {
       throw new Error('Selected chapter not found in Malappuram.');
     }
 
-    // 2. Execute transaction: Create profile & application with independent classifications
+    // 2. Execute transaction: Create profile & application with independent classifications and youth data
     return await db.$transaction(async (tx) => {
+      const expectationsData = (input.expectations || []).map((key) => ({
+        expectationKey: key,
+        customText: key === 'OTHER' ? input.otherExpectationText || null : null,
+      }));
+
+      const talentsData = (input.talents || []).map((key) => ({
+        talentKey: key,
+        category: getTalentCategory(key),
+        customDescription: key === 'OTHER_TALENT' ? input.otherTalentDescription || null : null,
+      }));
+
+      const participationData = (input.participationPreferences || []).map((key) => ({
+        preferenceKey: key,
+      }));
+
       const profile = await tx.memberProfile.create({
         data: {
           userId,
@@ -56,7 +73,8 @@ export class MembershipService {
           primaryPhone: input.primaryPhone,
           email: input.email,
           dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : null,
-          gender: input.gender,
+          gender: input.gender ?? null,
+          futureGoal: input.futureGoal ?? null,
           memberCategory: input.memberCategory,
           currentPosition: input.currentPosition,
           occupation: input.occupation,
@@ -70,6 +88,15 @@ export class MembershipService {
           taluk: input.taluk,
           ward: input.ward,
           pinCode: input.pinCode,
+          expectations: {
+            create: expectationsData,
+          },
+          talents: {
+            create: talentsData,
+          },
+          participationPreferences: {
+            create: participationData,
+          },
         },
       });
 
@@ -415,6 +442,95 @@ export class MembershipService {
         toChapterId: input.destinationChapterId,
         reason: input.reason,
         status: 'REQUESTED',
+      },
+    });
+  }
+
+  /**
+   * Update youth expectations, talents, and participation preferences
+   */
+  static async updateYouthProfile(
+    actor: AuthActor,
+    memberProfileId: string,
+    input: UpdateYouthProfileInput
+  ) {
+    const profile = await db.memberProfile.findUnique({
+      where: { id: memberProfileId },
+    });
+
+    if (!profile) {
+      throw new Error('Member profile not found.');
+    }
+
+    assertAuthorized({
+      actor,
+      action: 'member.update_own',
+      resource: 'membership',
+      recordOwnerId: profile.userId,
+      chapterId: profile.chapterId,
+      organizationId: profile.organizationId,
+    });
+
+    return await db.$transaction(async (tx) => {
+      // Clear previous youth selections
+      await tx.memberExpectation.deleteMany({ where: { memberProfileId } });
+      await tx.memberTalent.deleteMany({ where: { memberProfileId } });
+      await tx.memberParticipationPreference.deleteMany({ where: { memberProfileId } });
+
+      // Create new selections
+      const expectationsData = (input.expectations || []).map((key) => ({
+        memberProfileId,
+        expectationKey: key,
+        customText: key === 'OTHER' ? input.otherExpectationText || null : null,
+      }));
+
+      const talentsData = (input.talents || []).map((key) => ({
+        memberProfileId,
+        talentKey: key,
+        category: getTalentCategory(key),
+        customDescription: key === 'OTHER_TALENT' ? input.otherTalentDescription || null : null,
+      }));
+
+      const participationData = (input.participationPreferences || []).map((key) => ({
+        memberProfileId,
+        preferenceKey: key,
+      }));
+
+      if (expectationsData.length > 0) {
+        await tx.memberExpectation.createMany({ data: expectationsData });
+      }
+      if (talentsData.length > 0) {
+        await tx.memberTalent.createMany({ data: talentsData });
+      }
+      if (participationData.length > 0) {
+        await tx.memberParticipationPreference.createMany({ data: participationData });
+      }
+
+      return await tx.memberProfile.update({
+        where: { id: memberProfileId },
+        data: {
+          futureGoal: input.futureGoal ?? null,
+          gender: input.gender !== undefined ? input.gender : profile.gender,
+        },
+        include: {
+          expectations: true,
+          talents: true,
+          participationPreferences: true,
+        },
+      });
+    });
+  }
+
+  /**
+   * Get youth discovery profile with normalized relations
+   */
+  static async getYouthProfile(memberProfileId: string) {
+    return await db.memberProfile.findUnique({
+      where: { id: memberProfileId },
+      include: {
+        expectations: true,
+        talents: true,
+        participationPreferences: true,
       },
     });
   }

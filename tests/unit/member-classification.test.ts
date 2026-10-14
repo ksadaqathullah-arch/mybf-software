@@ -70,6 +70,8 @@ describe('MYBF Member Classification System', () => {
       fullName: 'Mohammed Anas',
       email: 'anas@enterprise.in',
       primaryPhone: '9847012345',
+      dateOfBirth: '1995-05-15',
+      expectations: ['NETWORKING_CONNECTIONS'],
       chapterId: 'manjeri-chapter-id',
       occupation: 'Managing Director',
       consentAcknowledged: true,

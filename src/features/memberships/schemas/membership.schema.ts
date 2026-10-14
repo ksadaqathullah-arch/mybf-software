@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+import {
+  validateYouthAgeEligibility,
+  AGE_ELIGIBILITY_ERROR_MESSAGE,
+} from '../constants/youth-discovery';
+
 export const MEMBER_CATEGORY_VALUES = [
   'STUDENT',
   'ASPIRING_ENTREPRENEUR',
@@ -23,8 +28,24 @@ export const memberRegistrationSchema = z.object({
   primaryPhone: z
     .string()
     .regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number'),
-  dateOfBirth: z.string().optional(),
-  gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional(),
+  
+  // Age Eligibility: Mandatory DOB with strict server-side <=35 age calculation
+  dateOfBirth: z
+    .string()
+    .min(1, 'Date of birth is required')
+    .superRefine((val, ctx) => {
+      const res = validateYouthAgeEligibility(val);
+      if (!res.eligible) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: res.error || AGE_ELIGIBILITY_ERROR_MESSAGE,
+        });
+      }
+    }),
+  
+  // Gender: Configurable single-choice dropdown (optional)
+  gender: z.enum(['MALE', 'FEMALE']).optional().nullable(),
+  
   chapterId: z.string().min(1, 'Please select an active chapter in Malappuram'),
   
   // Independent Member Classification (Replaces legacy tier/fee classification)
@@ -36,6 +57,22 @@ export const memberRegistrationSchema = z.object({
   }),
   // Optional backward-compatible reference (deprecated)
   categoryId: z.string().optional(),
+  
+  // Expectations from MYBF (At least 1 required)
+  expectations: z
+    .array(z.string())
+    .min(1, 'Please select at least one expectation from MYBF'),
+  otherExpectationText: z.string().max(300).optional(),
+  
+  // Future Goal for the next 3 years (Optional, max 500 chars)
+  futureGoal: z.string().max(500, 'Goal cannot exceed 500 characters').optional(),
+  
+  // Extracurricular Talents & Skills (Categorized, optional)
+  talents: z.array(z.string()).default([]),
+  otherTalentDescription: z.string().max(300).optional(),
+  
+  // Participation Preferences (Multi-select, optional)
+  participationPreferences: z.array(z.string()).default([]),
   
   // Professional & Business Details
   occupation: z.string().min(2, 'Please state your occupation or profession'),
@@ -52,13 +89,25 @@ export const memberRegistrationSchema = z.object({
   ward: z.string().optional(),
   pinCode: z.string().regex(/^\d{6}$/, 'PIN Code must be 6 digits').optional(),
   
-  // Compliance
+  // Compliance & Consent
   consentAcknowledged: z.boolean().refine((val) => val === true, {
     message: 'You must acknowledge the terms and organizational charter.',
   }),
 });
 
 export type MemberRegistrationInput = z.infer<typeof memberRegistrationSchema>;
+
+export const updateYouthProfileSchema = z.object({
+  expectations: z.array(z.string()).min(1, 'Please select at least one expectation from MYBF'),
+  otherExpectationText: z.string().max(300).optional(),
+  futureGoal: z.string().max(500, 'Goal cannot exceed 500 characters').optional(),
+  talents: z.array(z.string()).default([]),
+  otherTalentDescription: z.string().max(300).optional(),
+  participationPreferences: z.array(z.string()).default([]),
+  gender: z.enum(['MALE', 'FEMALE']).optional().nullable(),
+});
+
+export type UpdateYouthProfileInput = z.infer<typeof updateYouthProfileSchema>;
 
 export const applicationReviewSchema = z.object({
   applicationId: z.string().uuid(),

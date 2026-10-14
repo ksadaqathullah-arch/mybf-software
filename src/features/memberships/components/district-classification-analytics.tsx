@@ -12,6 +12,9 @@ import {
   Award,
   Briefcase,
   Layers,
+  Target,
+  Palette,
+  Users2,
 } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
@@ -23,6 +26,14 @@ import {
   type MemberCategoryValue,
   type CurrentPositionValue,
 } from '@/features/memberships/constants/member-classifications';
+import {
+  EXPECTATION_OPTIONS,
+  ALL_TALENT_OPTIONS,
+  PARTICIPATION_PREFERENCES,
+  getExpectationLabel,
+  getTalentLabel,
+  getParticipationPreferenceLabel,
+} from '@/features/memberships/constants/youth-discovery';
 
 export interface DistrictMemberRecord {
   id: string;
@@ -33,6 +44,9 @@ export interface DistrictMemberRecord {
   taluk: string;
   memberCategory: MemberCategoryValue | null;
   currentPosition: CurrentPositionValue | null;
+  expectations: string[];
+  talents: string[];
+  participationPreferences: string[];
   status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
   joinedDate: string;
 }
@@ -48,6 +62,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Ernad',
     memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
     currentPosition: 'BUSINESS_OWNER',
+    expectations: ['NETWORKING_CONNECTIONS', 'STARTUP_GUIDANCE', 'MENTORSHIP'],
+    talents: ['CODING', 'PRODUCT_DESIGN', 'PUBLIC_SPEAKING'],
+    participationPreferences: ['COLLABORATE_BUSINESS_PROJECTS', 'SHARE_EXPERTISE', 'PARTICIPATE_EVENTS'],
     status: 'ACTIVE',
     joinedDate: '2026-01-15',
   },
@@ -60,6 +77,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Perinthalmanna',
     memberCategory: 'ASPIRING_ENTREPRENEUR',
     currentPosition: 'EMPLOYEE',
+    expectations: ['STARTUP_GUIDANCE', 'INVESTOR_FUNDING', 'FIND_LIKE_MINDED_YOUTH'],
+    talents: ['PUBLIC_SPEAKING', 'LEADERSHIP'],
+    participationPreferences: ['LEARN_FROM_PROFESSIONALS', 'JOIN_NETWORKING_COMMUNITIES'],
     status: 'ACTIVE',
     joinedDate: '2026-02-10',
   },
@@ -72,6 +92,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Ernad',
     memberCategory: 'STUDENT',
     currentPosition: 'STUDENT',
+    expectations: ['CAREER_GUIDANCE_JOBS', 'SKILL_DEVELOPMENT_TRAINING'],
+    talents: ['CODING', 'ROBOTICS', 'FOOTBALL'],
+    participationPreferences: ['VOLUNTEER_ACTIVITIES', 'JOIN_SPORTS_RECREATION'],
     status: 'ACTIVE',
     joinedDate: '2026-03-01',
   },
@@ -84,6 +107,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Tirur',
     memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
     currentPosition: 'ENTREPRENEUR',
+    expectations: ['BUSINESS_LEADS_COLLABORATION', 'INVESTOR_FUNDING'],
+    talents: ['DIGITAL_MARKETING', 'CONTENT_CREATION'],
+    participationPreferences: ['COLLABORATE_BUSINESS_PROJECTS', 'ORGANIZE_PROGRAMS_EVENTS'],
     status: 'ACTIVE',
     joinedDate: '2026-01-20',
   },
@@ -96,6 +122,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Kondotty',
     memberCategory: 'OTHER',
     currentPosition: 'SELF_EMPLOYED',
+    expectations: ['NETWORKING_CONNECTIONS', 'COMMUNITY_SOCIAL_IMPACT'],
+    talents: ['COMMUNITY_VOLUNTEERING', 'EVENT_ORGANIZING'],
+    participationPreferences: ['VOLUNTEER_ACTIVITIES', 'SOCIAL_IMPACT_INITIATIVES'],
     status: 'ACTIVE',
     joinedDate: '2026-02-18',
   },
@@ -108,6 +137,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Ponnani',
     memberCategory: 'ASPIRING_ENTREPRENEUR',
     currentPosition: 'WORKER',
+    expectations: ['STARTUP_GUIDANCE', 'MENTORSHIP', 'CREATIVE_TALENT_OPPORTUNITIES'],
+    talents: ['SINGING', 'WRITING', 'PHOTOGRAPHY'],
+    participationPreferences: ['PERFORM_CULTURAL_TALENT', 'PARTICIPATE_EVENTS'],
     status: 'ACTIVE',
     joinedDate: '2026-03-12',
   },
@@ -120,6 +152,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Nilambur',
     memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
     currentPosition: 'BUSINESS_OWNER',
+    expectations: ['NETWORKING_CONNECTIONS', 'BUSINESS_LEADS_COLLABORATION'],
+    talents: ['BADMINTON', 'LEADERSHIP'],
+    participationPreferences: ['JOIN_SPORTS_RECREATION', 'SHARE_EXPERTISE'],
     status: 'ACTIVE',
     joinedDate: '2026-01-25',
   },
@@ -132,6 +167,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Tirurangadi',
     memberCategory: 'STUDENT',
     currentPosition: 'STUDENT',
+    expectations: ['SKILL_DEVELOPMENT_TRAINING', 'EVENTS_WORKSHOPS_EXPOSURE'],
+    talents: ['DANCE', 'PUBLIC_SPEAKING', 'EVENT_HOSTING'],
+    participationPreferences: ['PERFORM_CULTURAL_TALENT', 'PARTICIPATE_EVENTS'],
     status: 'ACTIVE',
     joinedDate: '2026-02-28',
   },
@@ -144,6 +182,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Tirur',
     memberCategory: null, // Historical unclassified
     currentPosition: null, // Historical unclassified
+    expectations: [],
+    talents: [],
+    participationPreferences: [],
     status: 'ACTIVE',
     joinedDate: '2025-11-05',
   },
@@ -156,6 +197,9 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
     taluk: 'Ponnani',
     memberCategory: 'OTHER',
     currentPosition: 'OTHER',
+    expectations: ['FIND_LIKE_MINDED_YOUTH', 'COMMUNITY_SOCIAL_IMPACT'],
+    talents: ['VIDEOGRAPHY', 'GRAPHIC_DESIGN'],
+    participationPreferences: ['VOLUNTEER_ACTIVITIES', 'SOCIAL_IMPACT_INITIATIVES'],
     status: 'ACTIVE',
     joinedDate: '2026-03-05',
   },
@@ -167,7 +211,9 @@ export function DistrictClassificationAnalytics() {
   const [talukFilter, setTalukFilter] = React.useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = React.useState<string>('ALL');
   const [positionFilter, setPositionFilter] = React.useState<string>('ALL');
-  const [dateFilter, setDateFilter] = React.useState<string>('ALL');
+  const [expectationFilter, setExpectationFilter] = React.useState<string>('ALL');
+  const [talentFilter, setTalentFilter] = React.useState<string>('ALL');
+  const [participationFilter, setParticipationFilter] = React.useState<string>('ALL');
 
   // Filtered dataset
   const filteredMembers = React.useMemo(() => {
@@ -188,9 +234,21 @@ export function DistrictClassificationAnalytics() {
           return false;
         }
       }
+      if (expectationFilter !== 'ALL' && !m.expectations.includes(expectationFilter)) return false;
+      if (talentFilter !== 'ALL' && !m.talents.includes(talentFilter)) return false;
+      if (participationFilter !== 'ALL' && !m.participationPreferences.includes(participationFilter)) return false;
       return true;
     });
-  }, [members, chapterFilter, talukFilter, categoryFilter, positionFilter]);
+  }, [
+    members,
+    chapterFilter,
+    talukFilter,
+    categoryFilter,
+    positionFilter,
+    expectationFilter,
+    talentFilter,
+    participationFilter,
+  ]);
 
   // Aggregate Category Distribution
   const categoryStats = React.useMemo(() => {
@@ -250,6 +308,42 @@ export function DistrictClassificationAnalytics() {
     ];
   }, [filteredMembers]);
 
+  // Youth Discovery Stats (Expectations & Talents Aggregation)
+  const youthStats = React.useMemo(() => {
+    const expectationCounts: Record<string, number> = {};
+    const talentCounts: Record<string, number> = {};
+    const prefCounts: Record<string, number> = {};
+
+    for (const m of filteredMembers) {
+      for (const exp of m.expectations) {
+        expectationCounts[exp] = (expectationCounts[exp] || 0) + 1;
+      }
+      for (const t of m.talents) {
+        talentCounts[t] = (talentCounts[t] || 0) + 1;
+      }
+      for (const p of m.participationPreferences) {
+        prefCounts[p] = (prefCounts[p] || 0) + 1;
+      }
+    }
+
+    const topExpectations = Object.entries(expectationCounts)
+      .map(([key, count]) => ({ key, label: getExpectationLabel(key), count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    const topTalents = Object.entries(talentCounts)
+      .map(([key, count]) => ({ key, label: getTalentLabel(key), count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    const topPrefs = Object.entries(prefCounts)
+      .map(([key, count]) => ({ key, label: getParticipationPreferenceLabel(key), count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    return { topExpectations, topTalents, topPrefs };
+  }, [filteredMembers]);
+
   // Export CSV Handler
   const handleExportCsv = () => {
     const headers = [
@@ -259,6 +353,9 @@ export function DistrictClassificationAnalytics() {
       'Taluk',
       'Member Category / Interest',
       'Current Position',
+      'Expectations',
+      'Talents',
+      'Participation Preferences',
       'Status',
       'Joined Date',
     ];
@@ -270,6 +367,9 @@ export function DistrictClassificationAnalytics() {
       m.taluk,
       `"${getMemberCategoryLabel(m.memberCategory)}"`,
       `"${getCurrentPositionLabel(m.currentPosition)}"`,
+      `"${m.expectations.map(getExpectationLabel).join('; ')}"`,
+      `"${m.talents.map(getTalentLabel).join('; ')}"`,
+      `"${m.participationPreferences.map(getParticipationPreferenceLabel).join('; ')}"`,
       m.status,
       m.joinedDate,
     ]);
@@ -279,7 +379,7 @@ export function DistrictClassificationAnalytics() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `MYBF_District_Member_Classification_Report_${Date.now()}.csv`);
+    link.setAttribute('download', `MYBF_Youth_Talent_Classification_Report_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -291,7 +391,9 @@ export function DistrictClassificationAnalytics() {
     setTalukFilter('ALL');
     setCategoryFilter('ALL');
     setPositionFilter('ALL');
-    setDateFilter('ALL');
+    setExpectationFilter('ALL');
+    setTalentFilter('ALL');
+    setParticipationFilter('ALL');
   };
 
   const isFiltered =
@@ -299,7 +401,9 @@ export function DistrictClassificationAnalytics() {
     talukFilter !== 'ALL' ||
     categoryFilter !== 'ALL' ||
     positionFilter !== 'ALL' ||
-    dateFilter !== 'ALL';
+    expectationFilter !== 'ALL' ||
+    talentFilter !== 'ALL' ||
+    participationFilter !== 'ALL';
 
   return (
     <div className="space-y-6">
@@ -309,10 +413,10 @@ export function DistrictClassificationAnalytics() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Layers className="h-4 w-4 text-[#035AFC]" /> Member Classification Intelligence & Filters
+                <Layers className="h-4 w-4 text-[#035AFC]" /> Member Classification & Youth Discovery Intelligence
               </CardTitle>
               <CardDescription className="text-xs">
-                Real-time aggregation across independent Interest Categories and Professional Positions.
+                Real-time filtering across Chapter, Classification, Member Expectations, and Extracurricular Talents.
               </CardDescription>
             </div>
 
@@ -338,7 +442,7 @@ export function DistrictClassificationAnalytics() {
             </div>
           </div>
 
-          {/* 5-Dimensional Filter Grid */}
+          {/* Multi-Dimensional Filter Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
             {/* Chapter Filter */}
             <div className="space-y-1">
@@ -421,38 +525,165 @@ export function DistrictClassificationAnalytics() {
                 <option value="UNCLASSIFIED">Unclassified Historical</option>
               </select>
             </div>
+
+            {/* Expectations Filter */}
+            <div className="space-y-1">
+              <label htmlFor="dist-filter-expectation" className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <Target className="h-3 w-3 text-[#035AFC]" /> Member Expectation
+              </label>
+              <select
+                id="dist-filter-expectation"
+                value={expectationFilter}
+                onChange={(e) => setExpectationFilter(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-[#035AFC]"
+              >
+                <option value="ALL">All Expectations</option>
+                {EXPECTATION_OPTIONS.map((exp) => (
+                  <option key={exp.key} value={exp.key}>
+                    {exp.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Talent Discovery Filter */}
+            <div className="space-y-1">
+              <label htmlFor="dist-filter-talent" className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <Palette className="h-3 w-3 text-purple-500" /> Talent / Skill
+              </label>
+              <select
+                id="dist-filter-talent"
+                value={talentFilter}
+                onChange={(e) => setTalentFilter(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-[#035AFC]"
+              >
+                <option value="ALL">All Talents & Skills</option>
+                {ALL_TALENT_OPTIONS.map((t) => (
+                  <option key={t.key} value={t.key}>
+                    {t.label} ({t.category.replace('_', ' ')})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Participation Preference Filter */}
+            <div className="space-y-1 sm:col-span-2">
+              <label htmlFor="dist-filter-pref" className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <Users2 className="h-3 w-3 text-emerald-500" /> Participation Preference
+              </label>
+              <select
+                id="dist-filter-pref"
+                value={participationFilter}
+                onChange={(e) => setParticipationFilter(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-[#035AFC]"
+              >
+                <option value="ALL">All Participation Preferences</option>
+                {PARTICIPATION_PREFERENCES.map((p) => (
+                  <option key={p.key} value={p.key}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Dual Distribution Analytics Cards */}
+      {/* Youth Discovery Highlights Card */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Top Expectations */}
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5 text-[#035AFC]" /> Top Community Expectations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            {youthStats.topExpectations.length === 0 ? (
+              <span className="text-xs text-slate-400">No expectations recorded.</span>
+            ) : (
+              youthStats.topExpectations.map((exp) => (
+                <div key={exp.key} className="flex justify-between items-center text-xs">
+                  <span className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
+                    {exp.label}
+                  </span>
+                  <Badge variant="primary" className="text-[10px] py-0">
+                    {exp.count} members
+                  </Badge>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Top Talents */}
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <Palette className="h-3.5 w-3.5 text-purple-500" /> Discovered Talents & Skills
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            {youthStats.topTalents.length === 0 ? (
+              <span className="text-xs text-slate-400">No talents recorded.</span>
+            ) : (
+              youthStats.topTalents.map((t) => (
+                <div key={t.key} className="flex justify-between items-center text-xs">
+                  <span className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
+                    {t.label}
+                  </span>
+                  <Badge variant="secondary" className="text-[10px] py-0">
+                    {t.count} members
+                  </Badge>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Top Participation Channels */}
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <Users2 className="h-3.5 w-3.5 text-emerald-500" /> Participation Channels
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            {youthStats.topPrefs.length === 0 ? (
+              <span className="text-xs text-slate-400">No preferences recorded.</span>
+            ) : (
+              youthStats.topPrefs.map((p) => (
+                <div key={p.key} className="flex justify-between items-center text-xs">
+                  <span className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
+                    {p.label}
+                  </span>
+                  <span className="text-[10px] font-mono font-semibold text-slate-500">
+                    {p.count} members
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Aggregate Classification Distribution Grids */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Field A: Member Category Distribution */}
+        {/* Field A: Member Category Breakdown */}
         <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader className="p-5 pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-[#035AFC] flex items-center justify-center font-bold">
-                  A
-                </div>
-                <div>
-                  <CardTitle className="text-sm font-bold">Member Category / Interest Distribution</CardTitle>
-                  <CardDescription className="text-[11px]">
-                    Aggregate distribution across all filtered members ({filteredMembers.length})
-                  </CardDescription>
-                </div>
-              </div>
-              <Badge variant="primary" className="text-[10px]">
-                FIELD A
-              </Badge>
-            </div>
+            <CardTitle className="text-sm font-bold flex items-center justify-between">
+              <span>Field A: Member Category / Interest</span>
+              <span className="text-xs text-slate-400 font-normal">
+                {filteredMembers.length} active in scope
+              </span>
+            </CardTitle>
           </CardHeader>
-
-          <CardContent className="p-5 pt-2 space-y-3">
+          <CardContent className="p-5 pt-0 space-y-3">
             {categoryStats.map((item) => (
               <div key={item.key} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium text-slate-700 dark:text-slate-300">
                     {item.label}
                   </span>
                   <span className="font-mono text-slate-500">
@@ -470,32 +701,21 @@ export function DistrictClassificationAnalytics() {
           </CardContent>
         </Card>
 
-        {/* Field B: Current Position Distribution */}
+        {/* Field B: Current Position Breakdown */}
         <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader className="p-5 pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-[#FBC206] flex items-center justify-center font-bold">
-                  B
-                </div>
-                <div>
-                  <CardTitle className="text-sm font-bold">Current Position Distribution</CardTitle>
-                  <CardDescription className="text-[11px]">
-                    Vocational and professional alignment ({filteredMembers.length} members)
-                  </CardDescription>
-                </div>
-              </div>
-              <Badge variant="secondary" className="text-[10px]">
-                FIELD B
-              </Badge>
-            </div>
+            <CardTitle className="text-sm font-bold flex items-center justify-between">
+              <span>Field B: Current Position</span>
+              <span className="text-xs text-slate-400 font-normal">
+                {filteredMembers.length} active in scope
+              </span>
+            </CardTitle>
           </CardHeader>
-
-          <CardContent className="p-5 pt-2 space-y-3">
+          <CardContent className="p-5 pt-0 space-y-3">
             {positionStats.map((item) => (
               <div key={item.key} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium text-slate-700 dark:text-slate-300">
                     {item.label}
                   </span>
                   <span className="font-mono text-slate-500">
@@ -519,7 +739,7 @@ export function DistrictClassificationAnalytics() {
         <CardHeader className="p-5 pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-bold">Authorized District Member Roster</CardTitle>
+              <CardTitle className="text-sm font-bold">Authorized District Member & Talent Roster</CardTitle>
               <CardDescription className="text-xs">
                 Showing {filteredMembers.length} records matching the active multi-attribute filters.
               </CardDescription>
@@ -538,9 +758,9 @@ export function DistrictClassificationAnalytics() {
                   <th className="py-3 px-2">Member ID</th>
                   <th className="py-3 px-2">Full Name</th>
                   <th className="py-3 px-2">Chapter</th>
-                  <th className="py-3 px-2">Taluk</th>
-                  <th className="py-3 px-2">Field A: Category / Interest</th>
-                  <th className="py-3 px-2">Field B: Current Position</th>
+                  <th className="py-3 px-2">Classification</th>
+                  <th className="py-3 px-2">Key Expectations</th>
+                  <th className="py-3 px-2">Talents & Skills</th>
                   <th className="py-3 px-2 text-right">Status</th>
                 </tr>
               </thead>
@@ -561,32 +781,66 @@ export function DistrictClassificationAnalytics() {
                         {m.fullName}
                       </td>
                       <td className="py-3 px-2 text-slate-600 dark:text-slate-300">
-                        {m.chapterName}
+                        <div>{m.chapterName}</div>
+                        <div className="text-[10px] text-slate-400">{m.taluk}</div>
                       </td>
-                      <td className="py-3 px-2 text-slate-500">
-                        {m.taluk}
+                      <td className="py-3 px-2 space-y-1">
+                        <div>
+                          {m.memberCategory ? (
+                            <Badge variant="primary" className="text-[9px]">
+                              {getMemberCategoryLabel(m.memberCategory)}
+                            </Badge>
+                          ) : (
+                            <span className="text-amber-600 font-medium italic text-[10px]">
+                              Not provided
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          {m.currentPosition ? (
+                            <span className="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                              {getCurrentPositionLabel(m.currentPosition)}
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="py-3 px-2">
-                        {m.memberCategory ? (
-                          <Badge variant="primary" className="text-[10px]">
-                            {getMemberCategoryLabel(m.memberCategory)}
-                          </Badge>
-                        ) : (
-                          <span className="text-amber-600 font-medium italic text-[11px]">
-                            Not provided
-                          </span>
-                        )}
+                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                          {m.expectations.length > 0 ? (
+                            m.expectations.slice(0, 2).map((exp) => (
+                              <span
+                                key={exp}
+                                className="text-[9px] bg-blue-50 dark:bg-blue-950/60 text-[#035AFC] dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 px-1.5 py-0.5 rounded"
+                              >
+                                {getExpectationLabel(exp)}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-400 text-[10px] italic">None logged</span>
+                          )}
+                          {m.expectations.length > 2 && (
+                            <span className="text-[9px] text-slate-400">+{m.expectations.length - 2}</span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 px-2">
-                        {m.currentPosition ? (
-                          <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                            {getCurrentPositionLabel(m.currentPosition)}
-                          </Badge>
-                        ) : (
-                          <span className="text-amber-600 font-medium italic text-[11px]">
-                            Not provided
-                          </span>
-                        )}
+                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                          {m.talents.length > 0 ? (
+                            m.talents.slice(0, 2).map((t) => (
+                              <span
+                                key={t}
+                                className="text-[9px] bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-900/50 px-1.5 py-0.5 rounded"
+                              >
+                                {getTalentLabel(t)}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-400 text-[10px] italic">None logged</span>
+                          )}
+                          {m.talents.length > 2 && (
+                            <span className="text-[9px] text-slate-400">+{m.talents.length - 2}</span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 px-2 text-right">
                         <Badge variant="success" className="text-[9px]">

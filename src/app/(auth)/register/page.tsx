@@ -5,7 +5,20 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building2, User, Phone, Mail, Briefcase, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
+import {
+  Building2,
+  User,
+  Briefcase,
+  MapPin,
+  CheckCircle2,
+  ArrowRight,
+  AlertCircle,
+  Target,
+  Palette,
+  Users2,
+  ShieldCheck,
+  Check,
+} from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 import {
   MEMBER_CATEGORIES,
@@ -16,18 +29,38 @@ import {
   type CurrentPositionValue,
 } from '@/features/memberships/constants/member-classifications';
 import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
+import {
+  EXPECTATION_OPTIONS,
+  TALENT_CATEGORIES,
+  PARTICIPATION_PREFERENCES,
+  GENDER_OPTIONS,
+  validateYouthAgeEligibility,
+  calculateAge,
+  getExpectationLabel,
+  getTalentLabel,
+  getParticipationPreferenceLabel,
+  type GenderOptionValue,
+} from '@/features/memberships/constants/youth-discovery';
 
 export default function RegisterPage() {
   const [formData, setFormData] = React.useState({
     fullName: '',
     email: '',
     primaryPhone: '',
+    dateOfBirth: '',
+    gender: '' as GenderOptionValue | '',
     chapterId: INITIAL_16_CHAPTERS[0].slug,
     memberCategory: MEMBER_CATEGORIES[0].value as MemberCategoryValue,
     currentPosition: CURRENT_POSITIONS[0].value as CurrentPositionValue,
     occupation: '',
     companyName: '',
     businessSector: 'Information Technology',
+    expectations: [] as string[],
+    otherExpectationText: '',
+    futureGoal: '',
+    talents: [] as string[],
+    otherTalentDescription: '',
+    participationPreferences: [] as string[],
     taluk: 'Ernad',
     ward: '',
     pinCode: '676121',
@@ -36,13 +69,55 @@ export default function RegisterPage() {
 
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  // Age eligibility verification state
+  const ageValidation = React.useMemo(() => {
+    if (!formData.dateOfBirth) return null;
+    return validateYouthAgeEligibility(formData.dateOfBirth);
+  }, [formData.dateOfBirth]);
+
+  // Toggle helper for multi-select arrays
+  const toggleSelection = (field: 'expectations' | 'talents' | 'participationPreferences', key: string) => {
+    setFormData((prev) => {
+      const current = prev[field];
+      const exists = current.includes(key);
+      const updated = exists ? current.filter((k) => k !== key) : [...current, key];
+      return { ...prev, [field]: updated };
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.consent) {
-      alert('Please acknowledge the DPDP consent and charter agreement.');
+    setErrorMessage(null);
+
+    // 1. Validate Date of Birth and Youth Age Eligibility
+    if (!formData.dateOfBirth) {
+      setErrorMessage('Date of birth is required for youth registration.');
       return;
     }
+
+    const ageCheck = validateYouthAgeEligibility(formData.dateOfBirth);
+    if (!ageCheck.eligible) {
+      setErrorMessage(
+        ageCheck.error ||
+          `MYBF membership registration is currently available for applicants aged 35 or below.`
+      );
+      return;
+    }
+
+    // 2. Validate Expectations (at least 1 required)
+    if (formData.expectations.length === 0) {
+      setErrorMessage('Please select at least one expectation from MYBF.');
+      return;
+    }
+
+    // 3. Validate Consent
+    if (!formData.consent) {
+      setErrorMessage('Please acknowledge the youth charter and DPDP privacy terms.');
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -51,47 +126,105 @@ export default function RegisterPage() {
   };
 
   if (submitted) {
+    const age = formData.dateOfBirth ? calculateAge(formData.dateOfBirth) : null;
+
     return (
       <Card className="border-emerald-500/40 shadow-2xl p-6 sm:p-8 text-center space-y-6">
         <div className="h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <div className="space-y-2">
-          <Badge variant="success">Application Received</Badge>
+          <Badge variant="success">Youth Application Received</Badge>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Submission Successful
+            Application Submitted Successfully
           </h2>
-          <p className="text-sm text-slate-500 max-w-md mx-auto">
-            Your application has been routed to the elected chapter officers for verification. In accordance with MYBF governance, you will receive an SMS/Email notification upon status update.
+          <p className="text-sm text-slate-500 max-w-lg mx-auto">
+            Your youth membership application and talent profile have been routed to the elected chapter officers for verification. In accordance with MYBF governance, you will receive an SMS/Email notification upon approval.
           </p>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 text-xs text-slate-600 dark:text-slate-400 text-left space-y-2">
-          <div className="flex justify-between">
-            <span>Applicant:</span>
-            <strong className="text-slate-900 dark:text-white">{formData.fullName}</strong>
+        <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900/50 text-xs text-slate-600 dark:text-slate-400 text-left space-y-3 max-w-2xl mx-auto border border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Applicant</span>
+              <strong className="text-sm text-slate-900 dark:text-white">{formData.fullName}</strong>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Age Eligibility</span>
+              <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                Eligible Youth ({age} years old)
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>Selected Chapter:</span>
-            <strong className="text-slate-900 dark:text-white">
-              {INITIAL_16_CHAPTERS.find((c) => c.slug === formData.chapterId)?.name || formData.chapterId}
-            </strong>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Selected Chapter</span>
+              <strong className="text-slate-900 dark:text-white">
+                {INITIAL_16_CHAPTERS.find((c) => c.slug === formData.chapterId)?.name || formData.chapterId}
+              </strong>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Member Classification</span>
+              <div className="space-y-0.5">
+                <span className="block text-slate-800 dark:text-slate-200">
+                  {getMemberCategoryLabel(formData.memberCategory)}
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  Position: {getCurrentPositionLabel(formData.currentPosition)}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>Member Category:</span>
-            <strong className="text-slate-900 dark:text-white">
-              {getMemberCategoryLabel(formData.memberCategory)}
-            </strong>
+
+          <div className="space-y-2">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                Selected Expectations ({formData.expectations.length})
+              </span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {formData.expectations.map((exp) => (
+                  <Badge key={exp} variant="primary" className="text-[10px] py-0 px-2">
+                    {getExpectationLabel(exp)}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            {formData.talents.length > 0 && (
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  Talents & Skills ({formData.talents.length})
+                </span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {formData.talents.map((t) => (
+                    <Badge key={t} variant="secondary" className="text-[10px] py-0 px-2">
+                      {getTalentLabel(t)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {formData.participationPreferences.length > 0 && (
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  Participation Preferences ({formData.participationPreferences.length})
+                </span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {formData.participationPreferences.map((p) => (
+                    <span key={p} className="text-[10px] text-slate-500 bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                      {getParticipationPreferenceLabel(p)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="flex justify-between">
-            <span>Current Position:</span>
-            <strong className="text-slate-900 dark:text-white">
-              {getCurrentPositionLabel(formData.currentPosition)}
-            </strong>
-          </div>
-          <div className="flex justify-between">
-            <span>Status:</span>
-            <span className="text-amber-600 font-semibold">SUBMITTED (UNDER REVIEW)</span>
+
+          <div className="flex justify-between items-center pt-2 text-[11px] font-medium border-t border-slate-200 dark:border-slate-800">
+            <span>Registration Standing:</span>
+            <span className="text-amber-600 font-bold">UNDER CHAPTER REVIEW (ZERO FEES)</span>
           </div>
         </div>
 
@@ -111,24 +244,35 @@ export default function RegisterPage() {
     <Card className="border-slate-200 dark:border-slate-800 shadow-2xl">
       <CardHeader className="text-center p-6 sm:p-8 pb-4">
         <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
-          <Badge variant="primary">Join MYBF Community</Badge>
+          <Badge variant="primary">Youth Registration</Badge>
           <Badge variant="success" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-            100% Free NGO Membership
+            100% Free Membership • Max 35 Years
           </Badge>
         </div>
-        <CardTitle className="text-2xl font-bold">Membership Application</CardTitle>
-        <CardDescription className="text-xs">
-          Connect your business with 16 chapters across Malappuram district • Zero application or annual fees
+        <CardTitle className="text-2xl font-bold">MYBF Youth Membership & Talent Discovery</CardTitle>
+        <CardDescription className="text-xs max-w-xl mx-auto">
+          Join 16 chapters across Malappuram district. Share your background, what you hope to achieve, and discover opportunities to connect with like-minded youth.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="p-6 sm:p-8 pt-0">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Personal Info */}
+        {errorMessage && (
+          <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <div className="flex-1 font-medium">{errorMessage}</div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* SECTION 1: Personal & Contact Identity */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              1. Personal & Contact Identity
-            </h4>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-[#035AFC]" />
+                1. Personal & Contact Identity
+              </h4>
+              <span className="text-[10px] text-slate-400">Eligibility: Up to 35 Years</span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
@@ -163,32 +307,91 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label htmlFor="reg-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Email Address *
-              </label>
-              <input
-                id="reg-email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="e.g. anas@enterprise.in"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <label htmlFor="reg-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Email Address *
+                </label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="e.g. anas@enterprise.in"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                />
+              </div>
+
+              {/* Date of Birth Field with Youth Eligibility Check */}
+              <div className="space-y-1 sm:col-span-1">
+                <label htmlFor="reg-dob" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                  <span>Date of Birth *</span>
+                  <span className="text-[10px] text-slate-400">Max age: 35</span>
+                </label>
+                <input
+                  id="reg-dob"
+                  type="date"
+                  required
+                  value={formData.dateOfBirth}
+                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                  className={`w-full rounded-lg border px-3 py-2 text-xs focus:ring-2 bg-white dark:bg-[#070A10] ${
+                    ageValidation
+                      ? ageValidation.eligible
+                        ? 'border-emerald-500/50 focus:ring-emerald-500'
+                        : 'border-rose-500/50 focus:ring-rose-500'
+                      : 'border-slate-200 dark:border-slate-800 focus:ring-[#035AFC]'
+                  }`}
+                />
+                {ageValidation && (
+                  <div className="mt-1">
+                    {ageValidation.eligible ? (
+                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                        <Check className="h-3 w-3 inline" /> Eligible Youth ({ageValidation.age} years old)
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400 block leading-tight">
+                        {ageValidation.error}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Gender Dropdown (Configurable & Optional) */}
+              <div className="space-y-1 sm:col-span-1">
+                <label htmlFor="reg-gender" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Gender (Optional)
+                </label>
+                <select
+                  id="reg-gender"
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as GenderOptionValue })}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                >
+                  <option value="">Select Gender (Optional)</option>
+                  {GENDER_OPTIONS.map((g) => (
+                    <option key={g.value} value={g.value}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[10px] text-slate-400 block">Kept private; not published</span>
+              </div>
             </div>
           </div>
 
-          {/* Chapter & Member Classification */}
+          {/* SECTION 2: Chapter & Member Classification */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Building2 className="h-3.5 w-3.5 text-[#035AFC]" />
               2. Chapter & Member Classification
             </h4>
 
             <div className="space-y-3">
               <div className="space-y-1">
                 <label htmlFor="reg-chapter" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Select Chapter (16 Chapters) *
+                  Select Chapter (16 Constituency Chapters in Malappuram) *
                 </label>
                 <select
                   id="reg-chapter"
@@ -205,7 +408,6 @@ export default function RegisterPage() {
                 </select>
               </div>
 
-              {/* Side-by-side dropdowns on desktop, stacked on mobile */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label htmlFor="reg-member-category" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -254,9 +456,10 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Professional Details */}
+          {/* SECTION 3: Business or Professional Details */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Briefcase className="h-3.5 w-3.5 text-[#035AFC]" />
               3. Business or Professional Details
             </h4>
 
@@ -271,31 +474,258 @@ export default function RegisterPage() {
                   required
                   value={formData.occupation}
                   onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                  placeholder="e.g. Managing Director / CA"
+                  placeholder="e.g. Founder / Software Engineer / Student"
                   className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
                 />
               </div>
 
               <div className="space-y-1">
                 <label htmlFor="reg-company" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Company / Firm Name
+                  Company / Firm / Institution Name
                 </label>
                 <input
                   id="reg-company"
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  placeholder="e.g. Malabar Green Logistics"
+                  placeholder="e.g. Malabar Green Logistics or College Name"
                   className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Geography */}
+          {/* SECTION 4: Expectations from MYBF */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              4. Malappuram Location
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Target className="h-3.5 w-3.5 text-[#035AFC]" />
+                  4. What Do You Expect from MYBF? *
+                </h4>
+                <p className="text-[11px] text-slate-500">
+                  Tell us what you hope to achieve through the MYBF community. (Select all that apply, at least 1 required)
+                </p>
+              </div>
+              <Badge variant={formData.expectations.length > 0 ? 'success' : 'neutral'} className="text-[10px] w-fit">
+                {formData.expectations.length} Selected
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+              {EXPECTATION_OPTIONS.map((exp) => {
+                const isSelected = formData.expectations.includes(exp.key);
+                return (
+                  <button
+                    key={exp.key}
+                    type="button"
+                    onClick={() => toggleSelection('expectations', exp.key)}
+                    className={`flex items-start text-left p-2.5 rounded-lg border transition-all text-xs ${
+                      isSelected
+                        ? 'border-[#035AFC] bg-[#035AFC]/10 text-slate-900 dark:text-white font-medium ring-1 ring-[#035AFC]'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#070A10] text-slate-700 dark:text-slate-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-4 w-4 rounded mr-2 mt-0.5 shrink-0 flex items-center justify-center border transition-colors ${
+                        isSelected
+                          ? 'bg-[#035AFC] border-[#035AFC] text-white'
+                          : 'border-slate-300 dark:border-slate-700'
+                      }`}
+                    >
+                      {isSelected && <Check className="h-3 w-3" />}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-xs leading-snug">{exp.label}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5 leading-snug">{exp.description}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Conditional "Other Expectation" input */}
+            {formData.expectations.includes('OTHER') && (
+              <div className="pt-2">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                  Please specify your expectation *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.otherExpectationText}
+                  onChange={(e) => setFormData({ ...formData, otherExpectationText: e.target.value })}
+                  placeholder="e.g. Cross-border trade guidance, sustainable energy mentorship..."
+                  maxLength={300}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                />
+              </div>
+            )}
+
+            {/* Optional 3-Year Future Goal */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  What is your biggest goal for the next 3 years? (Optional)
+                </label>
+                <span className="text-[10px] text-slate-400">
+                  {formData.futureGoal.length} / 500
+                </span>
+              </div>
+              <textarea
+                rows={2}
+                maxLength={500}
+                value={formData.futureGoal}
+                onChange={(e) => setFormData({ ...formData, futureGoal: e.target.value })}
+                placeholder="e.g. Launch a technology brand from Manjeri reaching 50+ clients across GCC; learn export trade and build a team of 10 youth."
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+              />
+              <span className="text-[10px] text-slate-400 block mt-0.5">
+                Kept confidential; shared only with chapter mentors to align programs with your goals.
+              </span>
+            </div>
+          </div>
+
+          {/* SECTION 5: Skills, Talents & Extracurricular Interests */}
+          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Palette className="h-3.5 w-3.5 text-[#035AFC]" />
+                  5. Skills, Talents & Extracurricular Interests
+                </h4>
+                <p className="text-[11px] text-slate-500">
+                  Share your talents and discover opportunities to connect with like-minded members. (Optional)
+                </p>
+              </div>
+              <Badge variant={formData.talents.length > 0 ? 'secondary' : 'neutral'} className="text-[10px] w-fit">
+                {formData.talents.length} Talents Selected
+              </Badge>
+            </div>
+
+            <div className="space-y-3 pt-1">
+              {TALENT_CATEGORIES.map((category) => (
+                <div
+                  key={category.key}
+                  className="p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      {category.title}
+                    </span>
+                    <span className="text-[10px] text-slate-400">{category.description}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {category.options.map((t) => {
+                      const isSelected = formData.talents.includes(t.key);
+                      return (
+                        <button
+                          key={t.key}
+                          type="button"
+                          onClick={() => toggleSelection('talents', t.key)}
+                          className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 border ${
+                            isSelected
+                              ? 'bg-[#035AFC] text-white border-[#035AFC] shadow-sm'
+                              : 'bg-white dark:bg-[#070A10] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                          }`}
+                        >
+                          {isSelected && <Check className="h-3 w-3" />}
+                          {t.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Other Talent Option */}
+              <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Other Special Talent
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleSelection('talents', 'OTHER_TALENT')}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 border ${
+                      formData.talents.includes('OTHER_TALENT')
+                        ? 'bg-[#035AFC] text-white border-[#035AFC]'
+                        : 'bg-white dark:bg-[#070A10] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+                    }`}
+                  >
+                    {formData.talents.includes('OTHER_TALENT') && <Check className="h-3 w-3" />}
+                    Add Other Talent
+                  </button>
+                </div>
+                {formData.talents.includes('OTHER_TALENT') && (
+                  <input
+                    type="text"
+                    value={formData.otherTalentDescription}
+                    onChange={(e) => setFormData({ ...formData, otherTalentDescription: e.target.value })}
+                    placeholder="Describe your talent (e.g., Calligraphy, Drone piloting, Culinary arts...)"
+                    maxLength={300}
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 6: Participation Preferences */}
+          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Users2 className="h-3.5 w-3.5 text-[#035AFC]" />
+                  6. How Would You Like to Participate in MYBF?
+                </h4>
+                <p className="text-[11px] text-slate-500">
+                  Select activities you are open to contributing to or taking part in. (Optional)
+                </p>
+              </div>
+              <Badge variant={formData.participationPreferences.length > 0 ? 'secondary' : 'neutral'} className="text-[10px] w-fit">
+                {formData.participationPreferences.length} Selected
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              {PARTICIPATION_PREFERENCES.map((pref) => {
+                const isSelected = formData.participationPreferences.includes(pref.key);
+                return (
+                  <button
+                    key={pref.key}
+                    type="button"
+                    onClick={() => toggleSelection('participationPreferences', pref.key)}
+                    className={`flex items-start text-left p-2.5 rounded-lg border transition-all text-xs ${
+                      isSelected
+                        ? 'border-[#035AFC] bg-[#035AFC]/10 text-slate-900 dark:text-white font-medium ring-1 ring-[#035AFC]'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#070A10] text-slate-700 dark:text-slate-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-4 w-4 rounded mr-2 mt-0.5 shrink-0 flex items-center justify-center border transition-colors ${
+                        isSelected
+                          ? 'bg-[#035AFC] border-[#035AFC] text-white'
+                          : 'border-slate-300 dark:border-slate-700'
+                      }`}
+                    >
+                      {isSelected && <Check className="h-3 w-3" />}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-xs">{pref.label}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">{pref.description}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SECTION 7: Malappuram Location */}
+          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
+              7. Malappuram Location
             </h4>
 
             <div className="grid grid-cols-3 gap-3">
@@ -336,8 +766,24 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Consent Checkbox */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SECTION 8: DPDP Privacy Notice & Consent */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+                <ShieldCheck className="h-4 w-4 text-[#035AFC]" />
+                Youth Privacy & Purpose-Specific Data Protection
+              </div>
+              <p>
+                • <strong>Age Eligibility:</strong> MYBF is an NGO youth community. Registration is available exclusively to applicants aged 35 or below.
+              </p>
+              <p>
+                • <strong>Restricted Visibility:</strong> Your Date of Birth, gender, and 3-year personal goals are securely stored and will <em>never</em> be made publicly visible on the member directory.
+              </p>
+              <p>
+                • <strong>Talent Discovery:</strong> Extracurricular talents and participation preferences help chapter leadership invite you to relevant programs. Enrolling in an activity remains strictly voluntary.
+              </p>
+            </div>
+
             <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
               <input
                 type="checkbox"
@@ -347,13 +793,17 @@ export default function RegisterPage() {
                 className="mt-0.5 rounded border-slate-300 text-[#035AFC] focus:ring-[#035AFC]"
               />
               <span>
-                I agree to the MYBF Organizational Charter and acknowledge DPDP privacy terms for verified member directory publishing.
+                I confirm that I am aged 35 or below, agree to the MYBF Organizational Charter, and consent to purpose-specific verification under DPDP guidelines.
               </span>
             </label>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full h-11 text-sm mt-3">
-            {loading ? 'Submitting Application...' : 'Submit Application for Review'}
+          <Button
+            type="submit"
+            disabled={loading || (ageValidation !== null && !ageValidation.eligible)}
+            className="w-full h-11 text-sm mt-3"
+          >
+            {loading ? 'Submitting Application...' : 'Submit Youth Application for Review'}
             <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
         </form>

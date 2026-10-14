@@ -7,6 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DigitalIdCard } from '@/features/membership-id-cards/components/digital-id-card';
 import { MemberClassificationCard } from '@/features/memberships/components/member-classification-card';
+import {
+  YouthDiscoveryCard,
+  type YouthDiscoveryData,
+} from '@/features/memberships/components/youth-discovery-card';
 import { Building2, Award, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { MemberCategoryValue, CurrentPositionValue } from '@/features/memberships/constants/member-classifications';
 
@@ -21,6 +25,12 @@ export default function MemberDashboardPage() {
     issuedAt: 'Jan 2026',
     validUntil: 'Dec 2027',
     verificationToken: 'sample-live-verification-token-389172',
+    youthData: {
+      expectations: ['NETWORKING_CONNECTIONS', 'STARTUP_GUIDANCE', 'MENTORSHIP'],
+      futureGoal: 'Establish a regional tech logistics hub in Manjeri and empower 20+ local youth.',
+      talents: ['CODING', 'PRODUCT_DESIGN', 'PUBLIC_SPEAKING'],
+      participationPreferences: ['PARTICIPATE_EVENTS', 'SHARE_EXPERTISE', 'COLLABORATE_BUSINESS_PROJECTS'],
+    } as YouthDiscoveryData,
   });
 
   const handleClassificationSave = (category: MemberCategoryValue, position: CurrentPositionValue) => {
@@ -28,6 +38,13 @@ export default function MemberDashboardPage() {
       ...prev,
       memberCategory: category,
       currentPosition: position,
+    }));
+  };
+
+  const handleYouthDiscoverySave = (youthData: YouthDiscoveryData) => {
+    setMemberProfile((prev) => ({
+      ...prev,
+      youthData,
     }));
   };
 
@@ -59,6 +76,12 @@ export default function MemberDashboardPage() {
         initialCategory={memberProfile.memberCategory}
         initialPosition={memberProfile.currentPosition}
         onSave={handleClassificationSave}
+      />
+
+      {/* Youth Expectations, Talents & Participation Card */}
+      <YouthDiscoveryCard
+        initialData={memberProfile.youthData}
+        onSave={handleYouthDiscoverySave}
       />
 
       {/* Main Grid: Card + Quick Stats */}

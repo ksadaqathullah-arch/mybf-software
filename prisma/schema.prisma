@@ -343,6 +343,9 @@ model MemberProfile {
   district       String        @default("Malappuram")
   pinCode        String?
 
+  // Youth Discovery & Goals
+  futureGoal     String?
+
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -355,6 +358,9 @@ model MemberProfile {
   mentorProfile  MentorshipProfile?
   sentReferrals  ReferralLead[] @relation("SentReferrals")
   receivedReferrals ReferralLead[] @relation("ReceivedReferrals")
+  expectations   MemberExpectation[]
+  talents        MemberTalent[]
+  participationPreferences MemberParticipationPreference[]
 
   @@index([chapterId])
   @@index([organizationId])
@@ -363,6 +369,49 @@ model MemberProfile {
   @@index([memberCategory])
   @@index([currentPosition])
   @@map("member_profiles")
+}
+
+model MemberExpectation {
+  id              String         @id @default(uuid())
+  memberProfileId String
+  expectationKey  String
+  customText      String?
+  createdAt       DateTime       @default(now())
+
+  memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([expectationKey])
+  @@map("member_expectations")
+}
+
+model MemberTalent {
+  id                String         @id @default(uuid())
+  memberProfileId   String
+  talentKey         String
+  category          String
+  customDescription String?
+  createdAt         DateTime       @default(now())
+
+  memberProfile     MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([talentKey])
+  @@index([category])
+  @@map("member_talents")
+}
+
+model MemberParticipationPreference {
+  id              String         @id @default(uuid())
+  memberProfileId String
+  preferenceKey   String
+  createdAt       DateTime       @default(now())
+
+  memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([preferenceKey])
+  @@map("member_participation_preferences")
 }
 
 model MembershipApplication {
