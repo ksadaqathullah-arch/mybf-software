@@ -127,6 +127,9 @@ describe('memberRegistrationSchema Zod Validation', () => {
     participationPreferences: ['PARTICIPATE_EVENTS', 'COLLABORATE_BUSINESS_PROJECTS'],
     futureGoal: 'Launch an AI agritech platform for Malappuram farmers.',
     consentAcknowledged: true,
+    username: 'salman_faris',
+    password: 'SuperSecurePassword2026!',
+    confirmPassword: 'SuperSecurePassword2026!',
   };
 
   it('validates a compliant youth registration payload', () => {
@@ -172,4 +175,57 @@ describe('memberRegistrationSchema Zod Validation', () => {
     const result = memberRegistrationSchema.safeParse(payload);
     expect(result.success).toBe(true);
   });
+
+  it('rejects registration when username is invalid', () => {
+    // too short
+    const shortUser = { ...validBasePayload, username: 'ab' };
+    expect(memberRegistrationSchema.safeParse(shortUser).success).toBe(false);
+
+    // invalid characters
+    const specialUser = { ...validBasePayload, username: 'salman@faris' };
+    expect(memberRegistrationSchema.safeParse(specialUser).success).toBe(false);
+
+    // spaces
+    const spaceUser = { ...validBasePayload, username: 'salman faris' };
+    expect(memberRegistrationSchema.safeParse(spaceUser).success).toBe(false);
+  });
+
+  it('rejects registration when password is less than 12 characters', () => {
+    const shortPass = {
+      ...validBasePayload,
+      password: 'Short123!',
+      confirmPassword: 'Short123!',
+    };
+    const result = memberRegistrationSchema.safeParse(shortPass);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const passError = result.error.issues.find((e) => e.path.includes('password'));
+      expect(passError?.message).toContain('at least 12 characters');
+    }
+  });
+
+  it('rejects registration when confirm password does not match', () => {
+    const mismatchPass = {
+      ...validBasePayload,
+      password: 'SuperSecurePassword2026!',
+      confirmPassword: 'DifferentPassword2026!',
+    };
+    const result = memberRegistrationSchema.safeParse(mismatchPass);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const matchError = result.error.issues.find((e) => e.path.includes('confirmPassword'));
+      expect(matchError?.message).toBe('Passwords do not match');
+    }
+  });
+
+  it('accepts registration with a long passphrase without special character restrictions', () => {
+    const longPassphrase = {
+      ...validBasePayload,
+      password: 'correct horse battery staple malappuram youth 2026',
+      confirmPassword: 'correct horse battery staple malappuram youth 2026',
+    };
+    const result = memberRegistrationSchema.safeParse(longPassphrase);
+    expect(result.success).toBe(true);
+  });
 });
+

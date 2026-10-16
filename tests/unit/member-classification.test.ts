@@ -75,6 +75,9 @@ describe('MYBF Member Classification System', () => {
       chapterId: 'manjeri-chapter-id',
       occupation: 'Managing Director',
       consentAcknowledged: true,
+      username: 'mohammed_anas',
+      password: 'StrongPassword@2026',
+      confirmPassword: 'StrongPassword@2026',
     };
 
     it('successfully accepts valid combinations of Category and Position', () => {

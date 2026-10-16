@@ -143,6 +143,7 @@ enum UserStatus {
 
 model User {
   id            String      @id @default(uuid())
+  username      String?     @unique
   email         String?     @unique
   phone         String?     @unique
   passwordHash  String?
@@ -166,6 +167,7 @@ model User {
   invoices                Invoice[]
   membershipApplications  MembershipApplication[]
 
+  @@index([username])
   @@index([email])
   @@index([phone])
   @@map("users")

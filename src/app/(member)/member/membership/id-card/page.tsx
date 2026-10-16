@@ -1,26 +1,82 @@
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { DigitalIdCard } from '@/features/membership-id-cards/components/digital-id-card';
-import { Download, ArrowLeft, ShieldCheck, Share2, QrCode } from 'lucide-react';
+import { IdCardActions } from '@/features/membership-id-cards/components/id-card-actions';
+import { getCurrentActor } from '@/server/auth/session';
+import { db } from '@/server/db';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
+import type { DigitalIdCardPayload } from '@/features/membership-id-cards/types/card.types';
 
-export default function MemberIdCardPage() {
-  const sampleCard = {
+export default async function MemberIdCardPage() {
+  const sampleCard: DigitalIdCardPayload = {
     membershipNumber: 'MYBF-0000000001',
     fullName: 'Mohammed Anas',
     memberCategory: 'ENTREPRENEUR_BUSINESS_OWNER',
     currentPosition: 'BUSINESS_OWNER',
     chapterName: 'Manjeri Chapter',
-    status: 'ACTIVE' as const,
+    status: 'ACTIVE',
     issuedAt: 'Jan 2026',
     validUntil: 'Dec 2027',
     verificationToken: 'sample-live-verification-token-389172',
   };
 
+  let cardData: DigitalIdCardPayload = sampleCard;
+
+  try {
+    const actor = await getCurrentActor();
+    if (actor) {
+      const user = await db.user.findUnique({
+        where: { id: actor.userId },
+        include: {
+          profile: {
+            include: {
+              chapter: true,
+              memberships: {
+                where: { status: 'ACTIVE' },
+                include: {
+                  idCards: {
+                    where: { status: 'ACTIVE' },
+                    orderBy: { cardVersion: 'desc' },
+                    take: 1,
+                  },
+                },
+                take: 1,
+              },
+            },
+          },
+        },
+      });
+
+      const activeMembership = user?.profile?.memberships[0];
+      const activeCard = activeMembership?.idCards[0];
+
+      if (user?.profile && activeMembership && activeCard) {
+        cardData = {
+          membershipNumber: activeMembership.membershipNumber,
+          fullName: user.profile.fullName,
+          memberCategory: user.profile.memberCategory,
+          currentPosition: user.profile.currentPosition,
+          chapterName: user.profile.chapter.name,
+          status: activeMembership.status as DigitalIdCardPayload['status'],
+          issuedAt: new Date(activeMembership.createdAt).toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric',
+          }),
+          validUntil: new Date(activeMembership.validUntil).toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric',
+          }),
+          verificationToken: activeCard.verificationToken,
+        };
+      }
+    }
+  } catch {
+    // Fall back to sampleCard
+  }
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <div>
+      <div className="print:hidden">
         <Link
           href="/member"
           className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-[#035AFC] transition-colors"
@@ -29,7 +85,7 @@ export default function MemberIdCardPage() {
         </Link>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4 print:hidden">
         <div>
           <Badge variant="primary" className="mb-1.5">Official Credential</Badge>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -40,29 +96,23 @@ export default function MemberIdCardPage() {
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Link href={`/verify/id/${sampleCard.verificationToken}`} target="_blank">
-            <Button variant="outline" size="sm">
-              <QrCode className="h-4 w-4 mr-1.5" /> Test Public QR
-            </Button>
-          </Link>
-          <Button variant="secondary" size="sm">
-            <Download className="h-4 w-4 mr-1.5" /> Save PDF / Image
-          </Button>
-        </div>
+        <IdCardActions
+          verificationToken={cardData.verificationToken}
+          membershipNumber={cardData.membershipNumber}
+        />
       </div>
 
-      <div className="flex flex-col items-center justify-center py-6">
-        <DigitalIdCard card={sampleCard} className="max-w-lg" />
+      <div className="flex flex-col items-center justify-center py-4 print:py-0 print:m-0">
+        <DigitalIdCard card={cardData} className="max-w-[380px]" />
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-6 text-xs text-slate-500 space-y-3">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-6 text-xs text-slate-500 space-y-3 print:hidden">
         <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
           <span>Security & Governance Policies</span>
         </div>
         <p>
-          • <strong>Transfer Policy:</strong> If you transfer from Manjeri to another chapter, your permanent 10-digit ID (<span className="font-mono text-[#035AFC]">MYBF-0000000001</span>) remains identical. Only the assigned chapter and QR token version are updated.
+          • <strong>Transfer Policy:</strong> If you transfer chapters, your permanent 10-digit ID (<span className="font-mono text-[#035AFC]">{cardData.membershipNumber}</span>) remains identical. Only the assigned chapter and QR token version are updated.
         </p>
         <p>
           • <strong>Event Admission:</strong> Event organizers scan the QR code using any modern camera. Attendance check-ins are idempotent to prevent duplicate scanning.
