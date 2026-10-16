@@ -11,7 +11,8 @@ export async function GET() {
     dbLatencyMs = Math.round(performance.now() - start);
     dbStatus = 'connected';
   } catch (err) {
-    dbStatus = `error: ${(err as Error).message}`;
+    console.error('[HealthCheck] Database connection error:', (err as Error).message);
+    dbStatus = process.env.NODE_ENV === 'production' ? 'disconnected' : `error: ${(err as Error).message}`;
   }
 
   const isHealthy = dbStatus === 'connected';
