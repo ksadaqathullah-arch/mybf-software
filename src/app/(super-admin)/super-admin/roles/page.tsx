@@ -1,37 +1,100 @@
 import { notFound } from 'next/navigation';
 import { getCurrentActor } from '@/server/auth/session';
 import { db } from '@/server/db';
-import { SuperAdminOfficersView } from '@/features/chapters/components/super-admin-officers-view';
-import { ShieldCheck, Key } from 'lucide-react';
+import { SuperAdminUnifiedRolesTabs } from '@/features/super-admin/components/super-admin-unified-roles-tabs';
 import { Badge } from '@/components/ui/badge';
+import { Key } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function SuperAdminRolesPage() {
   const actor = await getCurrentActor();
-  if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
+  if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
     notFound();
   }
 
-  // Fetch active and historical officers
-  const rawOfficers = await db.chapterLeadership.findMany({
-    include: {
-      chapter: {
-        select: { id: true, code: true, name: true, slug: true },
+  // 1. Fetch system users with assigned roles
+  const [rawSystemUsers, availableRoles, rawOfficers, chapters, rawEligibleUsers] = await Promise.all([
+    db.user.findMany({
+      include: {
+        profile: {
+          select: { fullName: true, primaryPhone: true },
+        },
+        roleAssignments: {
+          include: {
+            role: true,
+            chapter: { select: { id: true, code: true, name: true } },
+          },
+          orderBy: { assignedAt: 'desc' },
+        },
       },
-      user: {
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          profile: {
-            select: { fullName: true, primaryPhone: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+
+    // 2. Available system roles
+    db.role.findMany({
+      orderBy: { name: 'asc' },
+    }),
+
+    // 3. Chapter leadership appointments
+    db.chapterLeadership.findMany({
+      include: {
+        chapter: {
+          select: { id: true, code: true, name: true, slug: true },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            profile: {
+              select: { fullName: true, primaryPhone: true },
+            },
           },
         },
       },
-    },
-    orderBy: { startDate: 'desc' },
-  });
+      orderBy: { startDate: 'desc' },
+    }),
 
-  const officers = rawOfficers.map((o) => ({
+    // 4. All 16 constituency chapters
+    db.chapter.findMany({
+      where: { status: 'ACTIVE' },
+      select: { id: true, code: true, name: true, slug: true },
+      orderBy: { name: 'asc' },
+    }),
+
+    // 5. Eligible active users for appointments
+    db.user.findMany({
+      where: { status: 'ACTIVE' },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        profile: {
+          select: { fullName: true, primaryPhone: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+
+  const formattedSystemUsers = rawSystemUsers.map((u) => ({
+    id: u.id,
+    email: u.email,
+    username: u.username,
+    status: u.status,
+    fullName: u.profile?.fullName || u.username || u.email || 'Unnamed User',
+    phone: u.profile?.primaryPhone || u.phone,
+    roles: u.roleAssignments.map((ra) => ({
+      id: ra.id,
+      roleCode: ra.role.code,
+      roleName: ra.role.name,
+      chapter: ra.chapter,
+      createdAt: ra.assignedAt.toISOString(),
+    })),
+  }));
+
+  const formattedOfficers = rawOfficers.map((o) => ({
     id: o.id,
     role: o.role,
     title: o.title,
@@ -52,28 +115,7 @@ export default async function SuperAdminRolesPage() {
     },
   }));
 
-  // Fetch all 16 constituency chapters
-  const chapters = await db.chapter.findMany({
-    where: { status: 'ACTIVE' },
-    select: { id: true, code: true, name: true, slug: true },
-    orderBy: { name: 'asc' },
-  });
-
-  // Fetch active users eligible for appointment
-  const rawUsers = await db.user.findMany({
-    where: { status: 'ACTIVE' },
-    select: {
-      id: true,
-      email: true,
-      username: true,
-      profile: {
-        select: { fullName: true },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  const users = rawUsers.map((u) => ({
+  const formattedEligibleUsers = rawEligibleUsers.map((u) => ({
     id: u.id,
     email: u.email,
     username: u.username,
@@ -86,23 +128,26 @@ export default async function SuperAdminRolesPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
-              RBAC Governance
+              Access Governance
             </span>
-            <span className="text-xs text-slate-500 font-medium">Chapter Leadership Appointments</span>
+            <Badge variant="primary">STRICT DENY-BY-DEFAULT RBAC</Badge>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
-            Chapter Executive Roles & Officer Assignments
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
+            Roles, Permissions & Chapter Leadership
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Appoint, audit, and revoke Chapter Presidents, Secretaries, and Treasurers across all 16 Malappuram chapters.
+          <p className="text-xs text-slate-500 mt-1">
+            Centrally manage global tenant roles (Super Admin, District Admin) and constituency chapter appointments (President, Secretary, Treasurer).
           </p>
         </div>
       </div>
 
-      <SuperAdminOfficersView
-        initialOfficers={officers}
+      <SuperAdminUnifiedRolesTabs
+        initialUsers={formattedSystemUsers}
+        availableRoles={availableRoles}
+        currentAdminId={actor.userId}
+        officers={formattedOfficers}
         chapters={chapters}
-        users={users}
+        eligibleUsers={formattedEligibleUsers}
       />
     </div>
   );

@@ -1,31 +1,46 @@
-'use client';
-
 import * as React from 'react';
-import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Building2, MapPin, Users, CreditCard, BarChart3 } from 'lucide-react';
+import { db } from '@/server/db';
+import { getCurrentActor } from '@/server/auth/session';
+import { DistrictAdminPortalShell } from '@/features/district-admin/components/district-admin-portal-shell';
+import { DistrictAdminAccessDenied } from '@/features/district-admin/components/district-admin-access-denied';
 
-const DISTRICT_NAV_ITEMS: NavItem[] = [
-  { id: 'district-overview', label: 'District Overview', href: '/district-admin', icon: LayoutDashboard },
-  { id: 'district-chapters', label: '16 Chapters', href: '/chapters', icon: Building2 },
-  { id: 'district-geography', label: 'Taluk Geography', href: '/district-admin/geography', icon: MapPin },
-  { id: 'district-members', label: 'Members Directory', href: '/district-admin/members', icon: Users },
-  { id: 'district-finance', label: 'Financial Reports', href: '/district-admin/finance', icon: CreditCard },
-  { id: 'district-analytics', label: 'Growth Analytics', href: '/district-admin/reports', icon: BarChart3 },
-];
+export const dynamic = 'force-dynamic';
 
-export default function DistrictAdminLayout({
+export default async function DistrictAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const actor = await getCurrentActor();
+
+  // Deny-by-default server authorization
+  const isAuthorized =
+    actor &&
+    actor.status === 'ACTIVE' &&
+    (actor.roles.includes('DISTRICT_ADMIN') || actor.roles.includes('SUPER_ADMIN'));
+
+  if (!isAuthorized) {
+    return (
+      <DistrictAdminAccessDenied
+        reason="Access Restricted: This portal is reserved exclusively for verified MYBF Malappuram District Administrators. Your current session does not possess the required DISTRICT_ADMIN privilege."
+      />
+    );
+  }
+
+  // Query live pending review count across Malappuram chapters
+  const pendingCount = await db.membershipApplication.count({
+    where: {
+      chapter: { district: { code: 'MLP' } },
+      status: { in: ['SUBMITTED', 'UNDER_REVIEW'] },
+    },
+  });
+
   return (
-    <PortalShell
-      portalTitle="District Administration"
-      roleBadgeText="DISTRICT ADMIN"
-      scopeBadgeText="Malappuram District (MLP)"
-      navItems={DISTRICT_NAV_ITEMS}
+    <DistrictAdminPortalShell
+      pendingCount={pendingCount}
+      adminEmail={actor.email}
     >
       {children}
-    </PortalShell>
+    </DistrictAdminPortalShell>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentActor } from '@/server/auth/session';
+import { EventService } from '@/features/events/server/event.service';
 import { db } from '@/server/db';
 
 export async function GET(request: NextRequest) {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
     let targetUserId: string | null = actor?.userId ?? queryUserId ?? null;
 
     if (!targetUserId) {
-      // Find latest active member for demo/testing
+      // Find latest active member for demo/testing fallback
       const activeUser = await db.user.findFirst({
         where: { status: 'ACTIVE' },
       });
@@ -22,39 +23,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, tickets: [] });
     }
 
-    const registrations = await db.eventRegistration.findMany({
-      where: { userId: targetUserId },
-      include: {
-        event: {
-          include: {
-            chapter: { select: { id: true, name: true, slug: true } },
-          },
-        },
-        attendance: true,
-      },
-      orderBy: { registeredAt: 'desc' },
-    });
-
-    const tickets = registrations.map((reg) => ({
-      id: reg.id,
-      ticketCode: reg.qrToken,
-      status: reg.status,
-      registeredAt: reg.registeredAt.toISOString(),
-      checkedIn: Boolean(reg.attendance),
-      checkedInAt: reg.attendance?.scannedAt.toISOString() ?? null,
-      event: {
-        id: reg.event.id,
-        title: reg.event.title,
-        slug: reg.event.slug,
-        category: reg.event.category,
-        venueName: reg.event.venueName,
-        venueAddress: reg.event.venueAddress,
-        startsAt: reg.event.startsAt.toISOString(),
-        endsAt: reg.event.endsAt.toISOString(),
-        chapterName: reg.event.chapter?.name ?? 'District Level Event',
-        basePriceINR: reg.event.basePriceINR,
-      },
-    }));
+    const tickets = await EventService.getUserTickets(targetUserId);
 
     return NextResponse.json({
       success: true,

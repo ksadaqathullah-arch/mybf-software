@@ -1,31 +1,49 @@
-'use client';
-
 import * as React from 'react';
-import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Shield, Building2, Key, FileText, Database } from 'lucide-react';
+import { db } from '@/server/db';
+import { getCurrentActor } from '@/server/auth/session';
+import { SuperAdminPortalShell } from '@/features/super-admin/components/super-admin-portal-shell';
+import { SuperAdminAccessDenied } from '@/features/super-admin/components/super-admin-access-denied';
 
-const SUPER_ADMIN_NAV_ITEMS: NavItem[] = [
-  { id: 'super-admin-overview', label: 'System Overview', href: '/super-admin', icon: LayoutDashboard },
-  { id: 'super-admin-orgs', label: 'Organizations & Districts', href: '/super-admin/organizations', icon: Building2 },
-  { id: 'super-admin-roles', label: 'Roles & Permissions', href: '/super-admin/roles', icon: Key },
-  { id: 'super-admin-audit', label: 'Immutable Audit Logs', href: '/super-admin/audit-logs', icon: FileText },
-  { id: 'super-admin-capacity', label: 'Database & 5M Capacity', href: '/super-admin/system-config', icon: Database },
-  { id: 'super-admin-security', label: 'Security Health', href: '/super-admin/security', icon: Shield, badge: 'PASS' },
-];
+export const dynamic = 'force-dynamic';
 
-export default function SuperAdminLayout({
+export default async function SuperAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const actor = await getCurrentActor();
+
+  // Deny-by-default server authorization
+  if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+    return (
+      <SuperAdminAccessDenied
+        reason="Access Restricted: This portal is reserved exclusively for verified MYBF Super Administrators. Your current session does not possess the required SUPER_ADMIN privilege."
+      />
+    );
+  }
+
+  // Query live pending application and age exception counts
+  const [pendingAppsCount, allApps] = await Promise.all([
+    db.membershipApplication.count({
+      where: { status: { in: ['SUBMITTED', 'UNDER_REVIEW'] } },
+    }),
+    db.membershipApplication.findMany({
+      select: { payloadJson: true },
+    }),
+  ]);
+
+  const pendingAgeCount = allApps.filter((a) => {
+    const payload = (a.payloadJson as Record<string, any>) || {};
+    return payload.ageException && payload.ageException.status === 'PENDING';
+  }).length;
+
   return (
-    <PortalShell
-      portalTitle="Super Admin Governance"
-      roleBadgeText="SUPER_ADMIN"
-      scopeBadgeText="GLOBAL CLOUD TENANT"
-      navItems={SUPER_ADMIN_NAV_ITEMS}
+    <SuperAdminPortalShell
+      pendingAppsCount={pendingAppsCount}
+      pendingAgeCount={pendingAgeCount}
+      adminEmail={actor.email}
     >
       {children}
-    </PortalShell>
+    </SuperAdminPortalShell>
   );
 }

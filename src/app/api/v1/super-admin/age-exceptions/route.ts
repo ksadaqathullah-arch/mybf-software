@@ -7,18 +7,14 @@ import type { AuthActor } from '@/server/auth/types';
 export async function GET(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    // Allow SUPER_ADMIN session or demo fallback for Super Admin dashboard testing
-    const adminActor: AuthActor = (actor && actor.roles.includes('SUPER_ADMIN'))
-      ? actor
-      : {
-          userId: 'system-super-admin',
-          email: 'admin@mybf.in',
-          phone: null,
-          status: 'ACTIVE',
-          roles: ['SUPER_ADMIN'],
-        };
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Super Administrator credentials required.' },
+        { status: 403 }
+      );
+    }
 
-    const exceptions = await MembershipService.getPendingAgeExceptions(adminActor);
+    const exceptions = await MembershipService.getPendingAgeExceptions(actor);
 
     return NextResponse.json({
       success: true,
@@ -35,15 +31,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    const adminActor: AuthActor = (actor && actor.roles.includes('SUPER_ADMIN'))
-      ? actor
-      : {
-          userId: 'system-super-admin',
-          email: 'admin@mybf.in',
-          phone: null,
-          status: 'ACTIVE',
-          roles: ['SUPER_ADMIN'],
-        };
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Super Administrator credentials required.' },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json();
     const parsed = superAdminAgeExceptionReviewSchema.safeParse(body);
@@ -56,7 +49,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await MembershipService.reviewAgeException(adminActor, parsed.data);
+    const result = await MembershipService.reviewAgeException(actor, parsed.data);
 
     return NextResponse.json({
       success: true,

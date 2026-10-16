@@ -679,6 +679,17 @@ model Event {
   endsAt         DateTime
   status         EventStatus  @default(DRAFT)
   bannerUrl      String?
+  scope          String       @default("CHAPTER") // "MAIN" | "DISTRICT" | "CHAPTER"
+  mode           String       @default("OFFLINE") // "OFFLINE" | "ONLINE" | "HYBRID"
+  timezone       String       @default("Asia/Kolkata")
+  organizerName  String?
+  organizerEmail String?
+  organizerPhone String?
+  ticketTiersJson Json?       @default("[]")
+  speakersJson   Json?        @default("[]")
+  sponsorsJson   Json?        @default("[]")
+  regOpensAt     DateTime?
+  regClosesAt    DateTime?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -715,12 +726,15 @@ enum RegistrationStatus {
 }
 
 model EventRegistration {
-  id            String             @id @default(uuid())
-  eventId       String
-  userId        String
-  qrToken       String             @unique // Cryptographically secure token
-  status        RegistrationStatus @default(CONFIRMED)
-  registeredAt  DateTime           @default(now())
+  id              String             @id @default(uuid())
+  eventId         String
+  userId          String
+  ticketTierName  String?            @default("Free Admission")
+  ticketPriceINR  Int                @default(0)
+  paymentIntentId String?
+  qrToken         String             @unique // Cryptographically secure token
+  status          RegistrationStatus @default(CONFIRMED)
+  registeredAt    DateTime           @default(now())
 
   event         Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user          User               @relation(fields: [userId], references: [id], onDelete: Restrict)

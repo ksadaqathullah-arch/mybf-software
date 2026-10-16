@@ -1,13 +1,39 @@
 import Link from 'next/link';
+import { getCurrentActor } from '@/server/auth/session';
+import { DistrictAdminService } from '@/features/district-admin/server/district-admin.service';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
-import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
-import { DistrictClassificationAnalytics } from '@/features/memberships/components/district-classification-analytics';
+import { Download, ShieldCheck, Users, Building, Clock, Calendar } from 'lucide-react';
+import { DistrictClassificationAnalytics, type DistrictMemberRecord } from '@/features/memberships/components/district-classification-analytics';
 
-export default function DistrictAdminDashboardPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function DistrictAdminDashboardPage() {
+  const actor = await getCurrentActor();
+  if (!actor) return null;
+
+  const [overview, membersResult] = await Promise.all([
+    DistrictAdminService.getDistrictOverviewMetrics(actor),
+    DistrictAdminService.getDistrictMembers(actor, { pageSize: 100 }),
+  ]);
+
+  const initialMembers: DistrictMemberRecord[] = membersResult.members.map((m) => ({
+    id: m.id,
+    membershipNumber: m.membershipNumber,
+    fullName: m.fullName,
+    chapterSlug: m.chapterSlug,
+    chapterName: m.chapterName,
+    taluk: m.taluk,
+    memberCategory: m.memberCategory as any,
+    currentPosition: m.currentPosition as any,
+    expectations: m.expectations,
+    talents: m.talents,
+    participationPreferences: m.participationPreferences,
+    status: m.status as any,
+    joinedDate: m.joinedDate.split('T')[0],
+  }));
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -15,64 +41,92 @@ export default function DistrictAdminDashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Malappuram District Administration
+              {overview.districtName} District Administration
             </h1>
-            <Badge variant="primary">DISTRICT CODE: MLP</Badge>
+            <Badge variant="primary">DISTRICT CODE: {overview.districtCode}</Badge>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Central governance, 16 chapter aggregation, geographical distribution and financial reconciliation
+            Central governance, 16 chapter aggregation, taluk geographical distribution and NGO reporting
           </p>
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-1.5" /> Export District Report (CSV)
-          </Button>
+          <a href="/api/v1/district-admin/export?type=overview" download>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1.5" /> Export District Report (CSV)
+            </Button>
+          </a>
           <Link href="/super-admin">
             <Button variant="secondary" size="sm">
-              Super Admin View
+              <ShieldCheck className="h-4 w-4 mr-1.5" /> Super Admin View
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Aggregate District KPIs */}
+      {/* Aggregate District KPIs - Direct PostgreSQL Data */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="p-5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Total District Members</span>
-            <div className="text-3xl font-extrabold text-[#035AFC] mt-1">2,480</div>
-            <p className="text-[11px] text-emerald-600 font-medium">+14% month-over-month</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Total District Members</span>
+              <Users className="h-4 w-4 text-[#035AFC]" />
+            </div>
+            <div className="text-3xl font-extrabold text-[#035AFC] mt-1">
+              {overview.totalDistrictMembers.toLocaleString()}
+            </div>
+            <p className="text-[11px] text-slate-500 font-medium">
+              {overview.newRegistrationsThisMonth} new registrations this month
+            </p>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader className="p-5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Operational Chapters</span>
-            <div className="text-3xl font-extrabold text-[#FBC206] mt-1">16 / 16</div>
-            <p className="text-[11px] text-slate-500">100% active coverage in 7 taluks</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Operational Chapters</span>
+              <Building className="h-4 w-4 text-[#FBC206]" />
+            </div>
+            <div className="text-3xl font-extrabold text-[#FBC206] mt-1">
+              {overview.activeChaptersCount} / {overview.totalChaptersCount}
+            </div>
+            <p className="text-[11px] text-slate-500">100% active coverage across all 7 taluks</p>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader className="p-5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Pending Review Queue</span>
-            <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">18</div>
-            <p className="text-[11px] text-slate-500">Across all chapter officers</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Pending Review Queue</span>
+              <Clock className="h-4 w-4 text-amber-500" />
+            </div>
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+              {overview.pendingDistrictReviews}
+            </div>
+            <p className="text-[11px] text-slate-500">
+              {overview.approvedMemberships} approved memberships in district
+            </p>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader className="p-5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Community Programs</span>
-            <div className="text-3xl font-extrabold text-emerald-600 mt-1">48 Summits</div>
-            <p className="text-[11px] text-slate-500">100% Free NGO community events</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Community Programs</span>
+              <Calendar className="h-4 w-4 text-emerald-600" />
+            </div>
+            <div className="text-3xl font-extrabold text-emerald-600 mt-1">
+              {overview.totalEventsCount} Events
+            </div>
+            <p className="text-[11px] text-slate-500">
+              {overview.upcomingEventsCount} upcoming scheduled conclaves
+            </p>
           </CardHeader>
         </Card>
       </div>
 
       {/* Member Classification Intelligence & Dual Distributions */}
-      <DistrictClassificationAnalytics />
+      <DistrictClassificationAnalytics initialMembers={initialMembers} />
 
       {/* Geographical Taluk Breakdown */}
       <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
@@ -90,11 +144,11 @@ export default function DistrictAdminDashboardPage() {
 
         <CardContent className="p-6 pt-2">
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {TALUKS_OF_MALAPPURAM.map((t, idx) => (
+            {overview.taluks.map((t) => (
               <div key={t.code} className="rounded-xl border border-slate-100 dark:border-slate-800 p-3 bg-slate-50/50 dark:bg-slate-900/30 text-center">
                 <span className="text-[10px] font-bold text-slate-400 block">{t.name}</span>
                 <span className="text-lg font-black text-slate-900 dark:text-white mt-1 block">
-                  {300 + idx * 45}
+                  {t.memberCount}
                 </span>
                 <span className="text-[9px] text-emerald-600 font-semibold">HQ: {t.headquarters}</span>
               </div>
@@ -113,9 +167,9 @@ export default function DistrictAdminDashboardPage() {
                 Real-time operational health, active members, and pending approvals per chapter.
               </CardDescription>
             </div>
-            <Link href="/chapters">
+            <Link href="/district-admin/chapters">
               <Button variant="ghost" size="sm" className="text-xs">
-                Public Directory &rarr;
+                Full 16 Chapters Management &rarr;
               </Button>
             </Link>
           </div>
@@ -130,12 +184,13 @@ export default function DistrictAdminDashboardPage() {
                   <th className="py-3 px-2">Chapter Name</th>
                   <th className="py-3 px-2">Taluk</th>
                   <th className="py-3 px-2">Active Members</th>
-                  <th className="py-3 px-2">Health</th>
+                  <th className="py-3 px-2">Pending Reviews</th>
+                  <th className="py-3 px-2">Status</th>
                   <th className="py-3 px-2 text-right">Access</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {INITIAL_16_CHAPTERS.map((ch, idx) => (
+                {overview.chapters.map((ch) => (
                   <tr key={ch.code} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
                     <td className="py-3 px-2 font-mono text-[10px] text-slate-400 font-bold">
                       {ch.code}
@@ -147,11 +202,20 @@ export default function DistrictAdminDashboardPage() {
                       {ch.taluk}
                     </td>
                     <td className="py-3 px-2 font-semibold">
-                      {120 + ((idx * 17) % 60)}
+                      {ch.activeMembersCount}
                     </td>
                     <td className="py-3 px-2">
-                      <Badge variant="success" className="text-[9px]">
-                        OPTIMAL
+                      {ch.pendingReviewsCount > 0 ? (
+                        <Badge variant="warning" className="text-[9px]">
+                          {ch.pendingReviewsCount} pending
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400 text-[10px]">0</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-2">
+                      <Badge variant={ch.status === 'ACTIVE' ? 'success' : 'neutral'} className="text-[9px]">
+                        {ch.status}
                       </Badge>
                     </td>
                     <td className="py-3 px-2 text-right">

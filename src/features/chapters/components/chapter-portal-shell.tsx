@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard, Ticket } from 'lucide-react';
 
 interface ChapterPortalShellProps {
   chapterSlug: string;
@@ -40,6 +40,12 @@ export function ChapterPortalShell({
       label: 'Chapter Roster',
       href: `/chapter/${chapterSlug}/members`,
       icon: Users,
+    },
+    {
+      id: 'chapter-events',
+      label: 'Chapter Events',
+      href: `/chapter/${chapterSlug}/events`,
+      icon: Ticket,
     },
     {
       id: 'chapter-meetings',

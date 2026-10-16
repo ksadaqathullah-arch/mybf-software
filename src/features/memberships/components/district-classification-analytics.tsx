@@ -205,8 +205,15 @@ const INITIAL_DISTRICT_MEMBERS: DistrictMemberRecord[] = [
   },
 ];
 
-export function DistrictClassificationAnalytics() {
-  const [members] = React.useState<DistrictMemberRecord[]>(INITIAL_DISTRICT_MEMBERS);
+export interface DistrictClassificationAnalyticsProps {
+  initialMembers?: DistrictMemberRecord[];
+}
+
+export function DistrictClassificationAnalytics({ initialMembers }: DistrictClassificationAnalyticsProps = {}) {
+  const [members] = React.useState<DistrictMemberRecord[]>(() => {
+    if (initialMembers && initialMembers.length > 0) return initialMembers;
+    return INITIAL_DISTRICT_MEMBERS;
+  });
   const [chapterFilter, setChapterFilter] = React.useState<string>('ALL');
   const [talukFilter, setTalukFilter] = React.useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = React.useState<string>('ALL');

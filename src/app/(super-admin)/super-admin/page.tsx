@@ -1,82 +1,194 @@
+import * as React from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getCurrentActor } from '@/server/auth/session';
+import { SuperAdminService } from '@/features/super-admin/server/super-admin.service';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SuperAdminAgeExceptionQueue } from '@/features/memberships/components/super-admin-age-exception-queue';
 import { SuperAdminApplicationsQueue } from '@/features/memberships/components/super-admin-applications-queue';
+import { SuperAdminAgeExceptionQueue } from '@/features/memberships/components/super-admin-age-exception-queue';
 import {
+  Users,
+  UserCheck,
+  Clock,
+  Layers,
+  Calendar,
+  FileText,
   ShieldCheck,
-  Server,
+  ExternalLink,
+  ArrowRight,
   Database,
   Lock,
-  Activity,
   CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  Terminal,
 } from 'lucide-react';
 
-export default function SuperAdminDashboardPage() {
-  const auditLogs = [
-    {
-      id: 'log-1',
-      actor: 'president@manjeri.mybf.in',
-      action: 'MEMBERSHIP_APPLICATION_APPROVED',
-      resource: 'MembershipApplication',
-      target: 'MYBF-0000000001 (Anas Mohammed)',
-      timestamp: 'Today, 12:45:12 GMT+5:30',
-      ip: '103.21.244.12',
-    },
-    {
-      id: 'log-2',
-      actor: 'gateway.razorpay.webhook',
-      action: 'PAYMENT_SETTLED_WEBHOOK',
-      resource: 'PaymentIntent',
-      target: 'order_8923baf912 (Summit Ticket ₹3,000)',
-      timestamp: 'Today, 12:44:50 GMT+5:30',
-      ip: '52.66.192.4',
-    },
-    {
-      id: 'log-3',
-      actor: 'admin@mybf.in',
-      action: 'LEADERSHIP_ROLE_ASSIGNED',
-      resource: 'ChapterLeadership',
-      target: 'CHP-01-MANJERI (Treasurer Appointed)',
-      timestamp: 'Today, 10:15:00 GMT+5:30',
-      ip: '103.21.244.1',
-    },
-  ];
+export const dynamic = 'force-dynamic';
+
+export default async function SuperAdminDashboardPage() {
+  const actor = await getCurrentActor();
+  if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+    notFound();
+  }
+
+  const metrics = await SuperAdminService.getSystemOverviewMetrics(actor);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Super Administration & System Posture
-            </h1>
-            <Badge variant="primary">ROOT TENANT</Badge>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
+              Global Tenant Administration
+            </span>
+            <Badge variant="primary">ROOT GOVERNANCE</Badge>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
+            System Overview & Operational Posture
+          </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Global architecture health, immutable audit log stream, and 5-million capacity readiness
+            Real-time aggregates, maker-checker membership queues, active chapter leadership, and live audit telemetry.
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Badge variant="success" className="px-3 py-1 text-xs">
-            <ShieldCheck className="h-4 w-4 mr-1.5" /> All Systems Secure
+            <ShieldCheck className="h-4 w-4 mr-1.5" /> Database Connected
           </Badge>
         </div>
       </div>
 
-      {/* Super Admin Membership Applications Review Queue */}
-      <SuperAdminApplicationsQueue />
+      {/* Real Aggregate Metric Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Total Members */}
+        <Card className="border-slate-200 dark:border-slate-800">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase text-slate-400">Total Members</span>
+              <Users className="h-4 w-4 text-[#035AFC]" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900 dark:text-white">
+                {metrics.totalRegisteredUsers}
+              </span>
+              <span className="text-xs text-emerald-600 font-semibold">
+                {metrics.activeMembers} Active
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Registered Accounts in PostgreSQL
+            </p>
+          </CardContent>
+        </Card>
 
-      {/* Super Admin Age Exception Review Queue */}
-      <SuperAdminAgeExceptionQueue />
+        {/* Pending Applications */}
+        <Link href="/super-admin/applications">
+          <Card className="border-slate-200 dark:border-slate-800 hover:border-[#035AFC] transition-colors cursor-pointer group">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase text-slate-400 group-hover:text-[#035AFC]">
+                  Applications
+                </span>
+                <UserCheck className="h-4 w-4 text-blue-500" />
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                  {metrics.pendingApplicationsCount}
+                </span>
+                <span className="text-xs text-amber-600 font-semibold">Pending Review</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                <span>{metrics.approvedApplicationsCount} Approved</span>
+                <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#035AFC]" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-      {/* Architecture Readiness Cards */}
+        {/* Age Exceptions */}
+        <Link href="/super-admin/age-exceptions">
+          <Card className="border-slate-200 dark:border-slate-800 hover:border-amber-500 transition-colors cursor-pointer group">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase text-slate-400 group-hover:text-amber-500">
+                  Age Exceptions
+                </span>
+                <Clock className="h-4 w-4 text-amber-500" />
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                  {metrics.pendingAgeExceptionsCount}
+                </span>
+                <span className="text-xs text-amber-600 font-semibold">Age 36+ Requests</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                <span>Super Admin Decision</span>
+                <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-amber-500" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Constituency Chapters */}
+        <Link href="/super-admin/organizations">
+          <Card className="border-slate-200 dark:border-slate-800 hover:border-purple-500 transition-colors cursor-pointer group">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase text-slate-400 group-hover:text-purple-500">
+                  Chapters
+                </span>
+                <Layers className="h-4 w-4 text-purple-500" />
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                  {metrics.activeChaptersCount}
+                </span>
+                <span className="text-xs text-slate-500 font-semibold">
+                  {metrics.activeChapterOfficersCount} Officers
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                <span>Assembly Roster</span>
+                <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Active Review Queues */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <UserCheck className="h-5 w-5 text-[#035AFC]" />
+            Membership Approval Queue
+          </h2>
+          <Link href="/super-admin/applications">
+            <Button variant="ghost" size="sm" className="text-xs text-[#035AFC]">
+              View Full Queue <ArrowRight className="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </Link>
+        </div>
+        <SuperAdminApplicationsQueue />
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Clock className="h-5 w-5 text-amber-500" />
+            Age Exception Review Queue
+          </h2>
+          <Link href="/super-admin/age-exceptions">
+            <Button variant="ghost" size="sm" className="text-xs text-amber-600">
+              View Full Queue <ArrowRight className="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </Link>
+        </div>
+        <SuperAdminAgeExceptionQueue />
+      </div>
+
+      {/* Verified Architecture & Database Posture */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader className="p-6">
@@ -84,12 +196,12 @@ export default function SuperAdminDashboardPage() {
               <span className="text-xs font-bold uppercase text-slate-400">Database Engine</span>
               <Database className="h-5 w-5 text-[#035AFC]" />
             </div>
-            <CardTitle className="text-lg mt-2">PostgreSQL + Prisma</CardTitle>
+            <CardTitle className="text-lg mt-2">PostgreSQL 14+ via Prisma</CardTitle>
             <CardDescription className="text-xs">
-              UUID PKs, BigInt sequence allocation, composite indexes for chapter/org scopes.
+              UUID PKs, schema migrations synchronized, ACID transactional boundaries.
             </CardDescription>
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-emerald-600 font-semibold">
-              <span>Schema Validated</span>
+              <span>Connected & Operational</span>
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -98,12 +210,12 @@ export default function SuperAdminDashboardPage() {
         <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader className="p-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Security Engine</span>
-              <Lock className="h-5 w-5 text-[#FBC206]" />
+              <span className="text-xs font-bold uppercase text-slate-400">Security Architecture</span>
+              <Lock className="h-5 w-5 text-amber-500" />
             </div>
             <CardTitle className="text-lg mt-2">Deny-by-Default RBAC</CardTitle>
             <CardDescription className="text-xs">
-              Server-side boundary enforcement with chapter and organization data isolation.
+              Server-side boundary enforcement with chapter-scoped isolation.
             </CardDescription>
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-emerald-600 font-semibold">
               <span>Zero Client Trust</span>
@@ -115,63 +227,85 @@ export default function SuperAdminDashboardPage() {
         <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader className="p-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Member Scalability</span>
-              <Activity className="h-5 w-5 text-emerald-500" />
+              <span className="text-xs font-bold uppercase text-slate-400">Audit Trail</span>
+              <FileText className="h-5 w-5 text-purple-500" />
             </div>
-            <CardTitle className="text-lg mt-2">5,000,000 Records Target</CardTitle>
+            <CardTitle className="text-lg mt-2">Audit Logging</CardTitle>
             <CardDescription className="text-xs">
-              10-digit unencoded numeric format (MYBF-0000000001) with unchangeable transfer persistence.
+              {metrics.totalAuditEventsCount} recorded administrative and security events.
             </CardDescription>
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-emerald-600 font-semibold">
-              <span>Capacity Ready</span>
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-purple-600 font-semibold">
+              <span>Active Logging</span>
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </CardHeader>
         </Card>
       </div>
 
-      {/* Immutable Audit Log Stream */}
+      {/* Real Live Audit Log Stream */}
       <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
         <CardHeader className="p-6 pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Immutable System Audit Log Stream</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">
+                Live Administrative Activity Stream
+              </CardTitle>
               <CardDescription className="text-xs">
-                Audited financial settlements, maker-checker membership decisions, and role delegations.
+                Real audit records queried from PostgreSQL database table (db.auditEvent).
               </CardDescription>
             </div>
-            <Badge variant="neutral">APPEND-ONLY AUDIT</Badge>
+            <Link href="/super-admin/audit-logs">
+              <Button variant="outline" size="sm" className="text-xs">
+                View All {metrics.totalAuditEventsCount} Logs <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </Link>
           </div>
         </CardHeader>
 
         <CardContent className="p-6 pt-2">
-          <div className="space-y-3">
-            {auditLogs.map((log) => (
-              <div
-                key={log.id}
-                className="rounded-xl border border-slate-100 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-[#070A10] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-[#035AFC] dark:text-blue-400">
-                      {log.action}
-                    </span>
-                    <Badge variant="neutral" className="text-[9px]">{log.resource}</Badge>
+          {metrics.recentActivity.length === 0 ? (
+            <div className="py-8 text-center text-slate-400 text-xs">
+              No recent audit records available.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {metrics.recentActivity.map((log) => (
+                <div
+                  key={log.id}
+                  className="rounded-xl border border-slate-100 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-[#070A10] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-[#035AFC] dark:text-blue-400">
+                        {log.action}
+                      </span>
+                      <Badge variant="neutral" className="text-[9px]">
+                        {log.resource}
+                      </Badge>
+                      {log.resourceId && (
+                        <span className="font-mono text-[10px] text-slate-400">
+                          #{log.resourceId.slice(0, 8)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-slate-400 text-[11px]">
+                      Actor:{' '}
+                      <span className="font-mono text-slate-600 dark:text-slate-300">
+                        {log.actorEmail}
+                      </span>{' '}
+                      • IP: {log.ipAddress}
+                    </div>
                   </div>
-                  <div className="text-slate-700 dark:text-slate-300 font-medium">
-                    {log.target}
-                  </div>
-                  <div className="text-slate-400 text-[11px]">
-                    Actor: <span className="font-mono text-slate-500">{log.actor}</span> • IP: {log.ip}
-                  </div>
-                </div>
 
-                <div className="text-right text-[11px] text-slate-400 font-mono">
-                  {log.timestamp}
+                  <div className="text-right text-[11px] text-slate-400 font-mono">
+                    {new Date(log.createdAt).toLocaleString('en-IN', {
+                      timeZone: 'Asia/Kolkata',
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

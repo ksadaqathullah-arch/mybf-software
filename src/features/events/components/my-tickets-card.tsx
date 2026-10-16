@@ -8,6 +8,8 @@ import { Ticket, QrCode, Calendar, MapPin, CheckCircle2, Clock } from 'lucide-re
 export interface TicketItem {
   id: string;
   ticketCode: string;
+  ticketTierName?: string;
+  ticketPriceINR?: number;
   status: string;
   registeredAt: string;
   checkedIn: boolean;
@@ -16,6 +18,7 @@ export interface TicketItem {
     id: string;
     title: string;
     slug: string;
+    scope?: string;
     category: string;
     venueName: string;
     venueAddress: string;
@@ -107,8 +110,18 @@ export function MyTicketsCard({ refreshTrigger, onTicketsLoaded }: MyTicketsCard
               className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-[#070A10] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {t.event.scope && (
+                    <Badge variant={t.event.scope === 'MAIN' ? 'primary' : t.event.scope === 'DISTRICT' ? 'secondary' : 'neutral'} className="text-[10px]">
+                      {t.event.scope}
+                    </Badge>
+                  )}
                   <Badge variant="neutral" className="text-[10px]">{t.event.chapterName}</Badge>
+                  {t.ticketTierName && (
+                    <Badge variant="primary" className="text-[10px] font-semibold">
+                      {t.ticketTierName}
+                    </Badge>
+                  )}
                   {t.checkedIn ? (
                     <Badge variant="success" className="text-[10px]">
                       <CheckCircle2 className="h-3 w-3 mr-1" /> Admitted at Reception
@@ -144,7 +157,9 @@ export function MyTicketsCard({ refreshTrigger, onTicketsLoaded }: MyTicketsCard
                   <span className="font-mono font-bold text-xs text-[#035AFC] block truncate max-w-[130px]">
                     {t.ticketCode}
                   </span>
-                  <span className="text-[10px] text-emerald-600 font-semibold block">100% Free Pass</span>
+                  <span className="text-[10px] text-emerald-600 font-semibold block">
+                    {t.ticketPriceINR && t.ticketPriceINR > 0 ? `Paid Pass (₹${t.ticketPriceINR})` : 'Free Admission Pass'}
+                  </span>
                 </div>
               </div>
             </div>

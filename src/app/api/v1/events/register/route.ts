@@ -2,17 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentActor } from '@/server/auth/session';
 import { EventService } from '@/features/events/server/event.service';
 import { db } from '@/server/db';
+import { registerEventSchema } from '@/features/events/schemas/event.schema';
 
 export async function POST(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     const body = await request.json();
-    const { eventId } = body;
 
-    let targetUserId = actor?.userId || body.userId;
+    const parsed = registerEventSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: parsed.error.issues[0]?.message || 'Invalid registration payload.' },
+        { status: 400 }
+      );
+    }
+
+    let targetUserId = actor?.userId || parsed.data.userId;
 
     if (!targetUserId) {
-      // Find latest active member user as fallback if demo mode
+      // Find latest active member user as fallback if local demo/test session
       const activeUser = await db.user.findFirst({
         where: { status: 'ACTIVE' },
         include: { profile: true },
@@ -22,27 +30,20 @@ export async function POST(request: NextRequest) {
 
     if (!targetUserId) {
       return NextResponse.json(
-        { success: false, error: 'You must be signed in as an active member to book event tickets.' },
+        { success: false, error: 'You must be signed in to reserve event tickets.' },
         { status: 401 }
       );
     }
 
-    if (!eventId) {
-      return NextResponse.json(
-        { success: false, error: 'Event ID is required.' },
-        { status: 400 }
-      );
-    }
-
     const registration = await EventService.registerForEvent({
-      eventId,
+      ...parsed.data,
       userId: targetUserId,
     });
 
     return NextResponse.json({
       success: true,
       registration,
-      message: 'Ticket confirmed! 100% Free NGO Pass reserved successfully.',
+      message: 'Ticket confirmed! Admission pass reserved successfully.',
     });
   } catch (error: any) {
     return NextResponse.json(
