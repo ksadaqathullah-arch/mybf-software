@@ -36,12 +36,25 @@ export async function GET() {
 
   const hostType = getSafeHostClassification(rawDbUrl);
 
+  let userTableStatus = 'unknown';
+
   try {
     const start = performance.now();
     await db.$queryRaw`SELECT 1`;
     dbLatencyMs = Math.round(performance.now() - start);
     dbStatus = 'connected';
     diagnosticCode = 'CONNECTED';
+
+    // Verify User table queryability and record readiness
+    try {
+      const userCount = await db.user.count();
+      userTableStatus = userCount > 0 ? `ready (${userCount} records)` : 'ready (0 records)';
+    } catch (tableErr: any) {
+      console.error('[HealthCheck Schema Error]', tableErr?.message || tableErr);
+      userTableStatus = tableErr?.code === 'P2021'
+        ? 'schema_not_migrated (P2021: tables missing)'
+        : `query_failed (${tableErr?.code || tableErr?.name || 'error'})`;
+    }
   } catch (err: any) {
     console.error('[HealthCheck] Database connection error:', err?.message || err);
     dbStatus = 'disconnected';
@@ -90,6 +103,7 @@ export async function GET() {
         nextjs: 'operational',
         database: dbStatus,
         databaseLatencyMs: dbLatencyMs,
+        userTable: userTableStatus,
         securityEngine: 'enforced',
         ...(process.env.NODE_ENV !== 'production'
           ? {
