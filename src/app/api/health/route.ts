@@ -69,6 +69,16 @@ export async function GET() {
 
   const isHealthy = dbStatus === 'connected';
 
+  // Log detailed telemetry internally on the server (accessible via Vercel Function logs)
+  if (dbStatus !== 'connected') {
+    console.error('[HealthCheck Diagnostic Telemetry]', {
+      code: diagnosticCode,
+      detail: safeErrorMessage,
+      envConfigured: Boolean(rawDbUrl),
+      hostClassification: hostType,
+    });
+  }
+
   return NextResponse.json(
     {
       status: isHealthy ? 'healthy' : 'degraded',
@@ -81,12 +91,16 @@ export async function GET() {
         database: dbStatus,
         databaseLatencyMs: dbLatencyMs,
         securityEngine: 'enforced',
-        diagnostics: {
-          code: diagnosticCode,
-          detail: safeErrorMessage,
-          envConfigured: Boolean(rawDbUrl),
-          hostClassification: hostType,
-        },
+        ...(process.env.NODE_ENV !== 'production'
+          ? {
+              diagnostics: {
+                code: diagnosticCode,
+                detail: safeErrorMessage,
+                envConfigured: Boolean(rawDbUrl),
+                hostClassification: hostType,
+              },
+            }
+          : {}),
       },
     },
     { status: isHealthy ? 200 : 503 }

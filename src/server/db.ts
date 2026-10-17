@@ -13,41 +13,43 @@ function cleanDatabaseUrl(url: string | undefined): string | undefined {
   return cleaned || undefined;
 }
 
-// Determine connection URL with fallback to standard provider/Vercel variables
-const resolvedDatabaseUrl = cleanDatabaseUrl(
+// PRIMARY RUNTIME CONNECTION: Neon Connection Pooler (PgBouncer)
+// Standard Vercel serverless queries MUST strictly use the pooled DATABASE_URL to prevent connection exhaustion.
+const pooledDatabaseUrl = cleanDatabaseUrl(
   process.env.DATABASE_URL ||
   process.env.POSTGRES_PRISMA_URL ||
   process.env.POSTGRES_URL ||
   process.env.POSTGRESQL_URL
 );
 
-// Ensure process.env.DATABASE_URL is populated if another standard variable is present
-if (resolvedDatabaseUrl && process.env.DATABASE_URL !== resolvedDatabaseUrl) {
-  process.env.DATABASE_URL = resolvedDatabaseUrl;
-}
-
-// Fallback for DIRECT_URL (unpooled migration connection)
-const resolvedDirectUrl = cleanDatabaseUrl(
+// DIRECT MIGRATION CONNECTION: Unpooled direct connection for Prisma CLI migrations
+const directMigrationUrl = cleanDatabaseUrl(
   process.env.DIRECT_URL ||
   process.env.POSTGRES_URL_NON_POOLING ||
-  resolvedDatabaseUrl
+  pooledDatabaseUrl
 );
 
-if (resolvedDirectUrl && !process.env.DIRECT_URL) {
-  process.env.DIRECT_URL = resolvedDirectUrl;
+// Ensure process.env.DATABASE_URL is populated with the POOLED URL for Prisma runtime
+if (pooledDatabaseUrl && process.env.DATABASE_URL !== pooledDatabaseUrl) {
+  process.env.DATABASE_URL = pooledDatabaseUrl;
+}
+
+// Ensure process.env.DIRECT_URL is populated for Prisma CLI migrations
+if (directMigrationUrl && !process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = directMigrationUrl;
 }
 
 if (process.env.NODE_ENV === 'production') {
-  if (!resolvedDatabaseUrl) {
+  if (!pooledDatabaseUrl) {
     console.error(
-      '[MYBF DB CONFIG] CRITICAL: DATABASE_URL environment variable is missing in Vercel production. Configure DATABASE_URL in Vercel Project Settings.'
+      '[MYBF DB CONFIG] CRITICAL: DATABASE_URL environment variable is missing in Vercel production. Configure the Neon pooled DATABASE_URL in Vercel Project Settings.'
     );
   } else if (
-    resolvedDatabaseUrl.includes('localhost') ||
-    resolvedDatabaseUrl.includes('127.0.0.1')
+    pooledDatabaseUrl.includes('localhost') ||
+    pooledDatabaseUrl.includes('127.0.0.1')
   ) {
     console.error(
-      '[MYBF DB CONFIG] CRITICAL: Production DATABASE_URL points to localhost/127.0.0.1. A remote managed PostgreSQL database instance is required for Vercel deployment.'
+      '[MYBF DB CONFIG] CRITICAL: Production DATABASE_URL points to localhost/127.0.0.1. A remote managed PostgreSQL database instance (Neon) is required for Vercel deployment.'
     );
   }
 }
@@ -59,10 +61,10 @@ const globalForPrisma = globalThis as unknown as {
 export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
-    datasources: resolvedDatabaseUrl
+    datasources: pooledDatabaseUrl
       ? {
           db: {
-            url: resolvedDatabaseUrl,
+            url: pooledDatabaseUrl,
           },
         }
       : undefined,
