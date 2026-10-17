@@ -26,6 +26,17 @@ if (resolvedDatabaseUrl && process.env.DATABASE_URL !== resolvedDatabaseUrl) {
   process.env.DATABASE_URL = resolvedDatabaseUrl;
 }
 
+// Fallback for DIRECT_URL (unpooled migration connection)
+const resolvedDirectUrl = cleanDatabaseUrl(
+  process.env.DIRECT_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
+  resolvedDatabaseUrl
+);
+
+if (resolvedDirectUrl && !process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = resolvedDirectUrl;
+}
+
 if (process.env.NODE_ENV === 'production') {
   if (!resolvedDatabaseUrl) {
     console.error(
