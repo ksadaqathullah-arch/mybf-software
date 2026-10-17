@@ -1,14 +1,28 @@
 import 'server-only';
 import { PrismaClient } from '@prisma/client';
 
+function cleanDatabaseUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  let cleaned = url.trim();
+  if (
+    (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+    (cleaned.startsWith("'") && cleaned.endsWith("'"))
+  ) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+  return cleaned || undefined;
+}
+
 // Determine connection URL with fallback to standard provider/Vercel variables
-const resolvedDatabaseUrl =
+const resolvedDatabaseUrl = cleanDatabaseUrl(
   process.env.DATABASE_URL ||
   process.env.POSTGRES_PRISMA_URL ||
-  process.env.POSTGRES_URL;
+  process.env.POSTGRES_URL ||
+  process.env.POSTGRESQL_URL
+);
 
 // Ensure process.env.DATABASE_URL is populated if another standard variable is present
-if (resolvedDatabaseUrl && !process.env.DATABASE_URL) {
+if (resolvedDatabaseUrl && process.env.DATABASE_URL !== resolvedDatabaseUrl) {
   process.env.DATABASE_URL = resolvedDatabaseUrl;
 }
 
