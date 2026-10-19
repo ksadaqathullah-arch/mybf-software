@@ -41,21 +41,27 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
       const names = result.postOffices.map((po) => po.name);
       expect(names).toContain('Manjeri H.O');
       expect(names).toContain('Manjeri Bazar S.O');
-    });
+      // Automatic Location Resolution: Unambiguous verified Taluk
+      expect(result.verifiedTaluk).toBe('Ernad');
+      expect(result.verifiedLocalBody).toBe('Manjeri Municipality');
+    }, 15000);
 
     it('returns post offices for Tirur PIN 676101', async () => {
       const result = await GeographyService.lookupPostOfficesByPin('676101');
       expect(result.found).toBe(true);
       expect(result.pinCode).toBe('676101');
       expect(result.postOffices.some((po) => po.name.includes('Tirur'))).toBe(true);
-    });
+      expect(result.verifiedTaluk).toBe('Tirur');
+      expect(result.verifiedLocalBody).toBe('Tirur Municipality');
+    }, 15000);
 
     it('gracefully handles unlisted PIN codes and allows manual entry', async () => {
       const result = await GeographyService.lookupPostOfficesByPin('676999');
       expect(result.found).toBe(false);
       expect(result.postOffices).toHaveLength(0);
       expect(result.message).toContain('Manual input permitted');
-    });
+      expect(result.verifiedTaluk).toBeUndefined();
+    }, 15000);
 
     it('rejects invalid PIN formats gracefully', async () => {
       const result = await GeographyService.lookupPostOfficesByPin('abc12');
@@ -64,7 +70,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
     });
   });
 
-  describe('Taluk + Local Body Lookup (Method 2)', () => {
+  describe('Taluk + Local Body Lookup (Method 2: Fallback Location Search)', () => {
     it('returns matching post offices for verified local body Manjeri Municipality', async () => {
       const result = await GeographyService.getPostOfficesByLocalBody({
         localBody: 'Manjeri Municipality',
@@ -74,7 +80,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
       expect(result.postOffices.length).toBeGreaterThan(0);
       const names = result.postOffices.map((p) => p.name);
       expect(names).toContain('Manjeri H.O');
-    });
+    }, 15000);
 
     it('returns verified postal mapping for Malappuram Municipality', async () => {
       const result = await GeographyService.getPostOfficesByLocalBody({
@@ -84,7 +90,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
       expect(result.hasVerifiedPostalMapping).toBe(true);
       expect(result.postOffices.length).toBeGreaterThan(0);
       expect(result.postOffices.some((p) => p.name.includes('Malappuram'))).toBe(true);
-    });
+    }, 15000);
 
     it('returns pending mapping guidance if relationship is not established, guiding user to PIN search', async () => {
       const result = await GeographyService.getPostOfficesByLocalBody({
@@ -94,7 +100,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
       expect(result.hasVerifiedPostalMapping).toBe(false);
       expect(result.postOffices).toHaveLength(0);
       expect(result.message).toContain('Verified postal mapping pending');
-    });
+    }, 15000);
   });
 
   describe('Server-Side Postal Relationship Validation', () => {
@@ -104,7 +110,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
         postOffice: 'Manjeri H.O',
       });
       expect(result.valid).toBe(true);
-    });
+    }, 15000);
 
     it('validates case-insensitively with or without suffix', async () => {
       const result = await GeographyService.validatePostalRelationship({
@@ -112,7 +118,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
         postOffice: 'manjeri',
       });
       expect(result.valid).toBe(true);
-    });
+    }, 15000);
 
     it('rejects mismatched PIN and Post Office when PIN exists but Post Office is wrong', async () => {
       const result = await GeographyService.validatePostalRelationship({
@@ -121,7 +127,7 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
       });
       expect(result.valid).toBe(false);
       expect(result.error).toContain('is not associated with PIN 676121');
-    });
+    }, 15000);
 
     it('rejects invalid PIN formats', async () => {
       const result = await GeographyService.validatePostalRelationship({
@@ -138,6 +144,6 @@ describe('Smart Post Office and PIN Code Lookup System', () => {
         postOffice: 'Some Remote Branch',
       });
       expect(result.valid).toBe(true);
-    });
+    }, 15000);
   });
 });

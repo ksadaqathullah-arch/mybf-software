@@ -408,6 +408,10 @@ export class GeographyService {
       localBodyName?: string | null;
       postalDivision?: string | null;
     }>;
+    verifiedTaluk?: string | null;
+    verifiedLocalBody?: string | null;
+    candidateLocalBodies?: string[];
+    hasAmbiguousLocalBody?: boolean;
     message?: string;
   }> {
     const trimmed = pinCode.trim();
@@ -419,6 +423,25 @@ export class GeographyService {
         message: 'Invalid PIN Code format. Must be exactly 6 digits.',
       };
     }
+
+    const resolvePostalRelationships = (offices: Array<{ talukName: string; localBodyName?: string | null }>) => {
+      const taluksSet = new Set(offices.map((po) => po.talukName).filter(Boolean));
+      const verifiedTaluk = taluksSet.size === 1 ? Array.from(taluksSet)[0] : null;
+
+      const directLBMatches = new Set(offices.map((po) => po.localBodyName).filter(Boolean) as string[]);
+      const pinLinks = VERIFIED_LOCAL_BODY_PIN_LINKS.filter((l) => l.pinCode === trimmed);
+      const allCandidateLBs = Array.from(new Set([...Array.from(directLBMatches), ...pinLinks.map((l) => l.localBodyName)]));
+
+      // Local body is only verified if unambiguous (exactly 1 candidate)
+      const verifiedLocalBody = allCandidateLBs.length === 1 ? allCandidateLBs[0] : null;
+
+      return {
+        verifiedTaluk,
+        verifiedLocalBody,
+        candidateLocalBodies: allCandidateLBs,
+        hasAmbiguousLocalBody: allCandidateLBs.length > 1,
+      };
+    };
 
     try {
       const dbOffices = await db.postOffice.findMany({
@@ -434,20 +457,23 @@ export class GeographyService {
       });
 
       if (dbOffices.length > 0) {
+        const postOffices = dbOffices.map((po) => ({
+          id: po.id,
+          code: po.code,
+          name: po.name,
+          pinCode: po.pinCode,
+          officeType: po.officeType,
+          deliveryStatus: po.deliveryStatus,
+          talukName: po.taluk?.name || 'Malappuram District',
+          localBodyName: po.localBody?.name || null,
+          postalDivision: po.postalDivision,
+        }));
+        const resolution = resolvePostalRelationships(postOffices);
         return {
           found: true,
           pinCode: trimmed,
-          postOffices: dbOffices.map((po) => ({
-            id: po.id,
-            code: po.code,
-            name: po.name,
-            pinCode: po.pinCode,
-            officeType: po.officeType,
-            deliveryStatus: po.deliveryStatus,
-            talukName: po.taluk?.name || 'Malappuram District',
-            localBodyName: po.localBody?.name || null,
-            postalDivision: po.postalDivision,
-          })),
+          postOffices,
+          ...resolution,
         };
       }
     } catch {
@@ -457,20 +483,23 @@ export class GeographyService {
     // Fallback search in verified master dataset
     const matches = VERIFIED_POSTAL_OFFICES.filter((po) => po.pinCode === trimmed);
     if (matches.length > 0) {
+      const postOffices = matches.map((po) => ({
+        id: po.code,
+        code: po.code,
+        name: po.name,
+        pinCode: po.pinCode,
+        officeType: po.officeType,
+        deliveryStatus: po.deliveryStatus,
+        talukName: po.talukName,
+        localBodyName: po.localBodyName || null,
+        postalDivision: po.postalDivision,
+      }));
+      const resolution = resolvePostalRelationships(postOffices);
       return {
         found: true,
         pinCode: trimmed,
-        postOffices: matches.map((po) => ({
-          id: po.code,
-          code: po.code,
-          name: po.name,
-          pinCode: po.pinCode,
-          officeType: po.officeType,
-          deliveryStatus: po.deliveryStatus,
-          talukName: po.talukName,
-          localBodyName: po.localBodyName || null,
-          postalDivision: po.postalDivision,
-        })),
+        postOffices,
+        ...resolution,
       };
     }
 
