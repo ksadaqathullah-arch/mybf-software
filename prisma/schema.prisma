@@ -94,6 +94,7 @@ model Chapter {
   roleAssignments         UserRoleAssignment[]
   paymentIntents          PaymentIntent[]
   invoices                Invoice[]
+  historicalAssignments   MemberChapterAssignmentHistory[]
 
   @@index([organizationId, districtId])
   @@index([status])
@@ -167,6 +168,7 @@ model User {
   paymentIntents          PaymentIntent[]
   invoices                Invoice[]
   membershipApplications  MembershipApplication[]
+  contactChallenges       ContactVerificationChallenge[]
 
   @@index([username])
   @@index([email])
@@ -364,6 +366,8 @@ model MemberProfile {
   expectations   MemberExpectation[]
   talents        MemberTalent[]
   participationPreferences MemberParticipationPreference[]
+  correctionRequests       ProfileCorrectionRequest[]
+  chapterHistory           MemberChapterAssignmentHistory[]
 
   @@index([chapterId])
   @@index([organizationId])
@@ -530,17 +534,22 @@ enum TransferStatus {
 }
 
 model ChapterTransfer {
-  id              String         @id @default(uuid())
-  memberProfileId String
-  fromChapterId   String
-  toChapterId     String
-  status          TransferStatus @default(REQUESTED)
-  reason          String
-  requestedAt     DateTime       @default(now())
-  currentReviewedAt DateTime?
-  destinationReviewedAt DateTime?
-  completedAt     DateTime?
-  rejectionReason String?
+  id                     String         @id @default(uuid())
+  memberProfileId        String
+  fromChapterId          String
+  toChapterId            String
+  status                 TransferStatus @default(REQUESTED)
+  reason                 String
+  currentReviewNotes     String?
+  destinationReviewNotes String?
+  districtReviewNotes    String?
+  requestedAt            DateTime       @default(now())
+  currentReviewedAt      DateTime?
+  destinationReviewedAt  DateTime?
+  districtReviewedAt     DateTime?
+  completedAt            DateTime?
+  transferEffectiveDate  DateTime?
+  rejectionReason        String?
 
   memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Restrict)
   fromChapter     Chapter        @relation("TransferFrom", fields: [fromChapterId], references: [id], onDelete: Restrict)
@@ -550,6 +559,72 @@ model ChapterTransfer {
   @@index([toChapterId])
   @@index([memberProfileId])
   @@map("chapter_transfers")
+}
+
+model ContactVerificationChallenge {
+  id            String    @id @default(uuid())
+  userId        String
+  contactType   String    // "PHONE" | "EMAIL"
+  currentValue  String?
+  targetValue   String
+  tokenHash     String    // Secure one-way hash of OTP / verification token
+  expiresAt     DateTime
+  attemptsCount Int       @default(0)
+  resendAfter   DateTime
+  isVerified    Boolean   @default(false)
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, contactType, isVerified])
+  @@map("contact_verification_challenges")
+}
+
+enum CorrectionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CLARIFICATION_REQUESTED
+}
+
+model ProfileCorrectionRequest {
+  id              String                  @id @default(uuid())
+  memberProfileId String
+  field           String                  // "fullName" | "dateOfBirth" | "gender" | etc.
+  oldValue        String?
+  requestedValue  String
+  reason          String
+  documentUrl     String?
+  status          CorrectionRequestStatus @default(PENDING)
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  memberProfile   MemberProfile           @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId, status])
+  @@index([status])
+  @@map("profile_correction_requests")
+}
+
+model MemberChapterAssignmentHistory {
+  id              String    @id @default(uuid())
+  memberProfileId String
+  chapterId       String
+  assignedAt      DateTime  @default(now())
+  endedAt         DateTime?
+  transferId      String?
+  reason          String?
+
+  memberProfile   MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+  chapter         Chapter       @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+
+  @@index([memberProfileId])
+  @@index([chapterId])
+  @@map("member_chapter_assignment_history")
 }
 
 // ==========================================

@@ -14,7 +14,7 @@ import {
 import { EventBookingCard } from '@/features/events/components/event-booking-card';
 import { MyTicketsCard, type TicketItem } from '@/features/events/components/my-tickets-card';
 import { CommunityOpportunitiesCard } from '@/features/memberships/components/community-opportunities-card';
-import { Building2, Award, ArrowRight, ShieldCheck, LogOut, Ticket } from 'lucide-react';
+import { Building2, Award, ArrowRight, ShieldCheck, LogOut, Ticket, User } from 'lucide-react';
 import type { MemberCategoryValue, CurrentPositionValue } from '@/features/memberships/constants/member-classifications';
 
 export default function MemberDashboardPage() {
@@ -123,6 +123,11 @@ export default function MemberDashboardPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          <Link href="/member/profile">
+            <Button variant="primary" size="sm" className="bg-[#035AFC] hover:bg-[#0248ca] text-white">
+              <User className="h-4 w-4 mr-1.5" /> Manage Profile
+            </Button>
+          </Link>
           <Link href="/member/membership/id-card">
             <Button variant="secondary" size="sm">
               <Award className="h-4 w-4 mr-1.5" /> View Digital ID Card

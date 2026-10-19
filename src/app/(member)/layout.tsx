@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Award, Building2, Calendar } from 'lucide-react';
+import { LayoutDashboard, Award, Building2, Calendar, User } from 'lucide-react';
 
 const MEMBER_NAV_ITEMS: NavItem[] = [
   { id: 'member-overview', label: 'Overview', href: '/member', icon: LayoutDashboard },
+  { id: 'member-profile', label: 'My Profile & Identity', href: '/member/profile', icon: User },
   { id: 'member-id-card', label: 'Digital ID Pass', href: '/member/membership/id-card', icon: Award, badge: 'VERIFIED' },
   { id: 'member-chapter', label: 'My Chapter', href: '/chapters/manjeri', icon: Building2 },
   { id: 'member-events', label: 'Events & Summits', href: '/events', icon: Calendar },

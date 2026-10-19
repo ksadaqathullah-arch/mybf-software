@@ -94,7 +94,9 @@ export function authorize(context: AuthorizationContext): AuthorizationResult {
       action === 'member.read_own' ||
       action === 'member.transfer_request' ||
       action === 'member.update_own' ||
-      action === 'member.update_classification'
+      action === 'member.update_classification' ||
+      action === 'member.verify_contact' ||
+      action === 'member.request_correction'
     ) {
       return {
         allowed: true,

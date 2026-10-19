@@ -13,6 +13,7 @@ import {
   CreditCard,
   BarChart3,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface DistrictAdminPortalShellProps {
@@ -40,6 +41,12 @@ export function DistrictAdminPortalShell({
         href: '/district-admin/applications',
         icon: FileCheck,
         badge: pendingCount > 0 ? String(pendingCount) : undefined,
+      },
+      {
+        id: 'district-governance',
+        label: 'Member Governance',
+        href: '/district-admin/governance',
+        icon: ShieldCheck,
       },
       {
         id: 'district-chapters',

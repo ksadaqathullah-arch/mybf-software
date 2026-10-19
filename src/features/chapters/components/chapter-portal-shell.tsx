@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PortalShell, NavItem } from '@/components/layout/portal-shell';
-import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard, Ticket } from 'lucide-react';
+import { LayoutDashboard, Users, FileCheck, Calendar, CreditCard, Ticket, ArrowLeftRight } from 'lucide-react';
 
 interface ChapterPortalShellProps {
   chapterSlug: string;
@@ -34,6 +34,12 @@ export function ChapterPortalShell({
       href: `/chapter/${chapterSlug}/applications`,
       icon: FileCheck,
       badge: pendingCount > 0 ? String(pendingCount) : undefined,
+    },
+    {
+      id: 'chapter-transfers',
+      label: 'Transfer Requests',
+      href: `/chapter/${chapterSlug}/transfers`,
+      icon: ArrowLeftRight,
     },
     {
       id: 'chapter-roster',

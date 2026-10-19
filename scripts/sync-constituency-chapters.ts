@@ -84,7 +84,7 @@ async function main() {
         });
       }
     }
-  });
+  }, { maxWait: 20000, timeout: 90000 });
 
   const finalChapters = await prisma.chapter.findMany({
     orderBy: { code: 'asc' },

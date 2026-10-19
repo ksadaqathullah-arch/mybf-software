@@ -36,6 +36,8 @@ export type DomainAction =
   | 'member.reject_application'
   | 'member.transfer_request'
   | 'member.transfer_approve'
+  | 'member.verify_contact'
+  | 'member.request_correction'
   | 'chapter.read'
   | 'chapter.manage_leadership'
   | 'chapter.update_settings'

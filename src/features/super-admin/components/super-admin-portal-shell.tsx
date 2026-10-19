@@ -12,6 +12,7 @@ import {
   FileText,
   Database,
   Shield,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface SuperAdminPortalShellProps {
@@ -48,6 +49,12 @@ export function SuperAdminPortalShell({
         href: '/super-admin/age-exceptions',
         icon: Clock,
         badge: pendingAgeCount > 0 ? String(pendingAgeCount) : undefined,
+      },
+      {
+        id: 'super-admin-governance',
+        label: 'Member Governance',
+        href: '/super-admin/governance',
+        icon: ShieldCheck,
       },
       {
         id: 'super-admin-orgs',
