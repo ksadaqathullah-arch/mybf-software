@@ -11,11 +11,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictAdminDashboardPage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
   const [overview, membersResult] = await Promise.all([
-    DistrictAdminService.getDistrictOverviewMetrics(actor),
-    DistrictAdminService.getDistrictMembers(actor, { pageSize: 100 }),
+    DistrictAdminService.getDistrictOverviewMetrics(actor!),
+    DistrictAdminService.getDistrictMembers(actor!, { pageSize: 100 }),
   ]);
 
   const initialMembers: DistrictMemberRecord[] = membersResult.members.map((m) => ({
@@ -31,7 +31,7 @@ export default async function DistrictAdminDashboardPage() {
     talents: m.talents,
     participationPreferences: m.participationPreferences,
     status: m.status as any,
-    joinedDate: m.joinedDate.split('T')[0],
+    joinedDate: m.joinedDate ? m.joinedDate.split('T')[0] : '',
   }));
 
   return (

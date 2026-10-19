@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictChaptersPage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
-  const chapters = await DistrictAdminService.getDistrictChapters(actor);
+  const chapters = await DistrictAdminService.getDistrictChapters(actor!);
 
   return <DistrictChaptersView chapters={chapters} />;
 }

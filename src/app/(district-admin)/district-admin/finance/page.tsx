@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictFinancePage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
-  const finance = await DistrictAdminService.getDistrictFinance(actor);
+  const finance = await DistrictAdminService.getDistrictFinance(actor!);
 
   return <DistrictFinanceView finance={finance} />;
 }

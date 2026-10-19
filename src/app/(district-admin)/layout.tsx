@@ -30,7 +30,15 @@ export default async function DistrictAdminLayout({
   // Query live pending review count across Malappuram chapters
   const pendingCount = await db.membershipApplication.count({
     where: {
-      chapter: { district: { code: 'MLP' } },
+      chapter: {
+        district: {
+          OR: [
+            { code: 'DIST-MALAPPURAM' },
+            { code: 'MLP' },
+            { name: { contains: 'Malappuram', mode: 'insensitive' } },
+          ],
+        },
+      },
       status: { in: ['SUBMITTED', 'UNDER_REVIEW'] },
     },
   });

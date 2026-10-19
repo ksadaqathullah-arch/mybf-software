@@ -18,12 +18,12 @@ interface PageProps {
 
 export default async function DistrictMembersPage({ searchParams }: PageProps) {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
   const sp = await searchParams;
   const page = parseInt(sp.page || '1', 10) || 1;
 
-  const result = await DistrictAdminService.getDistrictMembers(actor, {
+  const result = await DistrictAdminService.getDistrictMembers(actor!, {
     search: sp.search,
     chapterSlug: sp.chapterSlug,
     taluk: sp.taluk,

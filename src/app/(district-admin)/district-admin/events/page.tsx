@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictEventsPage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
-  const events = await DistrictAdminService.getDistrictEvents(actor);
+  const events = await DistrictAdminService.getDistrictEvents(actor!);
 
   return <DistrictEventsView events={events} />;
 }

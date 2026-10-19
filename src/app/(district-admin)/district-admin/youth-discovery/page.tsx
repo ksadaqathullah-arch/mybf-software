@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictYouthDiscoveryPage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
-  const membersResult = await DistrictAdminService.getDistrictMembers(actor, { pageSize: 100 });
+  const membersResult = await DistrictAdminService.getDistrictMembers(actor!, { pageSize: 100 });
 
   const initialMembers: DistrictMemberRecord[] = membersResult.members.map((m) => ({
     id: m.id,
@@ -25,7 +25,7 @@ export default async function DistrictYouthDiscoveryPage() {
     talents: m.talents,
     participationPreferences: m.participationPreferences,
     status: m.status as any,
-    joinedDate: m.joinedDate.split('T')[0],
+    joinedDate: m.joinedDate ? m.joinedDate.split('T')[0] : '',
   }));
 
   return (

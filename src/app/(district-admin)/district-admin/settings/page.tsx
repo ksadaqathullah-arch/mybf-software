@@ -6,16 +6,16 @@ export const dynamic = 'force-dynamic';
 
 export default async function DistrictSettingsPage() {
   const actor = await getCurrentActor();
-  if (!actor) return null;
+  if (!DistrictAdminService.isAuthorizedDistrictAdmin(actor)) return null;
 
-  DistrictAdminService.assertDistrictAdmin(actor);
+  DistrictAdminService.assertDistrictAdmin(actor!);
   const district = await DistrictAdminService.resolveDistrict();
 
   return (
     <DistrictSettingsView
       districtName={district.name}
       districtCode={district.code}
-      adminEmail={actor.email || 'District Administrator'}
+      adminEmail={actor?.email || 'District Administrator'}
     />
   );
 }
