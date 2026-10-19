@@ -18,12 +18,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'MYBF - Malappuram Youth Business Forum | Enterprise Digital Platform',
+  title: 'MYBF - Malappuram Youth Business Forum | An Initiative Under Mission Malappuram 2050',
   description:
-    'Integrated digital operating system for the Malappuram Youth Business Forum, empowering youth and women entrepreneurship, AI-driven business leadership, and 16 founding chapters across Kerala.',
+    'Malappuram Youth Business Forum (MYBF), an initiative under Mission Malappuram 2050. The integrated digital operating system empowering youth and women entrepreneurship, AI-driven business leadership, and 16 founding chapters across Kerala.',
   keywords: [
     'MYBF',
     'Malappuram Youth Business Forum',
+    'Mission Malappuram 2050',
+    'Mission 2050 Malappuram',
     'Youth Entrepreneurship',
     'Women Entrepreneurship',
     'AI-Driven Business Leadership',
@@ -32,8 +34,13 @@ export const metadata: Metadata = {
     'Entrepreneurship Development',
     'Malappuram Chapters',
   ],
-  authors: [{ name: 'MYBF Secretariat' }],
-  creator: 'Malappuram Youth Business Forum',
+  authors: [{ name: 'MYBF Secretariat in collaboration with Mission Malappuram 2050' }],
+  creator: 'Malappuram Youth Business Forum (MYBF)',
+  publisher: 'Mission Malappuram 2050',
+  icons: {
+    icon: '/logos/mybf-logo.png',
+    apple: '/logos/mybf-logo.png',
+  },
 };
 
 export default function RootLayout({

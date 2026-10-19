@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, ShieldAlert, Building2, Calendar, Award, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { MybfLogo } from '@/components/brand/mybf-logo';
 
 export default async function PublicIdVerificationPage({
   params,
@@ -19,12 +20,15 @@ export default async function PublicIdVerificationPage({
     <div className="min-h-screen bg-[#FBFDFD] dark:bg-[#030405] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-lg space-y-6">
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#035AFC] text-white font-black text-2xl shadow-lg">
-            M
-          </div>
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            MYBF Credential Verification Service
+        <div className="text-center space-y-2 flex flex-col items-center">
+          <Link href="/" className="inline-block" aria-label="MYBF - Malappuram Youth Business Forum">
+            <MybfLogo size="lg" priority />
+          </Link>
+          <span className="text-[10px] font-bold tracking-widest text-amber-600 dark:text-amber-400 uppercase block">
+            An Initiative Under Mission Malappuram 2050
+          </span>
+          <h1 className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white pt-1">
+            Credential Verification Service
           </h1>
           <p className="text-xs text-slate-500">Official Membership Verification Gateway</p>
         </div>

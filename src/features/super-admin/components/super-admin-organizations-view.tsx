@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Layers,
 } from 'lucide-react';
+import { MybfLogo } from '@/components/brand/mybf-logo';
 
 interface ChapterItem {
   id: string;
@@ -163,9 +164,7 @@ export function SuperAdminOrganizationsView({
         <CardHeader className="p-5 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-[#035AFC] text-white flex items-center justify-center font-black">
-                M
-              </div>
+              <MybfLogo size="sm" />
               <div>
                 <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
                   {organization?.name || 'Malappuram Youth Business Forum'}

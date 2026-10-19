@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, Menu, X } from 'lucide-react';
+import { MybfLogo } from '@/components/brand/mybf-logo';
 
 export interface NavItem {
   id: string;
@@ -59,14 +60,12 @@ export function PortalShell({
         )}
       >
         {/* Brand Header */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2.5">
-            <div className="h-9 w-9 rounded-xl bg-[#035AFC] text-white flex items-center justify-center font-black text-lg">
-              M
-            </div>
-            <div>
-              <span className="font-extrabold text-sm tracking-tight block">MYBF</span>
-              <span className="text-[10px] text-slate-400 font-semibold uppercase">{portalTitle}</span>
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <Link href="/" className="flex flex-col space-y-1.5 group" aria-label="MYBF - Malappuram Youth Business Forum">
+            <MybfLogo size="sm" className="group-hover:opacity-90 transition-opacity" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{portalTitle}</span>
+              <span className="text-[8px] text-amber-500/80 font-medium tracking-tight">• Mission 2050</span>
             </div>
           </Link>
           <button

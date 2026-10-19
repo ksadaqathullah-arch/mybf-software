@@ -19,6 +19,8 @@ import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chap
 import { MEMBER_CATEGORIES } from '@/features/memberships/constants/member-classifications';
 import { VisionMissionSection } from '@/features/organization/components/vision-mission-section';
 
+import { ParentInitiativeBadge } from '@/components/brand/parent-initiative-badge';
+
 export default function HomePage() {
   return (
     <div className="space-y-24 pb-20">
@@ -29,9 +31,13 @@ export default function HomePage() {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="inline-flex items-center space-x-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-[#035AFC] dark:text-blue-400">
-              <span className="h-2 w-2 rounded-full bg-[#FBC206] animate-pulse" />
-              <span>Uniting Youth Business Leaders across 16 Malappuram Chapters</span>
+            {/* Parent Initiative Attribution & Scope */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <ParentInitiativeBadge />
+              <div className="inline-flex items-center space-x-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-[#035AFC] dark:text-blue-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#FBC206] animate-pulse" />
+                <span>16 Malappuram Chapters</span>
+              </div>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl">

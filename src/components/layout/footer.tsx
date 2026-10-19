@@ -2,6 +2,9 @@ import * as React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, MapPin, Mail, Phone } from 'lucide-react';
 
+import { MybfLogo } from '@/components/brand/mybf-logo';
+import { MissionMalappuramLogo } from '@/components/brand/mission-malappuram-logo';
+
 export function Footer() {
   return (
     <footer className="border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#070A10] text-slate-600 dark:text-slate-400 text-sm">
@@ -9,15 +12,27 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#035AFC] text-white font-black text-lg">
-                M
-              </div>
-              <span className="font-bold text-slate-900 dark:text-white">MYBF</span>
-            </div>
+            <Link href="/" className="inline-block" aria-label="MYBF - Malappuram Youth Business Forum">
+              <MybfLogo size="md" />
+            </Link>
             <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
               Malappuram Youth Business Forum is a unified digital platform uniting youth entrepreneurs, professionals, and business owners across 16 chapters.
             </p>
+
+            {/* Parent Initiative Attribution */}
+            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Parent Initiative
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium">Vision 2050</span>
+              </div>
+              <MissionMalappuramLogo size="sm" />
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-snug">
+                MYBF is an initiative under Mission Malappuram 2050.
+              </p>
+            </div>
+
             <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400">
               <ShieldCheck className="h-4 w-4" />
               <span>Certified Digital Platform</span>
@@ -76,7 +91,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-slate-100 dark:border-slate-800/60 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} Malappuram Youth Business Forum (MYBF). All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Malappuram Youth Business Forum (MYBF) — An Initiative Under Mission Malappuram 2050. All rights reserved.</p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Multi-Chapter Architecture Operational</span>

@@ -48,6 +48,9 @@ export function VisionSection({ className = '' }: { className?: string }) {
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               Malappuram Youth Business Forum
             </span>
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+              • An Initiative Under Mission Malappuram 2050
+            </span>
           </div>
 
           <div className="space-y-3">
