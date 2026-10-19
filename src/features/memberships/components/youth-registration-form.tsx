@@ -578,11 +578,46 @@ export function YouthRegistrationForm() {
             </div>
           </div>
 
-          {/* SECTION 2: Chapter & Member Classification */}
+          {/* SECTION 2: Malappuram Location */}
+          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
+                2. Malappuram Location
+              </h4>
+              <span className="text-[10px] text-slate-400">
+                Verified Administrative Master
+              </span>
+            </div>
+
+            <LocationSelector
+              value={{
+                district: formData.district || 'Malappuram',
+                taluk: formData.taluk,
+                localBody: formData.localBody,
+                ward: formData.ward,
+                postOffice: formData.postOffice,
+                pinCode: formData.pinCode,
+              }}
+              onChange={(loc) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  district: loc.district,
+                  taluk: loc.taluk,
+                  localBody: loc.localBody,
+                  ward: loc.ward || '',
+                  postOffice: loc.postOffice || '',
+                  pinCode: loc.pinCode || '',
+                }));
+              }}
+            />
+          </div>
+
+          {/* SECTION 3: Chapter & Member Classification */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Building2 className="h-3.5 w-3.5 text-[#035AFC]" />
-              2. Chapter & Member Classification
+              3. Chapter & Member Classification
             </h4>
 
             <div className="space-y-3">
@@ -653,11 +688,11 @@ export function YouthRegistrationForm() {
             </div>
           </div>
 
-          {/* SECTION 3: Business or Professional Details */}
+          {/* SECTION 4: Business or Professional Details */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Briefcase className="h-3.5 w-3.5 text-[#035AFC]" />
-              3. Business or Professional Details
+              4. Business or Professional Details
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -692,13 +727,13 @@ export function YouthRegistrationForm() {
             </div>
           </div>
 
-          {/* SECTION 4: Expectations from MYBF */}
+          {/* SECTION 5: Expectations from MYBF */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Target className="h-3.5 w-3.5 text-[#035AFC]" />
-                  4. What Do You Expect from MYBF? *
+                  5. What Do You Expect from MYBF? *
                 </h4>
                 <p className="text-[11px] text-slate-500">
                   Tell us what you hope to achieve through the MYBF community. (Select all that apply, at least 1 required)
@@ -783,13 +818,13 @@ export function YouthRegistrationForm() {
             </div>
           </div>
 
-          {/* SECTION 5: Skills, Talents & Extracurricular Interests */}
+          {/* SECTION 6: Skills, Talents & Extracurricular Interests */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Palette className="h-3.5 w-3.5 text-[#035AFC]" />
-                  5. Skills, Talents & Extracurricular Interests
+                  6. Skills, Talents & Extracurricular Interests
                 </h4>
                 <p className="text-[11px] text-slate-500">
                   Share your talents and discover opportunities to connect with like-minded members. (Optional)
@@ -868,13 +903,13 @@ export function YouthRegistrationForm() {
             </div>
           </div>
 
-          {/* SECTION 6: Participation Preferences */}
+          {/* SECTION 7: Participation Preferences */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Users2 className="h-3.5 w-3.5 text-[#035AFC]" />
-                  6. How Would You Like to Participate in MYBF?
+                  7. How Would You Like to Participate in MYBF?
                 </h4>
                 <p className="text-[11px] text-slate-500">
                   Select activities you are open to contributing to or taking part in. (Optional)
@@ -916,41 +951,6 @@ export function YouthRegistrationForm() {
                 );
               })}
             </div>
-          </div>
-
-          {/* SECTION 7: Malappuram Location */}
-          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
-                7. Malappuram Location
-              </h4>
-              <span className="text-[10px] text-slate-400">
-                Verified Administrative Master
-              </span>
-            </div>
-
-            <LocationSelector
-              value={{
-                district: formData.district || 'Malappuram',
-                taluk: formData.taluk,
-                localBody: formData.localBody,
-                ward: formData.ward,
-                postOffice: formData.postOffice,
-                pinCode: formData.pinCode,
-              }}
-              onChange={(loc) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  district: loc.district,
-                  taluk: loc.taluk,
-                  localBody: loc.localBody,
-                  ward: loc.ward || '',
-                  postOffice: loc.postOffice || '',
-                  pinCode: loc.pinCode || '',
-                }));
-              }}
-            />
           </div>
 
           {/* SECTION: CREATE YOUR LOGIN CREDENTIALS */}
