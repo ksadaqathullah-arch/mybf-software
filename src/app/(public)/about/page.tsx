@@ -1,8 +1,24 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Target, Compass, Award, ShieldCheck, MapPin } from 'lucide-react';
+import { VisionMissionSection } from '@/features/organization/components/vision-mission-section';
+
+export const metadata: Metadata = {
+  title: 'About MYBF - Official Vision, Mission & Six Strategic Pillars',
+  description:
+    'The official Vision and Six Strategic Mission Pillars of Malappuram Youth Business Forum driving youth economic empowerment, women entrepreneurship, AI leadership, and district-wide prosperity.',
+  keywords: [
+    'Malappuram Youth Business Forum',
+    'Youth Entrepreneurship',
+    'Women Entrepreneurship',
+    'AI-Driven Business Leadership',
+    'Malappuram Business Community',
+    'Startup Ecosystem',
+    'Entrepreneurship Development',
+    'MYBF Strategic Pillars',
+  ],
+};
 
 export default function AboutPage() {
   return (
@@ -18,28 +34,8 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Vision & Mission Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="border-slate-200 dark:border-slate-800 p-8 space-y-4">
-          <div className="h-12 w-12 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-[#035AFC] flex items-center justify-center">
-            <Target className="h-6 w-6" />
-          </div>
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Our Strategic Vision</h3>
-          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-            Build an inclusive, measurable, and digitally connected ecosystem for youth entrepreneurship and professional collaboration across Malappuram and beyond.
-          </p>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 p-8 space-y-4">
-          <div className="h-12 w-12 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-[#FBC206] flex items-center justify-center">
-            <Compass className="h-6 w-6" />
-          </div>
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Our Mission</h3>
-          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-            Equip MYBF chapters and members with trusted identities, accessible programmes, useful business connections, and transparent organizational administration.
-          </p>
-        </Card>
-      </div>
+      {/* Official Vision & Six Strategic Mission Pillars */}
+      <VisionMissionSection />
 
       {/* 16 Chapters Decentralized Governance */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-8 sm:p-12 space-y-6">

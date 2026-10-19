@@ -20,14 +20,17 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'MYBF - Malappuram Youth Business Forum | Enterprise Digital Platform',
   description:
-    'Integrated digital operating system for the Malappuram Youth Business Forum, connecting youth entrepreneurs, professionals, and 16 founding chapters across Kerala.',
+    'Integrated digital operating system for the Malappuram Youth Business Forum, empowering youth and women entrepreneurship, AI-driven business leadership, and 16 founding chapters across Kerala.',
   keywords: [
     'MYBF',
     'Malappuram Youth Business Forum',
-    'Kerala Business Forum',
     'Youth Entrepreneurship',
+    'Women Entrepreneurship',
+    'AI-Driven Business Leadership',
+    'Malappuram Business Community',
+    'Startup Ecosystem',
+    'Entrepreneurship Development',
     'Malappuram Chapters',
-    'Business Networking',
   ],
   authors: [{ name: 'MYBF Secretariat' }],
   creator: 'Malappuram Youth Business Forum',

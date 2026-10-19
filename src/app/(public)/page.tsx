@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 import { MEMBER_CATEGORIES } from '@/features/memberships/constants/member-classifications';
+import { VisionMissionSection } from '@/features/organization/components/vision-mission-section';
 
 export default function HomePage() {
   return (
@@ -99,6 +100,11 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Official Vision & Six Strategic Mission Pillars */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <VisionMissionSection />
       </section>
 
       {/* Chapters Grid Preview */}
