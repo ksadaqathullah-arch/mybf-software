@@ -78,8 +78,11 @@ export const memberRegistrationSchema = z
 
     // Geographic Residence Details
     addressLine: z.string().optional(),
+    district: z.string().default('Malappuram'),
     taluk: z.string().optional(),
+    localBody: z.string().optional(),
     ward: z.string().optional(),
+    postOffice: z.string().optional(),
     pinCode: z.string().regex(/^\d{6}$/, 'PIN Code must be 6 digits').optional(),
 
     // Login Credentials Section

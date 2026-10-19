@@ -63,6 +63,8 @@ export async function GET(request: NextRequest) {
       companyName: profile.companyName,
       businessSector: profile.businessSector,
       taluk: profile.taluk,
+      district: profile.district,
+      addressLine: profile.addressLine,
       ward: profile.ward,
       pinCode: profile.pinCode,
       futureGoal: profile.futureGoal,

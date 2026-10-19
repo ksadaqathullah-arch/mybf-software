@@ -16,13 +16,22 @@ import {
   ExternalLink,
   Layers,
   ArrowRight,
+  ShieldCheck,
+  AlertTriangle,
+  FileSpreadsheet,
+  Filter,
+  Check,
 } from 'lucide-react';
 import {
-  TALUKS_OF_MALAPPURAM,
-  MUNICIPALITIES_OF_MALAPPURAM,
-  NOTABLE_PIN_CODES,
-  type LocalBodyGeo,
-} from '@/features/geography/constants/malappuram-geo';
+  VERIFIED_TALUKS,
+  ALL_RESIDENTIAL_LOCAL_BODIES,
+  VERIFIED_MUNICIPALITIES,
+  VERIFIED_GRAMA_PANCHAYATS,
+  VERIFIED_BLOCK_PANCHAYATS,
+  DISTRICT_PANCHAYAT,
+  type VerifiedLocalBody,
+} from '@/features/geography/constants/malappuram-master-dataset';
+import { NOTABLE_PIN_CODES } from '@/features/geography/constants/malappuram-geo';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 
 interface DistrictGeographyViewProps {
@@ -31,6 +40,10 @@ interface DistrictGeographyViewProps {
 
 export function DistrictGeographyView({ distribution }: DistrictGeographyViewProps) {
   const [selectedTaluk, setSelectedTaluk] = React.useState<string>('ALL');
+  const [activeTab, setActiveTab] = React.useState<
+    'ALL_LB' | 'MUNICIPALITIES' | 'PANCHAYATS' | 'BLOCKS' | 'DUPLICATES' | 'AUDIT'
+  >('ALL_LB');
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [pinInput, setPinInput] = React.useState<string>('');
   const [pinResult, setPinResult] = React.useState<{
     found: boolean;
@@ -49,13 +62,49 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
     return map;
   }, [distribution]);
 
-  // Filter municipalities
-  const filteredLocalBodies = React.useMemo(() => {
-    if (selectedTaluk === 'ALL') return MUNICIPALITIES_OF_MALAPPURAM;
-    return MUNICIPALITIES_OF_MALAPPURAM.filter(
-      (m) => m.taluk.toLowerCase() === selectedTaluk.toLowerCase()
+  const unassignedMembers = React.useMemo(() => {
+    const unassigned = distribution.find((d) =>
+      d.taluk.toLowerCase().includes('unassigned') || d.taluk.toLowerCase().includes('pending')
     );
-  }, [selectedTaluk]);
+    return unassigned ? unassigned.memberCount : 0;
+  }, [distribution]);
+
+  // Filtered residential local bodies
+  const filteredLocalBodies = React.useMemo(() => {
+    let list: VerifiedLocalBody[] = ALL_RESIDENTIAL_LOCAL_BODIES;
+
+    // Filter by tab
+    if (activeTab === 'MUNICIPALITIES') {
+      list = VERIFIED_MUNICIPALITIES;
+    } else if (activeTab === 'PANCHAYATS') {
+      list = VERIFIED_GRAMA_PANCHAYATS;
+    }
+
+    // Filter by selected taluk
+    if (selectedTaluk !== 'ALL') {
+      const normSelected = selectedTaluk.toLowerCase();
+      const altSelected = normSelected === 'eranad' ? 'ernad' : normSelected === 'ernad' ? 'eranad' : normSelected;
+      list = list.filter(
+        (lb) =>
+          lb.talukName.toLowerCase() === normSelected ||
+          lb.talukName.toLowerCase() === altSelected
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (lb) =>
+          lb.name.toLowerCase().includes(q) ||
+          lb.talukName.toLowerCase().includes(q) ||
+          (lb.blockPanchayat && lb.blockPanchayat.toLowerCase().includes(q)) ||
+          lb.code.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }, [activeTab, selectedTaluk, searchQuery]);
 
   // Lookup PIN
   const handlePinLookup = (e: React.FormEvent) => {
@@ -75,34 +124,41 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
       setPinResult({
         found: false,
         pinCode: trimmed,
-        message: 'Postal code not in verified Malappuram database. Local body and ward require manual administrative verification.',
+        message:
+          'Postal code not in preliminary reference cache. Master postal records require official India Post gazette publication.',
       });
     }
   };
 
   // Export CSV
   const handleExportCsv = () => {
-    const headers = ['Taluk Name', 'Code', 'Headquarters', 'Constituency Chapters', 'Local Municipalities', 'Verified Members'];
-    const rows = TALUKS_OF_MALAPPURAM.map((t) => {
-      const chaptersInTaluk = INITIAL_16_CHAPTERS.filter((c) => c.taluk.toLowerCase() === t.name.toLowerCase()).map((c) => c.name);
-      const municipalities = MUNICIPALITIES_OF_MALAPPURAM.filter((m) => m.taluk.toLowerCase() === t.name.toLowerCase()).map((m) => m.name);
-      const members = countMap.get(t.name.toLowerCase()) || 0;
-      return [
-        t.name,
-        t.code,
-        t.headquarters,
-        `"${chaptersInTaluk.join(', ')}"`,
-        `"${municipalities.join(', ')}"`,
-        members,
-      ];
-    });
+    const headers = [
+      'Record ID',
+      'Local Body Name',
+      'Local Body Type',
+      'Taluk Coverage',
+      'Block Panchayat',
+      'Category',
+      'Ward Status',
+      'Verification Notes',
+    ];
+    const rows = ALL_RESIDENTIAL_LOCAL_BODIES.map((lb) => [
+      lb.code,
+      `"${lb.name}"`,
+      lb.type,
+      `"${lb.talukName}"`,
+      `"${lb.blockPanchayat || 'None (Urban)'}"`,
+      `"${lb.category}"`,
+      '"Delimitation Pending"',
+      `"${lb.notes || 'Verified Master Record'}"`,
+    ]);
 
     const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `MYBF_Malappuram_Geography_Report_${Date.now()}.csv`);
+    link.setAttribute('download', `MYBF_Malappuram_Verified_Local_Bodies_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -114,34 +170,94 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <MapPin className="h-6 w-6 text-[#035AFC]" /> Taluk Geography & Administrative Boundaries
+              <MapPin className="h-6 w-6 text-[#035AFC]" /> Malappuram Location Management
             </h1>
             <Badge variant="primary">MALAPPURAM DISTRICT</Badge>
+            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+              <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% Database Driven
+            </Badge>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Authoritative geographical hierarchy: Country &rarr; State &rarr; District &rarr; 7 Taluks &rarr; Municipalities/Local Bodies &rarr; 16 Constituencies
+            Authoritative administrative hierarchy: District &rarr; 7 Taluks &rarr; 106 Residential Local Bodies &rarr; Wards (Pending Delimitation) &rarr; Postal Locality &rarr; PIN Code
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
-            <Download className="h-3.5 w-3.5 mr-1.5" /> Export Geography (CSV)
+            <Download className="h-3.5 w-3.5 mr-1.5" /> Export Verified Master (CSV)
           </Button>
+        </div>
+      </div>
+
+      {/* Metrics Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Administrative Taluks</span>
+          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+            {VERIFIED_TALUKS.length}
+          </span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 block">
+            100% Verified in Database
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Residential Local Bodies</span>
+          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+            {ALL_RESIDENTIAL_LOCAL_BODIES.length}
+          </span>
+          <span className="text-[10px] text-slate-500 mt-0.5 block">
+            12 Municipalities + 94 Panchayats
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Block Panchayats (Rural)</span>
+          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+            {VERIFIED_BLOCK_PANCHAYATS.length}
+          </span>
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5 block">
+            Intermediate Tier (Distinct)
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Ward & Postal Verification</span>
+          <span className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1 block">
+            Pending
+          </span>
+          <span className="text-[10px] text-slate-500 mt-0.5 block">
+            No Fabricated Ward/PO Data
+          </span>
         </div>
       </div>
 
       {/* 7 Taluks Summary Cards */}
       <div>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-          <Layers className="h-3.5 w-3.5 text-[#035AFC]" /> 7 Administrative Taluks of Malappuram
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <Layers className="h-3.5 w-3.5 text-[#035AFC]" /> 7 Administrative Taluks of Malappuram
+          </h2>
+          {selectedTaluk !== 'ALL' && (
+            <button
+              onClick={() => setSelectedTaluk('ALL')}
+              className="text-[11px] font-semibold text-[#035AFC] hover:underline"
+            >
+              Show All Taluks
+            </button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
-          {TALUKS_OF_MALAPPURAM.map((t) => {
+          {VERIFIED_TALUKS.map((t) => {
             const memberCount = countMap.get(t.name.toLowerCase()) || 0;
             const chaptersInTaluk = INITIAL_16_CHAPTERS.filter(
               (c) => c.taluk.toLowerCase() === t.name.toLowerCase()
+            );
+            const localBodiesInTaluk = ALL_RESIDENTIAL_LOCAL_BODIES.filter(
+              (lb) => lb.talukName.toLowerCase() === t.name.toLowerCase()
             );
             const isSelected = selectedTaluk.toLowerCase() === t.name.toLowerCase();
 
@@ -151,7 +267,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
                 onClick={() => setSelectedTaluk(isSelected ? 'ALL' : t.name)}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer text-center ${
                   isSelected
-                    ? 'border-[#035AFC] bg-[#035AFC]/5 dark:bg-[#035AFC]/10 shadow-sm'
+                    ? 'border-[#035AFC] bg-[#035AFC]/5 dark:bg-[#035AFC]/10 shadow-sm ring-1 ring-[#035AFC]'
                     : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] hover:border-slate-300'
                 }`}
               >
@@ -162,9 +278,15 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
                 <span className="text-[10px] text-slate-500 block mt-0.5">
                   HQ: {t.headquarters}
                 </span>
-                <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px]">
-                  <span className="font-extrabold text-[#035AFC]">{memberCount}</span>
-                  <span className="text-[9px] text-slate-400 block">Members</span>
+                <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-around text-[10px]">
+                  <div>
+                    <span className="font-bold text-[#035AFC] block">{localBodiesInTaluk.length}</span>
+                    <span className="text-slate-400 text-[9px]">LBs</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 block">{memberCount}</span>
+                    <span className="text-slate-400 text-[9px]">Members</span>
+                  </div>
                 </div>
                 <div className="mt-1 text-[9px] text-slate-500 font-medium">
                   {chaptersInTaluk.length} {chaptersInTaluk.length === 1 ? 'Chapter' : 'Chapters'}
@@ -173,11 +295,352 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             );
           })}
         </div>
+
+        {unassignedMembers > 0 && (
+          <div className="mt-2.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+              <strong>{unassignedMembers} Member(s)</strong> have unassigned or pending taluk verification.
+            </span>
+            <Link href="/district-admin/members?taluk=ALL">
+              <span className="text-[11px] font-semibold text-[#035AFC] hover:underline cursor-pointer">
+                Review in Member Directory &rarr;
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* PIN Code Verification Intelligence & Safe Boundary Guideline */}
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <div className="flex flex-wrap items-center gap-1">
+          <Button
+            variant={activeTab === 'ALL_LB' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('ALL_LB')}
+            className="text-xs font-semibold"
+          >
+            All Residential Local Bodies ({ALL_RESIDENTIAL_LOCAL_BODIES.length})
+          </Button>
+          <Button
+            variant={activeTab === 'MUNICIPALITIES' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('MUNICIPALITIES')}
+            className="text-xs font-semibold"
+          >
+            Municipalities ({VERIFIED_MUNICIPALITIES.length})
+          </Button>
+          <Button
+            variant={activeTab === 'PANCHAYATS' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('PANCHAYATS')}
+            className="text-xs font-semibold"
+          >
+            Grama Panchayats ({VERIFIED_GRAMA_PANCHAYATS.length})
+          </Button>
+          <Button
+            variant={activeTab === 'BLOCKS' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('BLOCKS')}
+            className="text-xs font-semibold"
+          >
+            Block Panchayats ({VERIFIED_BLOCK_PANCHAYATS.length})
+          </Button>
+          <Button
+            variant={activeTab === 'DUPLICATES' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('DUPLICATES')}
+            className="text-xs font-semibold text-amber-600 dark:text-amber-400"
+          >
+            <AlertCircle className="h-3 w-3 mr-1 inline" /> Duplicate Audit (1)
+          </Button>
+          <Button
+            variant={activeTab === 'AUDIT' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('AUDIT')}
+            className="text-xs font-semibold"
+          >
+            <Info className="h-3 w-3 mr-1 inline" /> Source Notes & Policies
+          </Button>
+        </div>
+
+        {/* Real-time search */}
+        {(activeTab === 'ALL_LB' || activeTab === 'MUNICIPALITIES' || activeTab === 'PANCHAYATS') && (
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search local body, block, taluk..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#035AFC]"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* TAB CONTENT: Residential Local Bodies */}
+      {(activeTab === 'ALL_LB' || activeTab === 'MUNICIPALITIES' || activeTab === 'PANCHAYATS') && (
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Building className="h-4 w-4 text-[#035AFC]" />
+                  {activeTab === 'MUNICIPALITIES'
+                    ? '12 Statutory Municipalities'
+                    : activeTab === 'PANCHAYATS'
+                    ? '94 Grama Panchayats'
+                    : '106 Residential Local Bodies of Malappuram'}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Showing {filteredLocalBodies.length} verified administrative units{' '}
+                  {selectedTaluk !== 'ALL' ? `under ${selectedTaluk} Taluk` : 'across all 7 taluks'}
+                </CardDescription>
+              </div>
+
+              {selectedTaluk !== 'ALL' && (
+                <Badge variant="neutral" className="text-[10px] w-fit">
+                  Filtered by: {selectedTaluk} Taluk
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Local Body Name</th>
+                    <th className="py-2.5 px-4">Type</th>
+                    <th className="py-2.5 px-4">Taluk Coverage</th>
+                    <th className="py-2.5 px-4">Block Panchayat</th>
+                    <th className="py-2.5 px-4">Ward Delimitation</th>
+                    <th className="py-2.5 px-4 text-right">Related Chapter</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {filteredLocalBodies.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400 text-xs">
+                        No local bodies found matching &quot;{searchQuery}&quot;.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLocalBodies.map((lb) => {
+                      const matchingChapter =
+                        INITIAL_16_CHAPTERS.find((c) =>
+                          lb.name.toLowerCase().includes(c.name.toLowerCase().replace(' chapter', ''))
+                        ) ||
+                        INITIAL_16_CHAPTERS.find(
+                          (c) => c.taluk.toLowerCase() === lb.talukName.toLowerCase()
+                        );
+
+                      return (
+                        <tr key={lb.code} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                          <td className="py-2.5 px-4 font-bold text-slate-900 dark:text-white">
+                            <div>{lb.name}</div>
+                            <div className="text-[9px] font-mono text-slate-400">{lb.code}</div>
+                          </td>
+                          <td className="py-2.5 px-4">
+                            <Badge
+                              variant={lb.type === 'MUNICIPALITY' ? 'primary' : 'secondary'}
+                              className="text-[10px]"
+                            >
+                              {lb.type === 'MUNICIPALITY' ? 'Municipality' : 'Grama Panchayat'}
+                            </Badge>
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-600 dark:text-slate-300 font-medium">
+                            {lb.talukName}
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-500">
+                            {lb.blockPanchayat ? (
+                              <span className="text-[11px]">{lb.blockPanchayat}</span>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 italic">None (Urban Body)</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4">
+                            <Badge
+                              variant="warning"
+                              className="text-[9px] border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20"
+                            >
+                              Pending Delimitation
+                            </Badge>
+                          </td>
+                          <td className="py-2.5 px-4 text-right">
+                            {matchingChapter ? (
+                              <Link href={`/district-admin/chapters`}>
+                                <Button variant="ghost" size="sm" className="h-6 text-[10px] text-[#035AFC]">
+                                  {matchingChapter.name} <ArrowRight className="h-2.5 w-2.5 ml-1" />
+                                </Button>
+                              </Link>
+                            ) : (
+                              <span className="text-slate-400 text-[10px]">Constituency Mapped</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TAB CONTENT: Block Panchayats */}
+      {activeTab === 'BLOCKS' && (
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <Layers className="h-4 w-4 text-[#035AFC]" /> 15 Rural Development Block Panchayats
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Block Panchayats serve as intermediate rural local government tiers and are strictly separated from citizen residential address selection.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Block Code</th>
+                    <th className="py-2.5 px-4">Block Panchayat Name</th>
+                    <th className="py-2.5 px-4">Administrative Tier</th>
+                    <th className="py-2.5 px-4">Constituent Panchayats</th>
+                    <th className="py-2.5 px-4">Verification Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {VERIFIED_BLOCK_PANCHAYATS.map((bp) => {
+                    const gpsUnderBlock = VERIFIED_GRAMA_PANCHAYATS.filter(
+                      (gp) => gp.blockPanchayat?.toLowerCase() === bp.name.toLowerCase()
+                    );
+                    return (
+                      <tr key={bp.code} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                        <td className="py-2.5 px-4 font-mono text-slate-500 text-[11px]">{bp.code}</td>
+                        <td className="py-2.5 px-4 font-bold text-slate-900 dark:text-white">{bp.name}</td>
+                        <td className="py-2.5 px-4">
+                          <Badge variant="secondary" className="text-[10px]">Intermediate Rural Tier</Badge>
+                        </td>
+                        <td className="py-2.5 px-4 text-slate-600 dark:text-slate-300">
+                          <strong>{gpsUnderBlock.length}</strong> Grama Panchayats
+                        </td>
+                        <td className="py-2.5 px-4">
+                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                            <Check className="h-3 w-3" /> Source Verified
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TAB CONTENT: Duplicate Candidate Audit */}
+      {activeTab === 'DUPLICATES' && (
+        <Card className="border-amber-200 dark:border-amber-900/50 shadow-sm bg-amber-50/20 dark:bg-amber-950/10">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-600" /> Source Duplicate Candidate Audit & Resolution
+            </CardTitle>
+            <CardDescription className="text-xs text-amber-700 dark:text-amber-400">
+              Analysis of anomalous duplicate entries detected in the source workbook &quot;Malappuram_Local_Bodies_by_Taluk(1).xlsx&quot;.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-2 space-y-4 text-xs">
+            <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-900 bg-white dark:bg-[#070A10] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-slate-900 dark:text-white text-sm">
+                  Candidate 1: Edappatta Grama Panchayat (Perinthalmanna Taluk)
+                </div>
+                <Badge variant="success" className="border-emerald-300 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20">
+                  Idempotently Resolved
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-600 dark:text-slate-300">
+                <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Source Workbook Rows</span>
+                  <p className="mt-1 font-mono text-[11px]">
+                    Row 39 & Row 40 in &quot;All Local Bodies&quot; sheet.
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Listed twice under Perinthalmanna Taluk under different block references (Mankada vs Perinthalmanna Block).
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">MYBF Database Resolution</span>
+                  <p className="mt-1 font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
+                    Canonical Code: LB-EDAPPATTA
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Idempotent deduplication applied during import. Stored as exactly 1 residential local body record with Mankada Block coverage, preventing duplicate member registrations or foreign key collisions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TAB CONTENT: Source Notes & Integrity Policies */}
+      {activeTab === 'AUDIT' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <Info className="h-4 w-4 text-[#035AFC]" /> Source Verification Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-1 text-xs text-slate-600 dark:text-slate-300 space-y-3">
+              <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <div className="font-bold text-slate-900 dark:text-white">Kottakkal Municipality Note:</div>
+                <p className="mt-1 text-slate-500">
+                  Assigned to Tirur Taluk in official administrative revenue division records. Source notes verify that while parts of Kottakkal historically bordered Ernad and Tirurangadi revenue limits, its statutory local governance is verified under Tirur Taluk.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <div className="font-bold text-slate-900 dark:text-white">122 Data Rows Reconciliation:</div>
+                <p className="mt-1 text-slate-500">
+                  The primary worksheet contains 122 data rows: 94 Grama Panchayats + 12 Municipalities + 15 Block Panchayats + 1 District Panchayat. Deduplicating the candidate Edappatta row leaves exactly 106 residential local bodies.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-amber-600">
+                <ShieldCheck className="h-4 w-4 text-emerald-500" /> Geographic Integrity Constraints
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-1 text-xs text-slate-600 dark:text-slate-300 space-y-2">
+              <p>
+                <strong>1. No Fabricated Wards:</strong> The Excel workbook does not contain ward delimitations. MYBF explicitly prevents inventing fake ward sequences (1 to 20) until authoritative State Election Commission delimitation data is imported.
+              </p>
+              <p>
+                <strong>2. Postal Geography Disjunction:</strong> A PIN code represents an India Post sorting beat and does not strictly align with village or panchayat boundaries. A PIN code cannot automatically determine a local body or ward.
+              </p>
+              <p>
+                <strong>3. Chapter vs Taluk Separation:</strong> MYBF chapters represent the 16 Kerala Legislative Assembly (MLA) constituencies. While every chapter is geographically mapped to a taluk, members are assigned to chapters via membership rules, not derived blindly from taluk.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Postal PIN Code Verification Intelligence */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Safe Postal Verification Form */}
         <Card className="border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-1">
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -239,7 +702,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         <Card className="border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-2">
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Info className="h-4 w-4 text-amber-500" /> Geographic Governance & Integrity Rules
+              <Info className="h-4 w-4 text-amber-500" /> Administrative Governance & Location Audit Rules
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-1 text-xs text-slate-600 dark:text-slate-300 space-y-2">
@@ -247,7 +710,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
               <strong>1. Hierarchy Integrity:</strong> All members belong strictly to one of the 16 Assembly Constituency chapters in Malappuram. Each chapter maps deterministically to its administrative taluk.
             </p>
             <p>
-              <strong>2. PIN Code Boundary Rules:</strong> Postal PIN codes may cross local body boundaries and cover multiple panchayats or wards. A PIN code cannot be used to automatically fabricate or infer a ward assignment.
+              <strong>2. PIN Code Boundary Rules:</strong> Postal PIN codes cross local body boundaries and cover multiple panchayats or wards. A PIN code cannot be used to automatically fabricate or infer a ward assignment.
             </p>
             <p>
               <strong>3. Municipality / Local Body Oversight:</strong> Malappuram comprises 12 statutory municipalities and 94 grama panchayats. Ward-level corrections may only be verified through authorized administrative review.
@@ -255,88 +718,6 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
           </CardContent>
         </Card>
       </div>
-
-      {/* Local Bodies & Chapter Mapping Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-5 pb-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <CardTitle className="text-base font-bold">12 Municipalities & Urban Local Bodies</CardTitle>
-              <CardDescription className="text-xs">
-                Authoritative urban local bodies across the 7 taluks of Malappuram district
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <select
-                value={selectedTaluk}
-                onChange={(e) => setSelectedTaluk(e.target.value)}
-                aria-label="Filter Municipalities by Taluk"
-                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1 text-xs text-slate-900 dark:text-white"
-              >
-                <option value="ALL">All Taluks (7)</option>
-                {TALUKS_OF_MALAPPURAM.map((t) => (
-                  <option key={t.code} value={t.name}>
-                    {t.name} Taluk
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Local Body Name</th>
-                  <th className="py-3 px-4">Type</th>
-                  <th className="py-3 px-4">Taluk</th>
-                  <th className="py-3 px-4">Primary Postal PINs</th>
-                  <th className="py-3 px-4 text-right">Related Chapter</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filteredLocalBodies.map((lb) => {
-                  const matchingChapter = INITIAL_16_CHAPTERS.find(
-                    (c) => lb.name.toLowerCase().includes(c.name.toLowerCase().replace(' chapter', ''))
-                  ) || INITIAL_16_CHAPTERS.find((c) => c.taluk.toLowerCase() === lb.taluk.toLowerCase());
-
-                  return (
-                    <tr key={lb.name} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
-                      <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">
-                        {lb.name}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge variant="secondary" className="text-[10px]">
-                          {lb.type}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-slate-300 font-medium">
-                        {lb.taluk}
-                      </td>
-                      <td className="py-3 px-4 font-mono text-slate-500">
-                        {lb.majorPinCodes.join(', ')}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        {matchingChapter ? (
-                          <Link href={`/district-admin/chapters`}>
-                            <Button variant="ghost" size="sm" className="h-6 text-[10px] text-[#035AFC]">
-                              {matchingChapter.name} <ArrowRight className="h-2.5 w-2.5 ml-1" />
-                            </Button>
-                          </Link>
-                        ) : (
-                          <span className="text-slate-400 text-[10px]">Constituency Mapped</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

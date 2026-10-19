@@ -21,6 +21,7 @@ import { assertAuthorized } from '@/server/auth/policy';
 import { AuthActor } from '@/server/auth/types';
 import { generateVerificationToken } from '@/features/membership-id-cards/server/card-crypto';
 import { formatMemberId } from '@/lib/utils';
+import { GeographyService } from '@/features/geography/server/geography.service';
 import type { Prisma, ApplicationStatus } from '@prisma/client';
 
 async function resolveAuditActorId(tx: Prisma.TransactionClient, actorUserId?: string | null): Promise<string | null> {
@@ -115,6 +116,18 @@ export class MembershipService {
     const isAgeException = Boolean(input.requestAgeException && ageCheck.requiresAgeException);
     const initialStatus: ApplicationStatus = isAgeException ? 'UNDER_REVIEW' : 'SUBMITTED';
 
+    // 3.5. Server-side Location Hierarchy Validation
+    if (input.taluk && input.localBody) {
+      const geoValidation = await GeographyService.validateLocationHierarchy({
+        taluk: input.taluk,
+        localBody: input.localBody,
+        ward: input.ward,
+      });
+      if (!geoValidation.valid) {
+        throw new Error(geoValidation.error || 'Invalid location hierarchy combination submitted.');
+      }
+    }
+
     // 4. Securely hash password with scrypt
     const salt = crypto.randomBytes(16).toString('hex');
     const derivedKey = crypto.scryptSync(input.password, salt, 64);
@@ -200,7 +213,8 @@ export class MembershipService {
           isStudent: input.isStudent || input.memberCategory === 'STUDENT' || input.currentPosition === 'STUDENT',
           institutionName: input.institutionName,
           courseName: input.courseName,
-          addressLine: input.addressLine,
+          addressLine: input.addressLine || (input.localBody ? `${input.localBody}${input.postOffice ? ', ' + input.postOffice : ''}` : undefined),
+          district: input.district || 'Malappuram',
           taluk: input.taluk,
           ward: input.ward,
           pinCode: input.pinCode,

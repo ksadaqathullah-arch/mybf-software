@@ -32,6 +32,7 @@ import {
   type CurrentPositionValue,
 } from '@/features/memberships/constants/member-classifications';
 import { TALUKS_OF_MALAPPURAM } from '@/features/geography/constants/malappuram-geo';
+import { LocationSelector } from '@/features/geography/components/location-selector';
 import {
   EXPECTATION_OPTIONS,
   TALENT_CATEGORIES,
@@ -63,8 +64,11 @@ export function YouthRegistrationForm() {
     talents: [] as string[],
     otherTalentDescription: '',
     participationPreferences: [] as string[],
+    district: 'Malappuram',
     taluk: 'Ernad',
+    localBody: 'Manjeri Municipality',
     ward: '',
+    postOffice: '',
     pinCode: '676121',
     username: '',
     password: '',
@@ -221,8 +225,11 @@ export function YouthRegistrationForm() {
           talents: formData.talents,
           otherTalentDescription: formData.otherTalentDescription || undefined,
           participationPreferences: formData.participationPreferences,
+          district: formData.district || 'Malappuram',
           taluk: formData.taluk,
+          localBody: formData.localBody,
           ward: formData.ward || undefined,
+          postOffice: formData.postOffice || undefined,
           pinCode: formData.pinCode || '676121',
           username: formData.username.trim(),
           password: formData.password,
@@ -913,47 +920,37 @@ export function YouthRegistrationForm() {
 
           {/* SECTION 7: Malappuram Location */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
-              7. Malappuram Location
-            </h4>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Taluk</label>
-                <select
-                  value={formData.taluk}
-                  onChange={(e) => setFormData({ ...formData, taluk: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs"
-                >
-                  {TALUKS_OF_MALAPPURAM.map((t) => (
-                    <option key={t.code} value={t.name}>{t.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Ward / Area</label>
-                <input
-                  type="text"
-                  value={formData.ward}
-                  onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
-                  placeholder="e.g. Ward 14, Pandikkad Road"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">PIN Code</label>
-                <input
-                  type="text"
-                  value={formData.pinCode}
-                  onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
-                  placeholder="676121"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs"
-                />
-              </div>
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
+                7. Malappuram Location
+              </h4>
+              <span className="text-[10px] text-slate-400">
+                Verified Administrative Master
+              </span>
             </div>
+
+            <LocationSelector
+              value={{
+                district: formData.district || 'Malappuram',
+                taluk: formData.taluk,
+                localBody: formData.localBody,
+                ward: formData.ward,
+                postOffice: formData.postOffice,
+                pinCode: formData.pinCode,
+              }}
+              onChange={(loc) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  district: loc.district,
+                  taluk: loc.taluk,
+                  localBody: loc.localBody,
+                  ward: loc.ward || '',
+                  postOffice: loc.postOffice || '',
+                  pinCode: loc.pinCode || '',
+                }));
+              }}
+            />
           </div>
 
           {/* SECTION: CREATE YOUR LOGIN CREDENTIALS */}
