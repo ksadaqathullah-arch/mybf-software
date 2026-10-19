@@ -21,6 +21,7 @@ import {
   FileSpreadsheet,
   Filter,
   Check,
+  Mail,
 } from 'lucide-react';
 import {
   VERIFIED_TALUKS,
@@ -31,6 +32,12 @@ import {
   DISTRICT_PANCHAYAT,
   type VerifiedLocalBody,
 } from '@/features/geography/constants/malappuram-master-dataset';
+import {
+  VERIFIED_POSTAL_OFFICES,
+  UNIQUE_MALAPPURAM_PIN_CODES,
+  VERIFIED_LOCAL_BODY_PIN_LINKS,
+  type VerifiedPostOffice,
+} from '@/features/geography/constants/malappuram-postal-dataset';
 import { NOTABLE_PIN_CODES } from '@/features/geography/constants/malappuram-geo';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 
@@ -41,7 +48,7 @@ interface DistrictGeographyViewProps {
 export function DistrictGeographyView({ distribution }: DistrictGeographyViewProps) {
   const [selectedTaluk, setSelectedTaluk] = React.useState<string>('ALL');
   const [activeTab, setActiveTab] = React.useState<
-    'ALL_LB' | 'MUNICIPALITIES' | 'PANCHAYATS' | 'BLOCKS' | 'DUPLICATES' | 'AUDIT'
+    'ALL_LB' | 'MUNICIPALITIES' | 'PANCHAYATS' | 'BLOCKS' | 'POSTAL' | 'DUPLICATES' | 'AUDIT'
   >('ALL_LB');
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [pinInput, setPinInput] = React.useState<string>('');
@@ -73,17 +80,16 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
   const filteredLocalBodies = React.useMemo(() => {
     let list: VerifiedLocalBody[] = ALL_RESIDENTIAL_LOCAL_BODIES;
 
-    // Filter by tab
     if (activeTab === 'MUNICIPALITIES') {
       list = VERIFIED_MUNICIPALITIES;
     } else if (activeTab === 'PANCHAYATS') {
       list = VERIFIED_GRAMA_PANCHAYATS;
     }
 
-    // Filter by selected taluk
     if (selectedTaluk !== 'ALL') {
       const normSelected = selectedTaluk.toLowerCase();
-      const altSelected = normSelected === 'eranad' ? 'ernad' : normSelected === 'ernad' ? 'eranad' : normSelected;
+      const altSelected =
+        normSelected === 'eranad' ? 'ernad' : normSelected === 'ernad' ? 'eranad' : normSelected;
       list = list.filter(
         (lb) =>
           lb.talukName.toLowerCase() === normSelected ||
@@ -91,7 +97,6 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
       );
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter(
@@ -106,6 +111,36 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
     return list;
   }, [activeTab, selectedTaluk, searchQuery]);
 
+  // Filtered post offices
+  const filteredPostOffices = React.useMemo(() => {
+    let list = VERIFIED_POSTAL_OFFICES;
+
+    if (selectedTaluk !== 'ALL') {
+      const normSelected = selectedTaluk.toLowerCase();
+      const altSelected =
+        normSelected === 'eranad' ? 'ernad' : normSelected === 'ernad' ? 'eranad' : normSelected;
+      list = list.filter(
+        (po) =>
+          po.talukName.toLowerCase() === normSelected ||
+          po.talukName.toLowerCase() === altSelected
+      );
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (po) =>
+          po.name.toLowerCase().includes(q) ||
+          po.pinCode.includes(q) ||
+          po.talukName.toLowerCase().includes(q) ||
+          (po.localBodyName && po.localBodyName.toLowerCase().includes(q)) ||
+          po.postalDivision.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }, [selectedTaluk, searchQuery]);
+
   // Lookup PIN
   const handlePinLookup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +148,16 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
     if (!trimmed) return;
 
     const info = NOTABLE_PIN_CODES[trimmed];
-    if (info) {
+    const poMatches = VERIFIED_POSTAL_OFFICES.filter((p) => p.pinCode === trimmed);
+
+    if (poMatches.length > 0) {
+      setPinResult({
+        found: true,
+        pinCode: trimmed,
+        locality: poMatches.map((p) => p.name).join(', '),
+        taluk: poMatches[0].talukName,
+      });
+    } else if (info) {
       setPinResult({
         found: true,
         pinCode: trimmed,
@@ -125,12 +169,12 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         found: false,
         pinCode: trimmed,
         message:
-          'Postal code not in preliminary reference cache. Master postal records require official India Post gazette publication.',
+          'Postal code not in pre-indexed Malappuram registry. Manual verification permitted.',
       });
     }
   };
 
-  // Export CSV
+  // Export Local Bodies CSV
   const handleExportCsv = () => {
     const headers = [
       'Record ID',
@@ -165,6 +209,41 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
     URL.revokeObjectURL(url);
   };
 
+  // Export Postal CSV
+  const handleExportPostalCsv = () => {
+    const headers = [
+      'Post Office Code',
+      'Post Office Name',
+      'PIN Code',
+      'Office Type',
+      'Delivery Status',
+      'Postal Division',
+      'Taluk',
+      'Mapped Local Body',
+    ];
+    const rows = VERIFIED_POSTAL_OFFICES.map((po) => [
+      po.code,
+      `"${po.name}"`,
+      po.pinCode,
+      po.officeType,
+      po.deliveryStatus,
+      `"${po.postalDivision}"`,
+      `"${po.talukName}"`,
+      `"${po.localBodyName || 'Cross-boundary / Multi-Locality'}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `MYBF_Malappuram_Verified_Postal_Directory_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -172,10 +251,13 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <MapPin className="h-6 w-6 text-[#035AFC]" /> Malappuram Location Management
+              <MapPin className="h-6 w-6 text-[#035AFC]" /> Malappuram Location & Postal Management
             </h1>
             <Badge variant="primary">MALAPPURAM DISTRICT</Badge>
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+            <Badge
+              variant="secondary"
+              className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+            >
               <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% Database Driven
             </Badge>
           </div>
@@ -185,16 +267,34 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
-            <Download className="h-3.5 w-3.5 mr-1.5" /> Export Verified Master (CSV)
-          </Button>
+          {activeTab === 'POSTAL' ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportPostalCsv}
+              className="h-8 text-xs font-semibold"
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" /> Export Postal Directory (CSV)
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              className="h-8 text-xs font-semibold"
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" /> Export Verified Master (CSV)
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Administrative Taluks</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Administrative Taluks
+          </span>
           <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
             {VERIFIED_TALUKS.length}
           </span>
@@ -204,7 +304,9 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         </div>
 
         <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Residential Local Bodies</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Residential Local Bodies
+          </span>
           <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
             {ALL_RESIDENTIAL_LOCAL_BODIES.length}
           </span>
@@ -214,22 +316,24 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
         </div>
 
         <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Block Panchayats (Rural)</span>
-          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
-            {VERIFIED_BLOCK_PANCHAYATS.length}
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Verified Post Offices
           </span>
-          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5 block">
-            Intermediate Tier (Distinct)
+          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+            {VERIFIED_POSTAL_OFFICES.length}
+          </span>
+          <span className="text-[10px] text-[#035AFC] font-medium mt-0.5 block">
+            {UNIQUE_MALAPPURAM_PIN_CODES.length} PIN Codes Mapped
           </span>
         </div>
 
         <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Ward & Postal Verification</span>
-          <span className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1 block">
-            Pending
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Postal Divisions
           </span>
+          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">2</span>
           <span className="text-[10px] text-slate-500 mt-0.5 block">
-            No Fabricated Ward/PO Data
+            Manjeri Div & Tirur Div
           </span>
         </div>
       </div>
@@ -259,6 +363,9 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             const localBodiesInTaluk = ALL_RESIDENTIAL_LOCAL_BODIES.filter(
               (lb) => lb.talukName.toLowerCase() === t.name.toLowerCase()
             );
+            const postOfficesInTaluk = VERIFIED_POSTAL_OFFICES.filter(
+              (po) => po.talukName.toLowerCase() === t.name.toLowerCase()
+            );
             const isSelected = selectedTaluk.toLowerCase() === t.name.toLowerCase();
 
             return (
@@ -284,12 +391,14 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
                     <span className="text-slate-400 text-[9px]">LBs</span>
                   </div>
                   <div>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 block">{memberCount}</span>
-                    <span className="text-slate-400 text-[9px]">Members</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 block">
+                      {postOfficesInTaluk.length}
+                    </span>
+                    <span className="text-slate-400 text-[9px]">POs</span>
                   </div>
                 </div>
                 <div className="mt-1 text-[9px] text-slate-500 font-medium">
-                  {chaptersInTaluk.length} {chaptersInTaluk.length === 1 ? 'Chapter' : 'Chapters'}
+                  {memberCount} Members
                 </div>
               </div>
             );
@@ -320,7 +429,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             onClick={() => setActiveTab('ALL_LB')}
             className="text-xs font-semibold"
           >
-            All Residential Local Bodies ({ALL_RESIDENTIAL_LOCAL_BODIES.length})
+            All Local Bodies ({ALL_RESIDENTIAL_LOCAL_BODIES.length})
           </Button>
           <Button
             variant={activeTab === 'MUNICIPALITIES' ? 'primary' : 'ghost'}
@@ -336,7 +445,15 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             onClick={() => setActiveTab('PANCHAYATS')}
             className="text-xs font-semibold"
           >
-            Grama Panchayats ({VERIFIED_GRAMA_PANCHAYATS.length})
+            Panchayats ({VERIFIED_GRAMA_PANCHAYATS.length})
+          </Button>
+          <Button
+            variant={activeTab === 'POSTAL' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('POSTAL')}
+            className="text-xs font-semibold text-[#035AFC]"
+          >
+            <Mail className="h-3 w-3 mr-1 inline" /> Post Offices & PINs ({VERIFIED_POSTAL_OFFICES.length})
           </Button>
           <Button
             variant={activeTab === 'BLOCKS' ? 'primary' : 'ghost'}
@@ -344,7 +461,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             onClick={() => setActiveTab('BLOCKS')}
             className="text-xs font-semibold"
           >
-            Block Panchayats ({VERIFIED_BLOCK_PANCHAYATS.length})
+            Blocks ({VERIFIED_BLOCK_PANCHAYATS.length})
           </Button>
           <Button
             variant={activeTab === 'DUPLICATES' ? 'primary' : 'ghost'}
@@ -360,24 +477,128 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             onClick={() => setActiveTab('AUDIT')}
             className="text-xs font-semibold"
           >
-            <Info className="h-3 w-3 mr-1 inline" /> Source Notes & Policies
+            <Info className="h-3 w-3 mr-1 inline" /> Policies & Notes
           </Button>
         </div>
 
         {/* Real-time search */}
-        {(activeTab === 'ALL_LB' || activeTab === 'MUNICIPALITIES' || activeTab === 'PANCHAYATS') && (
+        {(activeTab === 'ALL_LB' ||
+          activeTab === 'MUNICIPALITIES' ||
+          activeTab === 'PANCHAYATS' ||
+          activeTab === 'POSTAL') && (
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search local body, block, taluk..."
+              placeholder={
+                activeTab === 'POSTAL'
+                  ? 'Search post office, PIN...'
+                  : 'Search local body, taluk...'
+              }
               className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#035AFC]"
             />
           </div>
         )}
       </div>
+
+      {/* TAB CONTENT: POST OFFICES & PIN DIRECTORY */}
+      {activeTab === 'POSTAL' && (
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-[#035AFC]" />
+                  Verified India Post Directory of Malappuram
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Showing {filteredPostOffices.length} verified post offices across Manjeri & Tirur Postal Divisions
+                </CardDescription>
+              </div>
+
+              {selectedTaluk !== 'ALL' && (
+                <Badge variant="neutral" className="text-[10px] w-fit">
+                  Filtered by: {selectedTaluk} Taluk
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Post Office Name</th>
+                    <th className="py-2.5 px-4">PIN Code</th>
+                    <th className="py-2.5 px-4">Office Type</th>
+                    <th className="py-2.5 px-4">Postal Division</th>
+                    <th className="py-2.5 px-4">Taluk</th>
+                    <th className="py-2.5 px-4">Mapped Local Body</th>
+                    <th className="py-2.5 px-4 text-right">Delivery Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {filteredPostOffices.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
+                        No post offices found matching &quot;{searchQuery}&quot;.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredPostOffices.map((po) => (
+                      <tr key={po.code} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                        <td className="py-2.5 px-4 font-bold text-slate-900 dark:text-white">
+                          <div>{po.name}</div>
+                          <div className="text-[9px] font-mono text-slate-400">{po.code}</div>
+                        </td>
+                        <td className="py-2.5 px-4 font-mono font-semibold text-[#035AFC]">
+                          {po.pinCode}
+                        </td>
+                        <td className="py-2.5 px-4">
+                          <Badge
+                            variant={po.officeType === 'HO' ? 'primary' : 'secondary'}
+                            className="text-[10px]"
+                          >
+                            {po.officeType === 'HO'
+                              ? 'Head Office'
+                              : po.officeType === 'SO'
+                              ? 'Sub Office'
+                              : 'Branch Office'}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-4 text-slate-600 dark:text-slate-300">
+                          {po.postalDivision}
+                        </td>
+                        <td className="py-2.5 px-4 text-slate-600 dark:text-slate-300 font-medium">
+                          {po.talukName}
+                        </td>
+                        <td className="py-2.5 px-4 text-slate-500">
+                          {po.localBodyName || (
+                            <span className="italic text-slate-400 text-[10px]">
+                              Cross-boundary
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-right">
+                          <Badge
+                            variant={po.deliveryStatus === 'Delivery' ? 'success' : 'neutral'}
+                            className="text-[9px]"
+                          >
+                            {po.deliveryStatus}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* TAB CONTENT: Residential Local Bodies */}
       {(activeTab === 'ALL_LB' || activeTab === 'MUNICIPALITIES' || activeTab === 'PANCHAYATS') && (
@@ -580,7 +801,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
                 <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
                   <span className="text-[10px] font-bold uppercase text-slate-400 block">MYBF Database Resolution</span>
                   <p className="mt-1 font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
-                    Canonical Code: LB-EDAPPATTA
+                    Canonical Code: LB-GP-EDAPPATTA
                   </p>
                   <p className="text-[11px] text-slate-500 mt-1">
                     Idempotent deduplication applied during import. Stored as exactly 1 residential local body record with Mankada Block coverage, preventing duplicate member registrations or foreign key collisions.
@@ -610,9 +831,9 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
               </div>
 
               <div className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
-                <div className="font-bold text-slate-900 dark:text-white">122 Data Rows Reconciliation:</div>
+                <div className="font-bold text-slate-900 dark:text-white">Postal & Revenue Hierarchy:</div>
                 <p className="mt-1 text-slate-500">
-                  The primary worksheet contains 122 data rows: 94 Grama Panchayats + 12 Municipalities + 15 Block Panchayats + 1 District Panchayat. Deduplicating the candidate Edappatta row leaves exactly 106 residential local bodies.
+                  India Post operates Manjeri Postal Division and Tirur Postal Division across Malappuram district. Postal beats frequently cross panchayat boundaries, which MYBF respects by separating postal delivery lookups from statutory local bodies.
                 </p>
               </div>
             </CardContent>
@@ -679,7 +900,7 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
                       <div className="font-bold flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
                         <CheckCircle2 className="h-3.5 w-3.5" /> PIN {pinResult.pinCode} Verified
                       </div>
-                      <div>Locality: <strong>{pinResult.locality}</strong></div>
+                      <div>Post Office(s): <strong>{pinResult.locality}</strong></div>
                       <div>Assigned Taluk: <strong>{pinResult.taluk}</strong></div>
                       <p className="text-[10px] text-slate-500 pt-1">
                         Ward must be assigned through verified residential documentation.

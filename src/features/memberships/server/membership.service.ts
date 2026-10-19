@@ -128,6 +128,19 @@ export class MembershipService {
       }
     }
 
+    // 3.6. Server-side Postal Relationship Validation
+    if (input.pinCode && input.postOffice) {
+      const postalValidation = await GeographyService.validatePostalRelationship({
+        pinCode: input.pinCode,
+        postOffice: input.postOffice,
+        localBody: input.localBody,
+        taluk: input.taluk,
+      });
+      if (!postalValidation.valid) {
+        throw new Error(postalValidation.error || 'Invalid postal relationship submitted.');
+      }
+    }
+
     // 4. Securely hash password with scrypt
     const salt = crypto.randomBytes(16).toString('hex');
     const derivedKey = crypto.scryptSync(input.password, salt, 64);

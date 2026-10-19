@@ -1,7 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { MapPin, Info, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import {
+  MapPin,
+  Info,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Search,
+  Building,
+  Check,
+  Edit2,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { TALUKS_OF_MALAPPURAM } from '../constants/malappuram-geo';
 
@@ -29,6 +39,18 @@ interface LocalBodyOption {
   talukName: string;
 }
 
+interface PostOfficeOption {
+  id: string;
+  code: string;
+  name: string;
+  pinCode: string;
+  officeType: string;
+  deliveryStatus: string;
+  talukName: string;
+  localBodyName?: string | null;
+  postalDivision?: string | null;
+}
+
 export function LocationSelector({
   value,
   onChange,
@@ -42,8 +64,16 @@ export function LocationSelector({
   const [isLoadingLocalBodies, setIsLoadingLocalBodies] = React.useState(false);
   const [loadError, setLoadError] = React.useState<string | null>(null);
 
-  // Request race-condition guard
+  // Postal lookup states
+  const [postOfficeOptions, setPostOfficeOptions] = React.useState<PostOfficeOption[]>([]);
+  const [isLoadingPostal, setIsLoadingPostal] = React.useState(false);
+  const [postalMessage, setPostalMessage] = React.useState<string | null>(null);
+  const [isManualPostOffice, setIsManualPostOffice] = React.useState(false);
+  const [isPinVerified, setIsPinVerified] = React.useState<boolean | null>(null);
+
+  // Request race-condition guards
   const latestTalukRequestRef = React.useRef<string>('');
+  const latestPostalRequestRef = React.useRef<string>('');
 
   // 1. Load Taluks on mount
   React.useEffect(() => {
@@ -87,11 +117,10 @@ export function LocationSelector({
         if (!res.ok) throw new Error('Failed to load local bodies');
         const data = await res.json();
 
-        // Check race condition
         if (latestTalukRequestRef.current === currentTaluk) {
           setLocalBodies(data.localBodies || []);
         }
-      } catch (err: any) {
+      } catch {
         if (latestTalukRequestRef.current === currentTaluk) {
           setLoadError('Unable to dynamically load local bodies for this taluk.');
         }
@@ -105,7 +134,106 @@ export function LocationSelector({
     fetchLocalBodies();
   }, [value.taluk]);
 
-  // Dependent cascading reset handlers
+  // 3. Method 2: Load Post Offices by Local Body when Local Body changes
+  React.useEffect(() => {
+    if (!value.localBody) {
+      // If no PIN is entered yet, clear post office options
+      if (!value.pinCode || value.pinCode.length !== 6) {
+        setPostOfficeOptions([]);
+        setPostalMessage(null);
+      }
+      return;
+    }
+
+    const reqKey = `LB:${value.localBody}:${value.taluk}`;
+    latestPostalRequestRef.current = reqKey;
+    setIsLoadingPostal(true);
+
+    async function fetchPostalByLocalBody() {
+      try {
+        const res = await fetch(
+          `/api/v1/geography/postal/local-body?localBody=${encodeURIComponent(
+            value.localBody
+          )}&taluk=${encodeURIComponent(value.taluk || '')}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (latestPostalRequestRef.current === reqKey) {
+            if (data.hasVerifiedPostalMapping && data.postOffices.length > 0) {
+              setPostOfficeOptions(data.postOffices);
+              setPostalMessage(null);
+              setIsPinVerified(true);
+            } else {
+              setPostalMessage(
+                'Verified postal mapping pending for this local body. Enter 6-digit PIN Code to lookup.'
+              );
+            }
+          }
+        }
+      } catch {
+        // Fallback
+      } finally {
+        if (latestPostalRequestRef.current === reqKey) {
+          setIsLoadingPostal(false);
+        }
+      }
+    }
+
+    fetchPostalByLocalBody();
+  }, [value.localBody, value.taluk]);
+
+  // 4. Method 1: Debounced PIN Code Lookup (when PIN code reaches 6 digits)
+  React.useEffect(() => {
+    const pin = (value.pinCode || '').trim();
+    if (!/^\d{6}$/.test(pin)) {
+      setIsPinVerified(null);
+      return;
+    }
+
+    const reqKey = `PIN:${pin}`;
+    latestPostalRequestRef.current = reqKey;
+    setIsLoadingPostal(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/v1/geography/postal/lookup?pinCode=${pin}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (latestPostalRequestRef.current === reqKey) {
+            if (data.found && data.postOffices.length > 0) {
+              setPostOfficeOptions(data.postOffices);
+              setIsPinVerified(true);
+              setPostalMessage(null);
+
+              // If only 1 post office and none selected yet, auto-populate
+              if (data.postOffices.length === 1 && !value.postOffice) {
+                onChange({
+                  ...value,
+                  postOffice: data.postOffices[0].name,
+                  pinCode: pin,
+                });
+              }
+            } else {
+              setIsPinVerified(false);
+              setPostalMessage('PIN Code not in Malappuram directory. Manual entry permitted.');
+            }
+          }
+        }
+      } catch {
+        if (latestPostalRequestRef.current === reqKey) {
+          setIsPinVerified(false);
+        }
+      } finally {
+        if (latestPostalRequestRef.current === reqKey) {
+          setIsLoadingPostal(false);
+        }
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [value.pinCode]);
+
+  // Cascading reset handlers
   const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newDistrict = e.target.value;
     onChange({
@@ -116,6 +244,9 @@ export function LocationSelector({
       postOffice: '',
       pinCode: '',
     });
+    setPostOfficeOptions([]);
+    setIsPinVerified(null);
+    setPostalMessage(null);
   };
 
   const handleTalukChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -128,6 +259,9 @@ export function LocationSelector({
       postOffice: '',
       pinCode: '',
     });
+    setPostOfficeOptions([]);
+    setIsPinVerified(null);
+    setPostalMessage(null);
   };
 
   const handleLocalBodyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -139,6 +273,9 @@ export function LocationSelector({
       postOffice: '',
       pinCode: '',
     });
+    setPostOfficeOptions([]);
+    setIsPinVerified(null);
+    setPostalMessage(null);
   };
 
   const handleWardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +285,31 @@ export function LocationSelector({
     });
   };
 
-  const handlePostOfficeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Post office selection handler
+  const handlePostOfficeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedVal = e.target.value;
+    if (selectedVal === '__MANUAL__') {
+      setIsManualPostOffice(true);
+      return;
+    }
+
+    const matchedPO = postOfficeOptions.find((po) => po.name === selectedVal);
+    if (matchedPO) {
+      onChange({
+        ...value,
+        postOffice: matchedPO.name,
+        pinCode: matchedPO.pinCode, // Auto-populate verified PIN!
+      });
+      setIsPinVerified(true);
+    } else {
+      onChange({
+        ...value,
+        postOffice: selectedVal,
+      });
+    }
+  };
+
+  const handleManualPostOfficeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       ...value,
       postOffice: e.target.value,
@@ -156,9 +317,12 @@ export function LocationSelector({
   };
 
   const handlePinCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cleanPin = e.target.value.replace(/\D/g, '').slice(0, 6);
     onChange({
       ...value,
-      pinCode: e.target.value,
+      pinCode: cleanPin,
+      // If PIN is edited manually, clear post office if it doesn't match
+      postOffice: cleanPin.length === 6 ? value.postOffice : '',
     });
   };
 
@@ -282,45 +446,104 @@ export function LocationSelector({
           />
         </div>
 
-        {/* Post Office Field */}
+        {/* Post Office Field (Searchable Select or Manual) */}
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Post Office
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <span>Post Office</span>
+              {isLoadingPostal && <Loader2 className="h-3 w-3 animate-spin text-[#035AFC]" />}
             </label>
-            <span className="text-[9px] text-slate-400 font-mono">Postal Dept</span>
+            {postOfficeOptions.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsManualPostOffice(!isManualPostOffice)}
+                className="text-[9px] text-[#035AFC] hover:underline flex items-center gap-0.5"
+              >
+                {isManualPostOffice ? 'Select from list' : 'Type manually'}
+              </button>
+            )}
           </div>
-          <input
-            type="text"
-            value={value.postOffice || ''}
-            onChange={handlePostOfficeChange}
-            disabled={disabled || !value.localBody}
-            placeholder={
-              !value.localBody ? 'Select Local Body first' : 'e.g. Manjeri H.O'
-            }
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
-          />
+
+          {!isManualPostOffice && postOfficeOptions.length > 0 ? (
+            <select
+              value={value.postOffice || ''}
+              onChange={handlePostOfficeSelect}
+              disabled={disabled}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+            >
+              <option value="">
+                {postOfficeOptions.length === 1
+                  ? 'Select Post Office...'
+                  : `Select from ${postOfficeOptions.length} matching offices...`}
+              </option>
+              {postOfficeOptions.map((po) => (
+                <option key={po.code} value={po.name}>
+                  {po.name} ({po.officeType}) - {po.pinCode}
+                </option>
+              ))}
+              <option value="__MANUAL__">&rarr; Enter custom / unlisted Post Office</option>
+            </select>
+          ) : (
+            <div className="relative">
+              <input
+                type="text"
+                value={value.postOffice || ''}
+                onChange={handleManualPostOfficeChange}
+                disabled={disabled}
+                placeholder={
+                  isLoadingPostal
+                    ? 'Checking postal directory...'
+                    : 'e.g. Manjeri H.O or Tirur H.O'
+                }
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+              />
+            </div>
+          )}
         </div>
 
         {/* PIN Code Field */}
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              PIN Code
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <span>PIN Code</span>
+              {isPinVerified === true && (
+                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center">
+                  <Check className="h-2.5 w-2.5 mr-0.5 inline" /> Verified
+                </span>
+              )}
             </label>
             <span className="text-[9px] text-slate-400 font-mono">6 Digits</span>
           </div>
-          <input
-            type="text"
-            maxLength={6}
-            value={value.pinCode || ''}
-            onChange={handlePinCodeChange}
-            disabled={disabled || !value.localBody}
-            placeholder={!value.localBody ? 'Select Local Body' : '676121'}
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              maxLength={6}
+              value={value.pinCode || ''}
+              onChange={handlePinCodeChange}
+              disabled={disabled}
+              placeholder="e.g. 676121"
+              className={`w-full rounded-lg border bg-white dark:bg-[#070A10] px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 ${
+                isPinVerified === true
+                  ? 'border-emerald-500 focus:border-emerald-600'
+                  : 'border-slate-200 dark:border-slate-800 focus:border-[#035AFC]'
+              }`}
+            />
+            {isLoadingPostal && (
+              <div className="absolute right-2.5 top-2.5">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Postal Status & Guidance Feedback */}
+      {postalMessage && (
+        <div className="flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20 p-2 rounded-lg border border-amber-200/50 dark:border-amber-900/30">
+          <Info className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+          <span>{postalMessage}</span>
+        </div>
+      )}
 
       {/* Verified Status Note */}
       {value.localBody && (

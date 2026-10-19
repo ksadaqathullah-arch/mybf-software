@@ -583,6 +583,7 @@ model Taluk {
   district    District    @relation(fields: [districtId], references: [id], onDelete: Restrict)
   localBodies LocalBody[]
   pinCodes    PinCode[]
+  postOffices PostOffice[]
 
   @@index([districtId])
   @@map("taluks")
@@ -606,6 +607,7 @@ model LocalBody {
   taluk       Taluk          @relation(fields: [talukId], references: [id], onDelete: Restrict)
   wards       Ward[]
   pinLinks    PinLocalityLink[]
+  postOffices PostOffice[]
 
   @@index([districtId, talukId])
   @@map("local_bodies")
@@ -629,6 +631,7 @@ model PinCode {
   postalOfficeName  String
   taluk             Taluk?            @relation(fields: [talukId], references: [id])
   localityLinks     PinLocalityLink[]
+  postOffices       PostOffice[]
 
   @@map("pin_codes")
 }
@@ -643,6 +646,34 @@ model PinLocalityLink {
 
   @@id([pinCode, localBodyId])
   @@map("pin_locality_links")
+}
+
+model PostOffice {
+  id              String      @id @default(uuid())
+  code            String      @unique // e.g. "PO-676121-MANJERI-HO"
+  name            String      // e.g. "Manjeri H.O"
+  pinCode         String      // e.g. "676121"
+  officeType      String      @default("SO") // "HO" | "SO" | "BO"
+  deliveryStatus  String      @default("Delivery") // "Delivery" | "Non-Delivery"
+  postalDistrict  String      @default("Malappuram")
+  postalDivision  String?     // e.g. "Manjeri Postal Division" | "Tirur Postal Division"
+  state           String      @default("Kerala")
+  talukId         String?
+  localBodyId     String?
+  isVerified      Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  pin             PinCode     @relation(fields: [pinCode], references: [code], onDelete: Cascade)
+  taluk           Taluk?      @relation(fields: [talukId], references: [id])
+  localBody       LocalBody?  @relation(fields: [localBodyId], references: [id])
+
+  @@unique([name, pinCode])
+  @@index([pinCode])
+  @@index([talukId])
+  @@index([localBodyId])
+  @@index([name])
+  @@map("post_offices")
 }
 
 // ==========================================
