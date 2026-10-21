@@ -435,12 +435,12 @@ export function LocationSelector({
                 onChange={handlePinCodeChange}
                 disabled={disabled}
                 placeholder="Enter 6-digit PIN Code (e.g. 676121 for Manjeri, 676101 for Tirur)"
-                className={`w-full rounded-lg border bg-white dark:bg-[#070A10] px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 transition-all ${
+                className={`w-full rounded-xl border bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 transition-all ${
                   isPinVerified === true
-                    ? 'border-emerald-500 focus:border-emerald-600 ring-1 ring-emerald-500/20'
+                    ? 'border-emerald-500 focus:border-emerald-600 ring-2 ring-emerald-500/20'
                     : isPinVerified === false
                     ? 'border-amber-400 focus:border-amber-500'
-                    : 'border-slate-200 dark:border-slate-800 focus:border-[#035AFC] focus:ring-1 focus:ring-[#035AFC]'
+                    : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
                 }`}
               />
               {isLoadingPostal && (
@@ -479,7 +479,7 @@ export function LocationSelector({
                 value={value.postOffice || ''}
                 onChange={handlePostOfficeSelect}
                 disabled={disabled}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               >
                 <option value="">
                   {postOfficeOptions.length === 1
@@ -507,7 +507,7 @@ export function LocationSelector({
                     ? 'Enter your Post Office name (e.g. Manjeri H.O)'
                     : 'Enter 6-digit PIN Code above to auto-load Post Offices'
                 }
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               />
             )}
           </div>
@@ -528,7 +528,7 @@ export function LocationSelector({
                 value={value.district || 'Malappuram'}
                 onChange={handleDistrictChange}
                 disabled={disabled}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070A10]/70 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/50 px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-white"
               >
                 <option value="Malappuram">Malappuram District</option>
               </select>
@@ -554,7 +554,7 @@ export function LocationSelector({
                 value={value.taluk}
                 onChange={handleTalukChange}
                 disabled={disabled}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none transition-all"
               >
                 <option value="">Select Taluk...</option>
                 {taluks.map((t) => (
@@ -590,7 +590,7 @@ export function LocationSelector({
                 value={value.localBody}
                 onChange={handleLocalBodyChange}
                 disabled={disabled || !value.taluk || isLoadingLocalBodies}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               >
                 <option value="">
                   {!value.taluk
@@ -644,7 +644,7 @@ export function LocationSelector({
                 placeholder={
                   !value.localBody ? 'Select Local Body first' : 'e.g. Ward 14 or Locality'
                 }
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               />
             </div>
           </div>
@@ -672,7 +672,7 @@ export function LocationSelector({
                 value={value.district || 'Malappuram'}
                 onChange={handleDistrictChange}
                 disabled={disabled}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070A10]/70 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white"
               >
                 <option value="Malappuram">Malappuram District</option>
               </select>
@@ -691,7 +691,7 @@ export function LocationSelector({
                 value={value.taluk}
                 onChange={handleTalukChange}
                 disabled={disabled}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none transition-all"
               >
                 <option value="">Select Taluk...</option>
                 {taluks.map((t) => (
@@ -726,7 +726,7 @@ export function LocationSelector({
                 value={value.localBody}
                 onChange={handleLocalBodyChange}
                 disabled={disabled || !value.taluk || isLoadingLocalBodies}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               >
                 <option value="">
                   {!value.taluk
@@ -779,7 +779,7 @@ export function LocationSelector({
                 placeholder={
                   !value.localBody ? 'Select Local Body first' : 'e.g. Ward 14 or Locality'
                 }
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
               />
             </div>
           </div>
@@ -812,7 +812,7 @@ export function LocationSelector({
                   value={value.postOffice || ''}
                   onChange={handlePostOfficeSelect}
                   disabled={disabled}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
                 >
                   <option value="">
                     {postOfficeOptions.length === 1
@@ -834,7 +834,7 @@ export function LocationSelector({
                   onChange={handleManualPostOfficeChange}
                   disabled={disabled}
                   placeholder="e.g. Manjeri H.O or Tirur H.O"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#035AFC] focus:outline-none disabled:opacity-60"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
                 />
               )}
             </div>
@@ -862,10 +862,10 @@ export function LocationSelector({
                 onChange={handlePinCodeChange}
                 disabled={disabled}
                 placeholder="e.g. 676121"
-                className={`w-full rounded-lg border bg-white dark:bg-[#070A10] px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 ${
+                className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 transition-all ${
                   isPinVerified === true
-                    ? 'border-emerald-500 focus:border-emerald-600'
-                    : 'border-slate-200 dark:border-slate-800 focus:border-[#035AFC]'
+                    ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/10'
+                    : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
                 }`}
               />
             </div>

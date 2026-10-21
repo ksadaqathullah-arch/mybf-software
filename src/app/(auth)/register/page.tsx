@@ -8,5 +8,11 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return <YouthRegistrationForm />;
+  return (
+    <div className="min-h-screen bg-paper py-8 sm:py-12 px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto">
+        <YouthRegistrationForm asModal={false} />
+      </div>
+    </div>
+  );
 }

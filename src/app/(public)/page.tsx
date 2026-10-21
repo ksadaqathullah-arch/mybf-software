@@ -218,22 +218,9 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Official Membership Application Form */}
+          {/* Official Membership Application Section */}
           <div id="register-form" className="mt-16 scroll-mt-24 border-t border-white/15 pt-12">
-            <div className="mb-8">
-              <span className="font-display text-xs font-bold tracking-[0.2em] uppercase text-yellow">
-                Official Application
-              </span>
-              <h3 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                Membership Registration & Chapter Enrollment
-              </h3>
-              <p className="mt-2 text-base text-paper/75 max-w-2xl">
-                Register with your constituency chapter across Malappuram district. Complete your personal details, PIN code location verification, and dual member classification below.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white text-slate-900 p-3 sm:p-8 shadow-2xl border-2 border-yellow/40">
-              <YouthRegistrationForm />
-            </div>
+            <YouthRegistrationForm triggerLabel="Apply for Membership Now" />
           </div>
         </div>
       </section>

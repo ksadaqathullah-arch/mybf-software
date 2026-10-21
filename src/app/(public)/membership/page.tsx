@@ -111,22 +111,11 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* Official Membership Application Form */}
+      {/* Official Membership Application Section */}
       <section id="register-form" className="scroll-mt-20 border-t border-ink/10 bg-paper-2 py-16">
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8">
-          <div className="mb-10 text-center max-w-2xl mx-auto">
-            <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-blue uppercase">
-              Registration
-            </p>
-            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight text-ink">
-              Official Chapter Registration
-            </h2>
-            <p className="mt-3 text-lg text-muted">
-              Enroll into your constituency chapter across Malappuram district. Complete your verification and classifications below.
-            </p>
-          </div>
           <div className="max-w-4xl mx-auto">
-            <YouthRegistrationForm />
+            <YouthRegistrationForm triggerLabel="Open Chapter Application Modal" />
           </div>
         </div>
       </section>
