@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Arrow } from "@/components/arrow";
 import { PageHero } from "@/components/page-hero";
 import { Swipe } from "@/components/swipe";
@@ -83,33 +82,6 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      <section className="bg-paper">
-        <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-12 sm:px-8 lg:grid-cols-12 lg:py-16">
-          <div className="lg:col-span-5">
-            <h2 className="text-4xl sm:text-5xl">The point of joining</h2>
-          </div>
-          <div className="max-w-xl text-xl leading-relaxed lg:col-span-7">
-            <p>
-              You meet people who are building at the same time as you, and a few who finished the
-              hard part years ago. You get into workshops, tours and investor evenings without
-              hunting for them. You can put a collaboration on the table instead of posting into
-              the void.
-            </p>
-            <p className="mt-5">
-              And the district gets a business community that talks to itself. That is the part
-              Mission Malappuram 2050 is backing.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col max-sm:[&>a]:w-full max-sm:[&>a]:justify-center">
-              <a href="#register-form" className="btn btn-magenta">
-                Apply now <Arrow />
-              </a>
-              <Link href="/members" className="btn btn-outline-dark">
-                Member portraits <Arrow />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Official Membership Application Section */}
       <section id="register-form" className="scroll-mt-20 border-t border-ink/10 bg-paper-2 py-16">
