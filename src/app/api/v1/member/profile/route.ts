@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getCurrentActor } from '@/server/auth/session';
+import { container } from '@/server/container';
+import { ApiResponse } from '@/server/presentation/http-response';
 import { MemberIdentityService } from '@/features/memberships/server/member-identity.service';
 import {
   updateProfilePersonalSchema,
@@ -13,19 +15,13 @@ export async function GET() {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const data = await MemberIdentityService.getMemberCompleteProfile(actor);
-    return NextResponse.json({ success: true, data });
+    return ApiResponse.ok(data);
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch member profile.' },
-      { status: 500 }
-    );
+    return ApiResponse.handle(error);
   }
 }
 
@@ -33,10 +29,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const body = await request.json();
@@ -44,31 +37,33 @@ export async function PATCH(request: NextRequest) {
 
     if (section === 'personal') {
       const parsed = updateProfilePersonalSchema.parse(data);
-      const updated = await MemberIdentityService.updatePersonalDetails(actor, parsed);
-      return NextResponse.json({ success: true, section, data: updated });
+      await container.updateMemberProfile.execute(
+        { segment: 'personal', data: parsed },
+        actor
+      );
+      return ApiResponse.ok({ section, data: parsed });
     }
 
     if (section === 'professional') {
       const parsed = updateProfileProfessionalSchema.parse(data);
-      const updated = await MemberIdentityService.updateProfessionalDetails(actor, parsed);
-      return NextResponse.json({ success: true, section, data: updated });
+      await container.updateMemberProfile.execute(
+        { segment: 'professional', data: parsed },
+        actor
+      );
+      return ApiResponse.ok({ section, data: parsed });
     }
 
     if (section === 'location') {
       const parsed = updateProfileLocationSchema.parse(data);
-      const updated = await MemberIdentityService.updateLocationDetails(actor, parsed);
-      return NextResponse.json({ success: true, section, data: updated });
+      await container.updateMemberProfile.execute(
+        { segment: 'location', data: parsed },
+        actor
+      );
+      return ApiResponse.ok({ section, data: parsed });
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Invalid section identifier. Expected: personal | professional | location' },
-      { status: 400 }
-    );
+    return ApiResponse.badRequest('Invalid section identifier. Expected: personal | professional | location');
   } catch (error: any) {
-    const status = error.name === 'ZodError' ? 400 : 500;
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update profile section.' },
-      { status }
-    );
+    return ApiResponse.handle(error);
   }
 }

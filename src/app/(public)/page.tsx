@@ -1,286 +1,242 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  Building2,
-  Users,
-  ShieldCheck,
-  TrendingUp,
-  Award,
-  ArrowRight,
-  MapPin,
-  CheckCircle2,
-  QrCode,
-  Briefcase,
-  GraduationCap,
-} from 'lucide-react';
-import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
-import { MEMBER_CATEGORIES } from '@/features/memberships/constants/member-classifications';
-import { VisionMissionSection } from '@/features/organization/components/vision-mission-section';
+import Link from "next/link";
+import { Arrow } from "@/components/arrow";
+import { HeroSlideshow } from "@/components/hero-slideshow";
+import { PhotoCycle } from "@/components/photo-cycle";
+import { Swipe } from "@/components/swipe";
+import { forumPhotos } from "@/lib/photos";
+import { initiatives, slugify } from "@/lib/site";
+import { YouthRegistrationForm } from "@/features/memberships/components/youth-registration-form";
 
-import { ParentInitiativeBadge } from '@/components/brand/parent-initiative-badge';
+const chapters = [
+  {
+    href: "/about",
+    index: "01",
+    title: "The forum",
+    text: "Who sits in the room, and what Mission Malappuram 2050 has to do with it.",
+    fill: "bg-yellow",
+    accent: "text-ink",
+    hoverText: "group-hover:text-ink",
+  },
+  {
+    href: "/what-we-offer",
+    index: "02",
+    title: "The work",
+    text: "Mentorship, a proper consultation, partnerships, and growth that is not a slogan.",
+    fill: "bg-magenta",
+    accent: "text-magenta",
+    hoverText: "group-hover:text-paper",
+  },
+  {
+    href: "/initiatives",
+    index: "03",
+    title: "The programme",
+    text: "Conclaves, the club, tours, gatherings, and the evenings with investors.",
+    fill: "bg-cyan",
+    accent: "text-blue",
+    hoverText: "group-hover:text-ink",
+  },
+];
+
+const rowBands = ["bg-yellow", "bg-cyan", "bg-magenta", "bg-yellow", "bg-cyan"];
 
 export default function HomePage() {
   return (
-    <div className="space-y-24 pb-20">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-32 bg-gradient-to-b from-[#035AFC]/10 via-transparent to-transparent">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[600px] rounded-full bg-[#035AFC]/15 blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 right-10 h-72 w-72 rounded-full bg-[#FBC206]/10 blur-[90px] pointer-events-none" />
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex flex-col items-center text-center space-y-6">
-            {/* Parent Initiative Attribution & Scope */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5">
-              <ParentInitiativeBadge />
-              <div className="inline-flex items-center space-x-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-[#035AFC] dark:text-blue-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FBC206] animate-pulse" />
-                <span>16 Malappuram Chapters</span>
-              </div>
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl">
-              The Digital Operating System for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#035AFC] via-blue-500 to-[#FBC206]">
-                Youth Entrepreneurship
-              </span>
+    <>
+      <section className="overflow-hidden bg-blue text-paper">
+        <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 pt-10 pb-14 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pt-14 lg:pb-16 max-sm:gap-8 max-sm:pt-8 max-sm:pb-12">
+          <div className="lg:col-span-6">
+            <p className="flex items-center gap-3 font-display text-[0.72rem] font-bold tracking-[0.24em] uppercase text-paper/75 max-sm:tracking-[0.16em]">
+              <span className="max-sm:hidden">MYBF</span>
+              <span aria-hidden="true" className="h-px w-10 bg-paper/50 max-sm:hidden" />
+              <span>Malappuram Youth Business Forum</span>
+            </p>
+            <h1 className="mt-6 max-w-[10ch] text-[3.6rem] text-paper sm:text-7xl lg:text-[6.4rem]">
+              Why not Malappuram.
             </h1>
-
-            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-              Empowering next-generation founders, professionals, and enterprises with verifiable digital identities, chapter governance, business matchmaking, and transparent collaboration.
+            <p className="mt-7 max-w-md text-xl leading-snug text-paper/90 sm:text-2xl">
+              A forum for founders, owners and students building in this district. Mentors in the
+              room. Introductions with a name on them.
             </p>
-
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-              <Link href="/register">
-                <Button size="lg" className="h-13 px-8 text-base shadow-lg shadow-blue-500/25">
-                  Apply for Membership <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/chapters">
-                <Button variant="outline" size="lg" className="h-13 px-8 text-base">
-                  Explore 16 Chapters
-                </Button>
-              </Link>
-            </div>
-
-            {/* Quick Proof Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" /> Tamper-Proof Cryptographic ID
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Building2 className="h-4 w-4 text-[#035AFC]" /> 16 Founding Chapters
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Award className="h-4 w-4 text-[#FBC206]" /> Audited Governance
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Bar */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-8 shadow-xl">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center divide-y lg:divide-y-0 lg:divide-x divide-slate-100 dark:divide-slate-800/80">
-            <div className="space-y-1">
-              <div className="text-3xl sm:text-4xl font-extrabold text-[#035AFC]">16</div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Founding Chapters</div>
-              <p className="text-[11px] text-slate-400">Covering all 7 Taluks</p>
-            </div>
-            <div className="space-y-1 pt-6 lg:pt-0">
-              <div className="text-3xl sm:text-4xl font-extrabold text-[#FBC206]">5,000,000</div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Architecture Scale</div>
-              <p className="text-[11px] text-slate-400">10-Digit Immutable IDs</p>
-            </div>
-            <div className="space-y-1 pt-6 lg:pt-0">
-              <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">100%</div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Maker-Checker Approvals</div>
-              <p className="text-[11px] text-slate-400">Zero Unverified Members</p>
-            </div>
-            <div className="space-y-1 pt-6 lg:pt-0">
-              <div className="text-3xl sm:text-4xl font-extrabold text-emerald-500">100% Free</div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Non-Profit NGO</div>
-              <p className="text-[11px] text-slate-400">Zero Membership Fees or Dues</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Official Vision & Six Strategic Mission Pillars */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <VisionMissionSection />
-      </section>
-
-      {/* Chapters Grid Preview */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <Badge variant="secondary" className="mb-2">Geographic Network</Badge>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              The 16 Founding Chapters of Malappuram
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Distributed chapter leadership ensuring hyper-local community development and peer mentorship.
-            </p>
-          </div>
-          <Link href="/chapters">
-            <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-              View All 16 Chapters &rarr;
-            </Button>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {INITIAL_16_CHAPTERS.slice(0, 8).map((ch) => (
-            <Link key={ch.code} href={`/chapters/${ch.slug}`}>
-              <Card className="h-full hover:border-[#035AFC] hover:shadow-md transition-all group">
-                <CardHeader className="p-5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] text-slate-400 font-semibold">{ch.code}</span>
-                    <Badge variant="neutral" className="text-[9px]">{ch.taluk}</Badge>
-                  </div>
-                  <CardTitle className="text-base mt-2 group-hover:text-[#035AFC] transition-colors">
-                    {ch.name}
-                  </CardTitle>
-                  <CardDescription className="text-xs line-clamp-2">
-                    {ch.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
-        </div>
-
-        <div className="text-center sm:hidden">
-          <Link href="/chapters">
-            <Button variant="outline" className="w-full">
-              Explore All 16 Chapters &rarr;
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Digital ID Card & Security Architecture */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center rounded-3xl bg-slate-900 text-white p-8 sm:p-12 border border-slate-800 shadow-2xl overflow-hidden relative">
-          <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#035AFC]/30 blur-3xl pointer-events-none" />
-
-          <div className="lg:col-span-7 space-y-6 relative">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#FBC206]/20 px-3 py-1 text-xs font-bold text-[#FBC206]">
-              <QrCode className="h-3.5 w-3.5" /> High-Trust Identity
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Cryptographically Verifiable Digital Membership Pass
-            </h2>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Every approved MYBF member receives an immutable sequential ID (<span className="font-mono text-[#FBC206]">MYBF-0000000001</span>) that never changes upon chapter transfer. The card incorporates HMAC-SHA256 signed QR tokens for instant offline/online credential verification.
-            </p>
-
-            <ul className="space-y-3 text-sm text-slate-300">
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Zero Private Data Exposure: QR resolves to an opaque validation token.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Instant Revocation: Expiry or suspension immediately invalidates verification.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Print-Optimized & Mobile Wallet Ready with official MYBF seals.</span>
-              </li>
-            </ul>
-
-            <div className="pt-2">
-              <Link href="/membership">
-                <Button variant="secondary" size="md">
-                  Review Membership Guidelines
-                </Button>
+            <div className="mt-9 flex flex-wrap gap-3 max-sm:mt-8">
+              <a href="#membership" className="btn btn-yellow max-sm:w-full max-sm:justify-center">
+                See membership <Arrow />
+              </a>
+              <Link href="/initiatives" className="btn btn-outline-light max-sm:w-full max-sm:justify-center">
+                The programme
               </Link>
             </div>
           </div>
-
-          <div className="lg:col-span-5 flex justify-center relative">
-            {/* Live Interactive Card Sample */}
-            <div className="w-full max-w-sm rounded-2xl bg-gradient-to-br from-[#035AFC] via-[#0240B8] to-[#012269] p-6 text-white shadow-2xl border border-blue-400/30">
-              <div className="flex items-start justify-between border-b border-white/15 pb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#035AFC] font-black text-lg">
-                    MYBF
-                  </div>
-                  <div>
-                    <h4 className="text-[10px] font-bold tracking-widest text-[#FBC206] uppercase">
-                      Malappuram Youth Business Forum
-                    </h4>
-                    <p className="text-[9px] text-blue-100 font-medium">Digital Identity Pass</p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="bg-[#FBC206] text-[#030405] text-[9px] px-2">
-                  ACTIVE
-                </Badge>
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-3 items-center">
-                <div className="h-20 w-20 rounded-xl bg-slate-900 border-2 border-[#FBC206] flex items-center justify-center font-bold text-2xl text-blue-200">
-                  M
-                </div>
-                <div className="col-span-2 space-y-1">
-                  <p className="text-[9px] uppercase tracking-wider text-blue-200">Member</p>
-                  <h4 className="font-bold text-base text-white">Anas Mohammed</h4>
-                  <p className="font-mono text-xs font-bold text-[#FBC206]">MYBF-0000000001</p>
-                  <p className="text-[10px] text-blue-100">Manjeri Chapter</p>
-                </div>
-              </div>
-
-              <div className="mt-4 border-t border-white/15 pt-3 flex items-center justify-between text-[10px]">
-                <span className="text-blue-100">Valid Until: Dec 2027</span>
-                <div className="flex items-center gap-1 text-[#FBC206] font-bold">
-                  <QrCode className="h-4 w-4" /> VERIFIED
-                </div>
-              </div>
-            </div>
+          <div className="lg:col-span-6">
+            <HeroSlideshow />
           </div>
         </div>
       </section>
 
-      {/* Membership Categories Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <Badge variant="primary">Categories</Badge>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Structured for Diverse Business Profiles
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Every category provides independent vocational classification, community networking, and democratic representation.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {MEMBER_CATEGORIES.map((cat) => (
-            <Card key={cat.value} className="flex flex-col justify-between hover:shadow-lg transition-all">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="text-[10px]">
-                    INTEREST FOCUS
-                  </Badge>
-                  <span className="text-xs text-[#035AFC] font-bold">MYBF</span>
-                </div>
-                <CardTitle className="text-lg mt-3">{cat.label}</CardTitle>
-                <CardDescription className="text-xs leading-relaxed">{cat.description}</CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Link href="/register" className="w-full">
-                  <Button variant="outline" size="sm" className="w-full">
-                    Apply in this Category
-                  </Button>
+      <section className="bg-paper">
+        <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:py-14">
+          <Swipe count={chapters.length} label="section">
+            <div data-swipe-row className="grid gap-5 md:grid-cols-3 max-sm:-mx-5 max-sm:gap-4 max-sm:px-5">
+              {chapters.map((chapter) => (
+                <Link
+                  key={chapter.href}
+                  href={chapter.href}
+                  className="group lift relative isolate flex min-h-64 flex-col justify-between overflow-hidden border-2 border-ink bg-paper p-7 max-sm:min-h-0 max-sm:gap-8 max-sm:p-5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-0 -z-10 origin-bottom scale-y-0 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-y-100 ${chapter.fill}`}
+                  />
+                  <span className="flex items-start justify-between">
+                    <span
+                      className={`font-display text-5xl font-extrabold tracking-tighter transition-colors max-sm:text-4xl ${chapter.accent} ${chapter.hoverText}`}
+                    >
+                      {chapter.index}
+                    </span>
+                    <span
+                      className={`inline-flex size-11 items-center justify-center border-2 border-ink transition-colors duration-300 group-hover:border-current ${chapter.hoverText}`}
+                    >
+                      <Arrow className="size-5 transition-transform duration-300 group-hover:-rotate-45" />
+                    </span>
+                  </span>
+                  <span className={`transition-colors ${chapter.hoverText}`}>
+                    <span className="block font-display text-4xl font-extrabold tracking-tight max-sm:text-3xl">
+                      {chapter.title}
+                    </span>
+                    <span className="mt-3 block max-w-xs text-lg leading-snug transition-transform duration-300 group-hover:-translate-y-1">
+                      {chapter.text}
+                    </span>
+                  </span>
                 </Link>
-              </CardFooter>
-            </Card>
-          ))}
+              ))}
+            </div>
+          </Swipe>
         </div>
       </section>
-    </div>
+
+      <section className="border-t border-ink/10 bg-paper">
+        <div className="mx-auto grid max-w-[1440px] gap-6 px-5 py-12 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:py-14">
+          <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-blue uppercase lg:col-span-3 lg:pt-2">
+            A note from the forum
+          </p>
+          <div className="lg:col-span-9">
+            <p className="max-w-4xl text-2xl leading-snug sm:text-3xl sm:leading-snug">
+              Malappuram already has the people. Founders, shop owners, students with a stubborn
+              idea, and operators who have been through a bad year and stayed. What it has not
+              always had is a room where those people owe each other something.
+            </p>
+            <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+              <p className="max-w-2xl text-xl leading-relaxed text-muted">
+                MYBF is that room. Supported by Mission Malappuram 2050, the forum runs conclaves, a
+                club, tours and the quieter work of referrals. Between events, members pass work to
+                each other by name across 16 chapters.
+              </p>
+              <Link href="/about" className="btn btn-outline-dark">
+                How it works <Arrow />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-ink/10 bg-paper-2">
+        <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="max-w-[14ch] text-4xl sm:text-6xl">On the programme</h2>
+            <Link href="/initiatives" className="btn btn-ink">
+              All ten <Arrow />
+            </Link>
+          </div>
+          <Swipe count={5} label="programme item" className="mt-8">
+            <ol
+              data-swipe-row
+              className="border-t-2 border-ink max-sm:-mx-5 max-sm:gap-4 max-sm:border-t-0 max-sm:px-5"
+            >
+              {initiatives.slice(0, 5).map((item, index) => (
+                <li key={item.title} className="border-b border-ink/20 max-sm:border-2 max-sm:border-ink max-sm:bg-paper">
+                  <Link
+                    href={`/initiatives#${slugify(item.title)}`}
+                    className="group relative isolate grid gap-2 px-2 py-5 sm:grid-cols-12 sm:items-center sm:gap-6 sm:px-4 max-sm:h-full max-sm:content-start max-sm:gap-3 max-sm:p-5"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`absolute inset-0 -z-10 origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-x-100 ${rowBands[index]}`}
+                    />
+                    <span className="font-display text-sm font-bold tracking-[0.16em] text-blue transition-[transform,color] duration-300 group-hover:translate-x-2 group-hover:text-ink sm:col-span-2">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-2xl font-extrabold tracking-tight transition-transform duration-300 group-hover:translate-x-2 sm:col-span-4 sm:text-3xl">
+                      {item.title}
+                    </span>
+                    <span
+                      className={`text-lg text-muted transition-colors group-hover:text-ink sm:col-span-5 ${
+                        rowBands[index] === "bg-magenta" ? "group-hover:text-paper" : ""
+                      }`}
+                    >
+                      {item.description}
+                    </span>
+                    <span className="hidden justify-end opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-x-0 group-hover:opacity-100 sm:col-span-1 sm:flex sm:-translate-x-3">
+                      <Arrow className="size-6" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </Swipe>
+        </div>
+      </section>
+
+      {/* Membership Section with Embedded Official Application Form */}
+      <section id="membership" className="scroll-mt-16 bg-ink text-paper">
+        <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:py-20 max-sm:gap-8 max-sm:py-12">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-yellow uppercase">
+                Membership
+              </p>
+              <h2 className="mt-4 max-w-[16ch] text-4xl text-paper sm:text-6xl">
+                If you are building here, you already have a reason to be in the room.
+              </h2>
+              <p className="mt-6 max-w-md text-xl leading-snug text-paper/75">
+                Founders, owners, students, and the mentors willing to be useful across 16 chapters in Malappuram. Zero fees. Tamper-proof digital ID cards and democratic chapter governance.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a href="#register-form" className="btn btn-yellow">
+                  Apply for membership <Arrow />
+                </a>
+                <Link href="/membership" className="btn btn-outline-light">
+                  How membership works
+                </Link>
+              </div>
+            </div>
+            <PhotoCycle
+              slides={forumPhotos}
+              start={7}
+              label="Members in the room"
+              tone="on-dark"
+              shadow="12px 12px 0 #fcc000"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+
+          {/* Official Membership Application Form */}
+          <div id="register-form" className="mt-16 scroll-mt-24 border-t border-white/15 pt-12">
+            <div className="mb-8">
+              <span className="font-display text-xs font-bold tracking-[0.2em] uppercase text-yellow">
+                Official Application
+              </span>
+              <h3 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Membership Registration & Chapter Enrollment
+              </h3>
+              <p className="mt-2 text-base text-paper/75 max-w-2xl">
+                Register with your constituency chapter across Malappuram district. Complete your personal details, PIN code location verification, and dual member classification below.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white text-slate-900 p-3 sm:p-8 shadow-2xl border-2 border-yellow/40">
+              <YouthRegistrationForm />
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

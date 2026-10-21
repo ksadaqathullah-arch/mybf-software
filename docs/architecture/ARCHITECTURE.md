@@ -56,3 +56,68 @@ Formulated according to official MYBF identity specifications:
 
 ### Verification Gateway `(verification)`
 - `/verify/id/[token]` - Public tamper-proof credential verification status page.
+
+---
+
+## 5. Clean Architecture & Domain-Driven Layers (`src/server/`)
+
+To support **50+ concurrent administrative and operational users** with strict invariants, decoupling, and high maintainability, the backend is structured following **Clean Architecture (Hexagonal / Ports & Adapters)**:
+
+```
+src/server/
+├── domain/                      # 1. Pure Domain Layer (Enterprise Rules)
+│   ├── common/                  # Entity base class, Result monad, Domain Errors
+│   ├── identity/                # MemberProfile, VerificationChallenge, ChapterTransfer, ProfileCorrection
+│   │   ├── entities/            # MemberProfileEntity, ChapterTransferEntity, etc.
+│   │   └── value-objects/       # IndianPhoneNumber, PinCode, MemberId, AgeEligibility
+│   ├── chapters/                # ChapterEntity
+│   ├── events/                  # EventEntity
+│   └── notifications/           # NotificationEntity
+│
+├── application/                 # 2. Application Layer (Use Cases & Ports)
+│   ├── common/                  # IUseCase<TInput, TOutput> interface
+│   ├── ports/                   # Repository & Gateway Contracts (Inversion of Control)
+│   │   ├── member.repository.port.ts
+│   │   ├── chapter.repository.port.ts
+│   │   ├── event.repository.port.ts
+│   │   ├── notification.repository.port.ts
+│   │   ├── geography.repository.port.ts
+│   │   ├── audit.repository.port.ts
+│   │   ├── challenge.repository.port.ts
+│   │   ├── transfer.repository.port.ts
+│   │   ├── correction.repository.port.ts
+│   │   └── crypto.gateway.port.ts
+│   └── use-cases/               # Orchestrated Business Transactions
+│       ├── identity/            # Request/Verify Phone OTP, Email Token, Profile Updates
+│       ├── chapters/            # Request & Review Chapter Transfers (Maker-Checker)
+│       ├── events/              # Event Registration & Idempotent QR Check-in
+│       ├── geography/           # PIN-First Postal Lookup & Location Hierarchy Validation
+│       └── notifications/       # User Notifications & Mark As Read
+│
+├── infrastructure/              # 3. Infrastructure Layer (Adapters & External Systems)
+│   ├── repositories/            # Prisma ORM implementations of repository ports
+│   │   ├── prisma-member.repository.ts
+│   │   ├── prisma-chapter.repository.ts
+│   │   ├── prisma-event.repository.ts
+│   │   ├── prisma-notification.repository.ts
+│   │   ├── prisma-geography.repository.ts
+│   │   ├── prisma-audit.repository.ts
+│   │   ├── prisma-challenge.repository.ts
+│   │   ├── prisma-transfer.repository.ts
+│   │   └── prisma-correction.repository.ts
+│   └── gateways/                # Concrete cryptographic & payment gateways
+│       └── node-crypto.gateway.ts
+│
+├── presentation/                # 4. Presentation & Delivery Adapters
+│   └── http-response.ts         # Standardized ApiResponse, RFC 7807 problem details, error handling
+│
+├── container.ts                 # 5. Composition Root / Dependency Injection Container
+│                                # Singleton lifecycle management for 50+ concurrent users
+└── db.ts                        # Resilient Prisma Client connection pool
+```
+
+### Key Clean Architecture Invariants
+1. **Dependency Rule**: Dependencies point inward only. Domain entities know nothing about Prisma, HTTP, or Next.js.
+2. **Ports & Adapters**: Application use cases depend solely on abstract interfaces (`ports`), fulfilled by concrete `infrastructure/repositories/prisma-*`.
+3. **Decoupled Delivery**: Route handlers (`src/app/api/v1/`) and Server Actions consume use cases via `container.<useCase>.execute(...)` and return uniform `ApiResponse`.
+4. **Audit Immutability**: All sensitive domain mutations (profile changes, verification requests, chapter transfers, event check-ins) emit immutable `AuditEvent` records.

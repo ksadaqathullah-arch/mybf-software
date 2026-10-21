@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-blue: #005bff;
+  --color-blue-deep: #0046cc;
+  --color-sky: #c9dcff;
+  --color-ink: #14161c;
+  --color-paper: #f4f0e6;
+  --color-paper-2: #e6e0d2;
+  --color-yellow: #fcc000;
+  --color-magenta: #e11d74;
+  --color-cyan: #3aadf2;
+  --color-muted: #5e584e;
+}
+
 @layer base {
   :root {
     --background: #FBFDFD;
@@ -73,6 +91,236 @@ body {
   color: var(--foreground);
   font-feature-settings: "rlig" 1, "calt" 1;
   min-height: 100vh;
+}
+
+/* Public Portal Editorial Styling */
+.public-portal {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.public-portal h1,
+.public-portal h2,
+.public-portal h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+}
+
+.public-portal ::selection {
+  background: var(--color-yellow);
+  color: var(--color-ink);
+}
+
+.public-portal :focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.public-portal .bg-blue :focus-visible,
+.public-portal .bg-blue-deep :focus-visible,
+.public-portal .bg-magenta :focus-visible,
+.public-portal .bg-ink :focus-visible {
+  outline-color: var(--color-yellow);
+}
+
+@layer components {
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--btn-fill);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  .btn:hover,
+  .btn:focus-visible {
+    color: var(--btn-fill-text);
+  }
+
+  .btn svg {
+    transition: transform 0.3s ease;
+  }
+
+  .btn:hover svg,
+  .btn:focus-visible svg {
+    transform: translateX(4px);
+  }
+
+  .btn-yellow {
+    background: var(--color-yellow);
+    color: var(--color-ink);
+    --btn-fill: var(--color-ink);
+    --btn-fill-text: var(--color-paper);
+  }
+
+  .btn-ink {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    --btn-fill: var(--color-blue);
+    --btn-fill-text: var(--color-paper);
+  }
+
+  .btn-blue {
+    background: var(--color-blue);
+    color: var(--color-paper);
+    --btn-fill: var(--color-ink);
+    --btn-fill-text: var(--color-paper);
+  }
+
+  .btn-magenta {
+    background: var(--color-magenta);
+    color: var(--color-paper);
+    --btn-fill: var(--color-ink);
+    --btn-fill-text: var(--color-paper);
+  }
+
+  .btn-outline-light {
+    border: 1.5px solid var(--color-paper);
+    color: var(--color-paper);
+    --btn-fill: var(--color-paper);
+    --btn-fill-text: var(--color-ink);
+  }
+
+  .btn-outline-dark {
+    border: 1.5px solid var(--color-ink);
+    color: var(--color-ink);
+    --btn-fill: var(--color-ink);
+    --btn-fill-text: var(--color-paper);
+  }
+
+  .lift {
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .lift:hover,
+  .lift:focus-within {
+    transform: translate(-5px, -5px);
+    box-shadow: 10px 10px 0 var(--lift-shadow, var(--color-ink));
+  }
+
+  @media (hover: none) {
+    .lift:active {
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 var(--lift-shadow, var(--color-ink));
+    }
+
+    .btn:active::before {
+      transform: scaleX(1);
+    }
+
+    .btn:active {
+      color: var(--btn-fill-text);
+    }
+  }
+
+  .slide-progress {
+    transform-origin: left;
+    animation: slide-progress var(--slide-duration, 5s) linear forwards;
+  }
+
+  .slide-progress[data-paused="true"] {
+    animation-play-state: paused;
+  }
+
+  .marquee-track {
+    animation: marquee 32s linear infinite;
+  }
+}
+
+@media (width < 40rem) {
+  [data-swipe-row] {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    scrollbar-width: none;
+  }
+
+  [data-swipe-row]::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-swipe-row] > * {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+
+  [data-swipe-row] .lift:active {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@keyframes slide-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+
+  .marquee-track,
+  .slide-progress {
+    animation: none;
+  }
 }
 
 /* Custom scrollbars for clean dashboards */

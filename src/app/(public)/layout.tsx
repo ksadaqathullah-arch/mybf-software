@@ -1,5 +1,5 @@
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
 
 export default function PublicLayout({
   children,
@@ -7,10 +7,16 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FBFDFD] dark:bg-[#030405] text-slate-900 dark:text-slate-100">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
+    <div className="public-portal flex min-h-screen flex-col">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-yellow focus:px-4 focus:py-3 focus:font-display focus:text-sm focus:font-bold focus:text-ink"
+      >
+        Skip to main content
+      </a>
+      <SiteHeader />
+      <main id="main" className="flex-1">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

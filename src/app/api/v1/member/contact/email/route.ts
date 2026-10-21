@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getCurrentActor } from '@/server/auth/session';
-import { MemberIdentityService } from '@/features/memberships/server/member-identity.service';
+import { container } from '@/server/container';
+import { ApiResponse } from '@/server/presentation/http-response';
 import {
   emailChangeRequestSchema,
   emailChangeVerifySchema,
@@ -12,23 +13,16 @@ export async function POST(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const body = await request.json();
     const { newEmail } = emailChangeRequestSchema.parse(body);
 
-    const result = await MemberIdentityService.requestEmailChangeVerification(actor, newEmail);
-    return NextResponse.json(result);
+    const result = await container.requestEmailToken.execute({ newEmail }, actor);
+    return ApiResponse.ok(result);
   } catch (error: any) {
-    const status = error.name === 'ZodError' ? 400 : 400;
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to request email change verification.' },
-      { status }
-    );
+    return ApiResponse.handle(error);
   }
 }
 
@@ -36,22 +30,15 @@ export async function PUT(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const body = await request.json();
     const { newEmail, token } = emailChangeVerifySchema.parse(body);
 
-    const result = await MemberIdentityService.verifyEmailChange(actor, newEmail, token);
-    return NextResponse.json(result);
+    const result = await container.verifyEmailToken.execute({ newEmail, token }, actor);
+    return ApiResponse.ok(result);
   } catch (error: any) {
-    const status = error.name === 'ZodError' ? 400 : 400;
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to verify email change.' },
-      { status }
-    );
+    return ApiResponse.handle(error);
   }
 }

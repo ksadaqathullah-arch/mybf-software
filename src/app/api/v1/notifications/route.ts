@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getCurrentActor } from '@/server/auth/session';
-import { NotificationService } from '@/features/notifications/server/notification.service';
+import { container } from '@/server/container';
+import { ApiResponse } from '@/server/presentation/http-response';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,22 +9,20 @@ export async function GET(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20', 10);
 
-    const notifications = await NotificationService.getUserNotifications(actor.userId, limit);
-    return NextResponse.json({ success: true, notifications });
+    const result = await container.listNotifications.execute({ pageSize: limit }, actor);
+    return ApiResponse.ok({
+      notifications: result.notifications,
+      total: result.total,
+      unreadCount: result.unreadCount,
+    });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch notifications.' },
-      { status: 500 }
-    );
+    return ApiResponse.handle(error);
   }
 }
 
@@ -31,33 +30,22 @@ export async function PATCH(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
     if (!actor || actor.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized: Active session required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const body = await request.json();
     const { notificationId, markAll } = body;
 
-    if (markAll) {
-      await NotificationService.markAllAsRead(actor.userId);
-      return NextResponse.json({ success: true });
+    if (!markAll && !notificationId) {
+      return ApiResponse.badRequest('Expected notificationId or markAll flag.');
     }
 
-    if (notificationId) {
-      await NotificationService.markAsRead(notificationId, actor.userId);
-      return NextResponse.json({ success: true });
-    }
-
-    return NextResponse.json(
-      { success: false, error: 'Expected notificationId or markAll flag.' },
-      { status: 400 }
+    const result = await container.markNotificationRead.execute(
+      { notificationId, all: !!markAll },
+      actor
     );
+    return ApiResponse.ok(result);
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update notifications.' },
-      { status: 500 }
-    );
+    return ApiResponse.handle(error);
   }
 }
