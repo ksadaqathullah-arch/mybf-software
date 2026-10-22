@@ -70,6 +70,25 @@ describe('MYBF Youth Age Eligibility Policy (Max 35 Years)', () => {
     expect(result.eligible).toBe(true);
     expect(result.age).toBe(34);
   });
+
+  it('considers applicants younger than 18 (e.g. 15, 16, 17) eligible without exception', () => {
+    // 16 years old: born 2010-05-10
+    const res16 = validateYouthAgeEligibility('2010-05-10', referenceDate);
+    expect(res16.eligible).toBe(true);
+    expect(res16.age).toBe(16);
+    expect(res16.error).toBeUndefined();
+    expect(res16.requiresAgeException).toBeFalsy();
+
+    // 17 years old: born 2009-08-01
+    const res17 = validateYouthAgeEligibility('2009-08-01', referenceDate);
+    expect(res17.eligible).toBe(true);
+    expect(res17.age).toBe(17);
+
+    // 15 years old: born 2011-01-01
+    const res15 = validateYouthAgeEligibility('2011-01-01', referenceDate);
+    expect(res15.eligible).toBe(true);
+    expect(res15.age).toBe(15);
+  });
 });
 
 describe('Youth Catalogs & Classification Preservations', () => {
@@ -227,5 +246,38 @@ describe('memberRegistrationSchema Zod Validation', () => {
     const result = memberRegistrationSchema.safeParse(longPassphrase);
     expect(result.success).toBe(true);
   });
+
+  it('accepts registration for an applicant under 18 without requiring age exception', () => {
+    // 16 years old
+    const under18Payload = { ...validBasePayload, dateOfBirth: '2010-05-10' };
+    const result = memberRegistrationSchema.safeParse(under18Payload);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts registration for applicant over 35 when age exception is requested with justification', () => {
+    const over35Payload = {
+      ...validBasePayload,
+      dateOfBirth: '1985-05-10', // 41 years old
+      requestAgeException: true,
+      ageExceptionReason: 'Senior tech architect building deep-tech incubators across Malappuram districts.',
+    };
+    const result = memberRegistrationSchema.safeParse(over35Payload);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects registration for applicant over 35 when age exception is not requested', () => {
+    const over35Payload = {
+      ...validBasePayload,
+      dateOfBirth: '1985-05-10',
+      requestAgeException: false,
+    };
+    const result = memberRegistrationSchema.safeParse(over35Payload);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const dobError = result.error.issues.find((e) => e.path.includes('dateOfBirth'));
+      expect(dobError?.message).toBe(AGE_ELIGIBILITY_ERROR_MESSAGE);
+    }
+  });
 });
+
 

@@ -423,7 +423,7 @@ export function DistrictApplicationsView({
                     <div className="p-3 rounded-lg border border-amber-200 dark:border-amber-950 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-200 flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                       <div>
-                        <strong>Age Exception Flag:</strong> Applicant is {age} years old (exceeds standard 18-35 policy). Requires official Super Admin Age Exception Review.
+                        <strong>Age Exception Flag:</strong> Applicant is {age} years old (exceeds standard 35-or-below policy). Requires official Super Admin Age Exception Review.
                       </div>
                     </div>
                   );

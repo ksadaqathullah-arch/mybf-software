@@ -43,7 +43,9 @@ export function PageHero({
             <span aria-hidden="true" className="h-px w-10 bg-current opacity-50" />
             <span>{eyebrow}</span>
           </p>
-          <h1 className="mt-6 max-w-[13ch] text-5xl sm:text-7xl lg:text-[5.4rem] max-sm:text-[2.6rem]">{title}</h1>
+          <h1 className="mt-6 max-w-[14ch] text-5xl sm:text-7xl lg:text-[5.4rem] max-sm:text-[2.6rem] leading-[0.94] text-balance">
+            {title}
+          </h1>
           <p className="mt-6 max-w-lg text-xl leading-snug opacity-90 sm:text-2xl max-sm:text-lg">{lead}</p>
           {children ? (
             <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col max-sm:[&>a]:w-full max-sm:[&>a]:justify-center">{children}</div>

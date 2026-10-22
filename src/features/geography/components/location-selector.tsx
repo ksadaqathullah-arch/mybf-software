@@ -29,6 +29,7 @@ export interface LocationSelectorProps {
   onChange: (value: LocationSelectorValue) => void;
   disabled?: boolean;
   className?: string;
+  variant?: 'default' | 'editorial';
 }
 
 interface LocalBodyOption {
@@ -56,6 +57,7 @@ export function LocationSelector({
   onChange,
   disabled = false,
   className = '',
+  variant = 'editorial',
 }: LocationSelectorProps) {
   // Navigation & mode state: PIN-First (default) vs Location-First (fallback)
   const [isLocationFirstMode, setIsLocationFirstMode] = React.useState(false);
@@ -372,12 +374,30 @@ export function LocationSelector({
   const municipalities = localBodies.filter((lb) => lb.type === 'MUNICIPALITY');
   const gramaPanchayats = localBodies.filter((lb) => lb.type === 'GRAMA_PANCHAYAT');
 
+  const isEditorial = variant === 'editorial';
+
+  const inputBaseClass = isEditorial
+    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-xs text-ink placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60 font-sans'
+    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all font-sans';
+
+  const monoInputBaseClass = isEditorial
+    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-xs text-ink font-mono placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60'
+    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all';
+
+  const labelBaseClass = isEditorial
+    ? 'text-xs font-display font-bold uppercase tracking-wider text-ink flex items-center gap-1.5'
+    : 'text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5';
+
+  const fixedFieldClass = isEditorial
+    ? 'w-full border-2 border-ink/40 bg-paper/60 px-3.5 py-2.5 text-xs font-bold text-ink'
+    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/50 px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-white';
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Mode Switcher Banner / Top Control */}
-      <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-          <MapPin className="h-3.5 w-3.5 text-[#035AFC]" />
+      <div className={`flex items-center justify-between pb-2 border-b-2 ${isEditorial ? 'border-ink/15 text-ink' : 'border-slate-100 dark:border-slate-800/80'}`}>
+        <div className={labelBaseClass}>
+          <MapPin className="h-3.5 w-3.5 text-blue" />
           <span>
             {isLocationFirstMode
               ? 'Administrative Location-First Mode'
@@ -390,7 +410,7 @@ export function LocationSelector({
             setIsLocationFirstMode(!isLocationFirstMode);
             setPostalMessage(null);
           }}
-          className="text-[11px] text-[#035AFC] hover:underline font-medium flex items-center gap-1 transition-colors"
+          className={`text-[11px] font-display font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer ${isEditorial ? 'text-blue hover:text-ink underline' : 'text-[#035AFC] hover:underline font-medium'}`}
         >
           <ArrowUpDown className="h-3 w-3" />
           {isLocationFirstMode ? 'Lookup by PIN Code Instead' : 'Search by Location Instead'}
@@ -412,17 +432,17 @@ export function LocationSelector({
             <div className="flex items-center justify-between">
               <label
                 htmlFor="location-pincode"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                className={labelBaseClass}
               >
-                <Search className="h-3.5 w-3.5 text-[#035AFC]" />
+                <Search className="h-3.5 w-3.5 text-blue" />
                 <span>1. Postal PIN Code *</span>
                 {isPinVerified === true && (
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                  <span className={isEditorial ? 'text-[10px] text-ink font-display font-bold flex items-center bg-yellow px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]' : 'text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800'}>
                     <Check className="h-2.5 w-2.5 mr-0.5" /> Verified Malappuram PIN
                   </span>
                 )}
               </label>
-              <span className="text-[10px] text-slate-400 font-mono">6 Digits</span>
+              <span className={`text-[10px] font-mono ${isEditorial ? 'text-ink/60 font-bold' : 'text-slate-400'}`}>6 Digits</span>
             </div>
             <div className="relative">
               <input
@@ -435,16 +455,10 @@ export function LocationSelector({
                 onChange={handlePinCodeChange}
                 disabled={disabled}
                 placeholder="Enter 6-digit PIN Code (e.g. 676121 for Manjeri, 676101 for Tirur)"
-                className={`w-full rounded-xl border bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 transition-all ${
-                  isPinVerified === true
-                    ? 'border-emerald-500 focus:border-emerald-600 ring-2 ring-emerald-500/20'
-                    : isPinVerified === false
-                    ? 'border-amber-400 focus:border-amber-500'
-                    : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
-                }`}
+                className={monoInputBaseClass}
               />
               {isLoadingPostal && (
-                <div className="absolute right-3 top-2.5 flex items-center gap-1 text-[11px] text-[#035AFC]">
+                <div className="absolute right-3 top-2.5 flex items-center gap-1 text-[11px] text-blue font-bold">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   <span>Looking up...</span>
                 </div>
@@ -457,16 +471,16 @@ export function LocationSelector({
             <div className="flex items-center justify-between">
               <label
                 htmlFor="location-post-office"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                className={labelBaseClass}
               >
-                <Building className="h-3.5 w-3.5 text-[#035AFC]" />
+                <Building className="h-3.5 w-3.5 text-blue" />
                 <span>2. Post Office *</span>
               </label>
               {postOfficeOptions.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setIsManualPostOffice(!isManualPostOffice)}
-                  className="text-[10px] text-[#035AFC] hover:underline"
+                  className={`text-[10px] font-display font-bold uppercase tracking-wider ${isEditorial ? 'text-blue hover:text-ink underline' : 'text-[#035AFC] hover:underline'}`}
                 >
                   {isManualPostOffice ? 'Select from verified list' : 'Type unlisted Post Office'}
                 </button>
@@ -479,7 +493,7 @@ export function LocationSelector({
                 value={value.postOffice || ''}
                 onChange={handlePostOfficeSelect}
                 disabled={disabled}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               >
                 <option value="">
                   {postOfficeOptions.length === 1
@@ -507,7 +521,7 @@ export function LocationSelector({
                     ? 'Enter your Post Office name (e.g. Manjeri H.O)'
                     : 'Enter 6-digit PIN Code above to auto-load Post Offices'
                 }
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               />
             )}
           </div>
@@ -518,17 +532,17 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="location-district"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>3. District *</span>
-                <span className="text-[10px] text-slate-400">Fixed</span>
+                <span className={`text-[10px] ${isEditorial ? 'font-mono text-ink/60 font-bold' : 'text-slate-400'}`}>Fixed</span>
               </label>
               <select
                 id="location-district"
                 value={value.district || 'Malappuram'}
                 onChange={handleDistrictChange}
                 disabled={disabled}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/50 px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-white"
+                className={fixedFieldClass}
               >
                 <option value="Malappuram">Malappuram District</option>
               </select>
@@ -538,15 +552,15 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="location-taluk"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>4. Taluk *</span>
                 {value.taluk ? (
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className={isEditorial ? 'text-[10px] text-ink font-display font-bold flex items-center bg-yellow px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]' : 'text-[10px] text-emerald-600 dark:text-emerald-400 font-medium'}>
                     Verified
                   </span>
                 ) : (
-                  <span className="text-[10px] text-[#035AFC]">7 Taluks</span>
+                  <span className={isEditorial ? 'text-[10px] font-mono text-blue font-bold' : 'text-[10px] text-[#035AFC]'}>7 Taluks</span>
                 )}
               </label>
               <select
@@ -554,7 +568,7 @@ export function LocationSelector({
                 value={value.taluk}
                 onChange={handleTalukChange}
                 disabled={disabled}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none transition-all"
+                className={inputBaseClass}
               >
                 <option value="">Select Taluk...</option>
                 {taluks.map((t) => (
@@ -572,15 +586,15 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="location-local-body"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>5. Local Body *</span>
                 {isLoadingLocalBodies ? (
-                  <span className="inline-flex items-center text-[10px] text-blue-500">
+                  <span className="inline-flex items-center text-[10px] text-blue font-bold">
                     <Loader2 className="h-3 w-3 animate-spin mr-1" /> Loading...
                   </span>
                 ) : value.taluk ? (
-                  <span className="text-[10px] text-slate-400">
+                  <span className={`text-[10px] ${isEditorial ? 'font-mono text-ink/60 font-bold' : 'text-slate-400'}`}>
                     {localBodies.length} in {value.taluk}
                   </span>
                 ) : null}
@@ -590,7 +604,7 @@ export function LocationSelector({
                 value={value.localBody}
                 onChange={handleLocalBodyChange}
                 disabled={disabled || !value.taluk || isLoadingLocalBodies}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               >
                 <option value="">
                   {!value.taluk
@@ -627,11 +641,11 @@ export function LocationSelector({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="location-ward"
-                  className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                  className={labelBaseClass}
                 >
                   6. Ward / Locality
                 </label>
-                <span className="text-[9px] text-amber-600 dark:text-amber-400 font-mono">
+                <span className={`text-[9px] font-mono ${isEditorial ? 'text-ink/60 font-bold' : 'text-amber-600 dark:text-amber-400'}`}>
                   Pending Delimitation
                 </span>
               </div>
@@ -644,7 +658,7 @@ export function LocationSelector({
                 placeholder={
                   !value.localBody ? 'Select Local Body first' : 'e.g. Ward 14 or Locality'
                 }
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               />
             </div>
           </div>
@@ -662,17 +676,17 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="fb-district"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>District *</span>
-                <span className="text-[10px] text-slate-400">Fixed</span>
+                <span className={`text-[10px] ${isEditorial ? 'font-mono text-ink/60 font-bold' : 'text-slate-400'}`}>Fixed</span>
               </label>
               <select
                 id="fb-district"
                 value={value.district || 'Malappuram'}
                 onChange={handleDistrictChange}
                 disabled={disabled}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white"
+                className={fixedFieldClass}
               >
                 <option value="Malappuram">Malappuram District</option>
               </select>
@@ -681,17 +695,17 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="fb-taluk"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>Taluk *</span>
-                <span className="text-[10px] text-[#035AFC]">7 Taluks</span>
+                <span className={isEditorial ? 'text-[10px] font-mono text-blue font-bold' : 'text-[10px] text-[#035AFC]'}>7 Taluks</span>
               </label>
               <select
                 id="fb-taluk"
                 value={value.taluk}
                 onChange={handleTalukChange}
                 disabled={disabled}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none transition-all"
+                className={inputBaseClass}
               >
                 <option value="">Select Taluk...</option>
                 {taluks.map((t) => (
@@ -708,15 +722,15 @@ export function LocationSelector({
             <div className="space-y-1">
               <label
                 htmlFor="fb-localbody"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between"
+                className={labelBaseClass}
               >
                 <span>Local Body *</span>
                 {isLoadingLocalBodies ? (
-                  <span className="inline-flex items-center text-[10px] text-blue-500">
+                  <span className="inline-flex items-center text-[10px] text-blue font-bold">
                     <Loader2 className="h-3 w-3 animate-spin mr-1" /> Loading...
                   </span>
                 ) : value.taluk ? (
-                  <span className="text-[10px] text-slate-400">
+                  <span className={`text-[10px] ${isEditorial ? 'font-mono text-ink/60 font-bold' : 'text-slate-400'}`}>
                     {localBodies.length} Options
                   </span>
                 ) : null}
@@ -726,7 +740,7 @@ export function LocationSelector({
                 value={value.localBody}
                 onChange={handleLocalBodyChange}
                 disabled={disabled || !value.taluk || isLoadingLocalBodies}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               >
                 <option value="">
                   {!value.taluk
@@ -762,11 +776,11 @@ export function LocationSelector({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="fb-ward"
-                  className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                  className={labelBaseClass}
                 >
                   Ward / Locality
                 </label>
-                <span className="text-[9px] text-amber-600 dark:text-amber-400 font-mono">
+                <span className={`text-[9px] font-mono ${isEditorial ? 'text-ink/60 font-bold' : 'text-amber-600 dark:text-amber-400'}`}>
                   Pending Delimitation
                 </span>
               </div>
@@ -779,7 +793,7 @@ export function LocationSelector({
                 placeholder={
                   !value.localBody ? 'Select Local Body first' : 'e.g. Ward 14 or Locality'
                 }
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                className={inputBaseClass}
               />
             </div>
           </div>
@@ -790,16 +804,16 @@ export function LocationSelector({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="fb-post-office"
-                  className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                  className={labelBaseClass}
                 >
-                  <Building className="h-3.5 w-3.5 text-[#035AFC]" />
+                  <Building className="h-3.5 w-3.5 text-blue" />
                   <span>Post Office *</span>
                 </label>
                 {postOfficeOptions.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setIsManualPostOffice(!isManualPostOffice)}
-                    className="text-[10px] text-[#035AFC] hover:underline"
+                    className={`text-[10px] font-display font-bold uppercase tracking-wider ${isEditorial ? 'text-blue hover:text-ink underline' : 'text-[#035AFC] hover:underline'}`}
                   >
                     {isManualPostOffice ? 'Select from list' : 'Type manually'}
                   </button>
@@ -812,7 +826,7 @@ export function LocationSelector({
                   value={value.postOffice || ''}
                   onChange={handlePostOfficeSelect}
                   disabled={disabled}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                  className={inputBaseClass}
                 >
                   <option value="">
                     {postOfficeOptions.length === 1
@@ -834,7 +848,7 @@ export function LocationSelector({
                   onChange={handleManualPostOfficeChange}
                   disabled={disabled}
                   placeholder="e.g. Manjeri H.O or Tirur H.O"
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all"
+                  className={inputBaseClass}
                 />
               )}
             </div>
@@ -843,16 +857,16 @@ export function LocationSelector({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="fb-pin"
-                  className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                  className={labelBaseClass}
                 >
                   <span>PIN Code *</span>
                   {isPinVerified === true && (
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center">
+                    <span className={isEditorial ? 'text-[10px] text-ink font-display font-bold flex items-center bg-yellow px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]' : 'text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center'}>
                       <Check className="h-2.5 w-2.5 mr-0.5" /> Verified
                     </span>
                   )}
                 </label>
-                <span className="text-[10px] text-slate-400 font-mono">6 Digits</span>
+                <span className={`text-[10px] font-mono ${isEditorial ? 'text-ink/60 font-bold' : 'text-slate-400'}`}>6 Digits</span>
               </div>
               <input
                 id="fb-pin"
@@ -862,11 +876,7 @@ export function LocationSelector({
                 onChange={handlePinCodeChange}
                 disabled={disabled}
                 placeholder="e.g. 676121"
-                className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-60 transition-all ${
-                  isPinVerified === true
-                    ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/10'
-                    : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
-                }`}
+                className={monoInputBaseClass}
               />
             </div>
           </div>
@@ -875,36 +885,36 @@ export function LocationSelector({
 
       {/* Postal Status & Guidance Feedback */}
       {postalMessage && (
-        <div className="flex items-center gap-2 text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-lg border border-amber-200 dark:border-amber-900/40">
-          <Info className="h-4 w-4 shrink-0 text-amber-500" />
+        <div className={isEditorial ? 'flex items-center gap-2 text-xs text-ink bg-yellow/20 p-3 border-2 border-ink shadow-[2px_2px_0px_#14161c]' : 'flex items-center gap-2 text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-lg border border-amber-200 dark:border-amber-900/40'}>
+          <Info className="h-4 w-4 shrink-0 text-ink" />
           <span>{postalMessage}</span>
         </div>
       )}
 
       {/* Verified Location Information Panel */}
       {(value.localBody || value.postOffice || isPinVerified) && (
-        <div className="flex items-start gap-2.5 rounded-lg bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 p-3 text-xs text-slate-600 dark:text-slate-300">
-          <CheckCircle2 className="h-4 w-4 text-[#035AFC] shrink-0 mt-0.5" />
+        <div className={isEditorial ? 'flex items-start gap-3 border-2 border-ink bg-paper p-4 text-xs text-ink shadow-[3px_3px_0px_#14161c]' : 'flex items-start gap-2.5 rounded-lg bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 p-3 text-xs text-slate-600 dark:text-slate-300'}>
+          <CheckCircle2 className="h-5 w-5 text-blue shrink-0 mt-0.5" />
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-slate-900 dark:text-white">
+              <span className={`font-bold ${isEditorial ? 'font-display uppercase tracking-wider text-xs' : 'text-slate-900'}`}>
                 {value.localBody ? value.localBody : value.taluk ? `${value.taluk} Taluk` : 'Malappuram District'}
               </span>
               {value.taluk && value.localBody && (
-                <span className="text-[11px] text-slate-400">&bull; {value.taluk} Taluk</span>
+                <span className="text-[11px] text-muted">&bull; {value.taluk} Taluk</span>
               )}
               {value.pinCode && (
-                <span className="text-[11px] font-mono text-[#035AFC] bg-blue-100/60 dark:bg-blue-900/40 px-1.5 py-0.5 rounded border border-blue-200/50 dark:border-blue-800/40">
+                <span className={isEditorial ? 'text-[11px] font-mono text-ink bg-yellow px-2 py-0.5 border border-ink font-bold shadow-[1px_1px_0px_#14161c]' : 'text-[11px] font-mono text-[#035AFC] bg-blue-100/60 px-1.5 py-0.5 rounded border'}>
                   PIN: {value.pinCode}
                 </span>
               )}
               {value.postOffice && (
-                <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                <span className="text-[11px] text-muted font-medium">
                   &bull; PO: {value.postOffice}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className={`text-xs ${isEditorial ? 'font-serif text-muted' : 'text-slate-500'} leading-relaxed`}>
               {value.localBody
                 ? 'Administrative Local Body and verified Postal mapping confirmed against the official Malappuram registry.'
                 : 'Postal verification active. Please select your administrative Taluk and Local Body to complete location details.'}
@@ -914,8 +924,8 @@ export function LocationSelector({
       )}
 
       {loadError && (
-        <div className="flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 p-2.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+        <div className="flex items-center gap-1.5 text-xs text-rose-700 bg-rose-50 p-3 border-2 border-rose-500 shadow-[2px_2px_0px_#14161c] font-bold">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
           <span>{loadError}</span>
         </div>
       )}

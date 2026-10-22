@@ -67,7 +67,7 @@ export default function PrivacyPage() {
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
               <span>
-                <strong>Date of Birth & Age:</strong> Used exclusively for youth eligibility verification (18-35 age bracket) and is never displayed publicly on member rosters or search directories.
+                <strong>Date of Birth & Age:</strong> Used exclusively for youth eligibility verification (aged 35 years or below) and is never displayed publicly on member rosters or search directories.
               </span>
             </div>
             <div className="flex items-start gap-2.5">

@@ -150,7 +150,7 @@ export function SuperAdminAgeExceptionQueue() {
         ) : exceptions.length === 0 ? (
           <div className="py-8 text-center space-y-1">
             <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">No Pending Age Exception Requests</div>
-            <p className="text-xs text-slate-400">All submitted applications currently meet standard youth eligibility (18-35 years) or have already been decided.</p>
+            <p className="text-xs text-slate-400">All submitted applications currently meet standard youth eligibility (aged 35 years or below) or have already been decided.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">

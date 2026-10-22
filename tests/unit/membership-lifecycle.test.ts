@@ -54,13 +54,12 @@ describe('MYBF Full Membership Lifecycle, Age Guard & Super Admin Exception Test
       expect(res36.error).toBe(AGE_ELIGIBILITY_ERROR_MESSAGE);
     });
 
-    it('rejects applicant under 18 years of age with under-age message', () => {
-      // 17 years old
+    it('accepts applicant under 18 years of age (no minimum age restriction)', () => {
+      // 17 years old (born 2009-10-16 with reference 2026-10-15 => 16 years old)
       const res17 = validateYouthAgeEligibility('2009-10-16', referenceDate);
-      expect(res17.eligible).toBe(false);
+      expect(res17.eligible).toBe(true);
       expect(res17.age).toBe(16);
-      expect(res17.isUnderAge).toBe(true);
-      expect(res17.error).toBe(UNDER_AGE_ERROR_MESSAGE);
+      expect(res17.requiresAgeException).toBeFalsy();
     });
 
     it('validates age exception eligibility for applicants aged 36+', () => {

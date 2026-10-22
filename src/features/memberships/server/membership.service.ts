@@ -94,9 +94,6 @@ export class MembershipService {
     const applicantAge = ageCheck.age;
 
     if (input.requestAgeException) {
-      if (ageCheck.isUnderAge) {
-        throw new Error('Applicants must be at least 18 years of age.');
-      }
       if (ageCheck.eligible) {
         throw new Error(
           'Applicant is aged 35 or below. Standard membership applies; special age exception is not required.'

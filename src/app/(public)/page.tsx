@@ -5,7 +5,6 @@ import { PhotoCycle } from "@/components/photo-cycle";
 import { Swipe } from "@/components/swipe";
 import { forumPhotos } from "@/lib/photos";
 import { initiatives, slugify } from "@/lib/site";
-import { YouthRegistrationForm } from "@/features/memberships/components/youth-registration-form";
 
 const chapters = [
   {
@@ -200,9 +199,9 @@ export default function HomePage() {
                 Founders, owners, students, and the mentors willing to be useful across 16 chapters in Malappuram. Zero fees. Tamper-proof digital ID cards and democratic chapter governance.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <a href="#register-form" className="btn btn-yellow">
+                <Link href="/register" className="btn btn-yellow">
                   Apply for membership <Arrow />
-                </a>
+                </Link>
                 <Link href="/membership" className="btn btn-outline-light">
                   How membership works
                 </Link>
@@ -220,7 +219,49 @@ export default function HomePage() {
 
           {/* Official Membership Application Section */}
           <div id="register-form" className="mt-16 scroll-mt-24 border-t border-white/15 pt-12">
-            <YouthRegistrationForm triggerLabel="Apply for Membership Now" />
+            <div className="border-2 border-yellow bg-ink p-6 sm:p-10 text-paper relative overflow-hidden lift">
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="max-w-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-yellow text-ink font-display text-[0.7rem] font-extrabold uppercase tracking-[0.18em] px-2.5 py-0.5">
+                      Official Chapter Enrollment
+                    </span>
+                    <span className="text-xs text-yellow/80 font-display font-medium tracking-wider uppercase">
+                      • Mission Malappuram 2050
+                    </span>
+                  </div>
+                  <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-paper tracking-tight">
+                    MYBF Youth Membership Registration
+                  </h3>
+                  <p className="mt-2 text-paper/80 font-serif text-sm sm:text-base leading-relaxed">
+                    Join 16 constituency chapters across Malappuram district. Zero registration fees, tamper-proof digital ID card, democratic chapter voting, and youth leadership discovery.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs font-display font-bold uppercase tracking-wider">
+                    <span className="px-2.5 py-1 bg-white/10 text-paper border border-white/20">
+                      ✓ 100% Free Membership
+                    </span>
+                    <span className="px-2.5 py-1 bg-white/10 text-paper border border-white/20">
+                      16 Chapters
+                    </span>
+                    <span className="px-2.5 py-1 bg-yellow text-ink">
+                      Age 35 or Below
+                    </span>
+                  </div>
+                </div>
+
+                <div className="shrink-0 flex flex-col items-start md:items-end gap-2">
+                  <Link
+                    href="/register"
+                    className="btn btn-yellow min-h-12 px-6 text-sm"
+                  >
+                    Open Application Form <Arrow />
+                  </Link>
+                  <span className="text-xs text-paper/60 font-sans">
+                    Full-page 5-step registration · Zero fees
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

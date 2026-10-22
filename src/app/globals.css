@@ -106,11 +106,26 @@ body {
 
 .public-portal h1,
 .public-portal h2,
-.public-portal h3 {
+.public-portal h3,
+.public-portal h4 {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.92;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.public-portal h3 {
+  line-height: 1.05;
+}
+
+.public-portal h4 {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.public-portal p {
+  text-wrap: pretty;
 }
 
 .public-portal ::selection {

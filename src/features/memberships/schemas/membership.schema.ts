@@ -115,14 +115,6 @@ export const memberRegistrationSchema = z
     const res = validateYouthAgeEligibility(data.dateOfBirth);
 
     if (data.requestAgeException) {
-      if (res.isUnderAge) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['dateOfBirth'],
-          message: res.error || 'Applicants must be at least 18 years of age.',
-        });
-        return;
-      }
       if (res.eligible) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

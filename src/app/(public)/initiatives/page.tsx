@@ -49,8 +49,8 @@ export default function InitiativesPage() {
               lines the forum keeps returning to: building ideas, creating connections, designing
               the future. The place changes. The brief does not.
             </p>
-            <Link href="/founders" className="btn btn-magenta mt-6 max-sm:w-full max-sm:justify-center">
-              Founders who made an impact <Arrow />
+            <Link href="/mission" className="btn btn-magenta mt-6 max-sm:w-full max-sm:justify-center">
+              Our Vision &amp; Mission <Arrow />
             </Link>
           </div>
         </div>

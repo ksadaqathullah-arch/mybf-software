@@ -29,7 +29,7 @@ export const navLinks = [
   { href: "/about", label: "About" },
   { href: "/what-we-offer", label: "What we offer" },
   { href: "/initiatives", label: "Initiatives" },
-  { href: "/founders", label: "Founders" },
+  { href: "/mission", label: "Our Mission" },
   { href: "/membership", label: "Membership" },
   { href: "/members", label: "Members" },
   { href: "/contact", label: "Contact" },

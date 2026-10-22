@@ -7,14 +7,14 @@
  */
 
 // ==========================================
-// 1. AGE ELIGIBILITY POLICY (18 TO 35 YEARS)
+// 1. AGE ELIGIBILITY POLICY (35 YEARS OR BELOW)
 // ==========================================
-export const MIN_ELIGIBLE_AGE = 18;
+export const MIN_ELIGIBLE_AGE = 0;
 export const MAX_ELIGIBLE_AGE = 35;
 export const AGE_ELIGIBILITY_ERROR_MESSAGE =
-  'MYBF membership registration is currently available for applicants aged 35 or below.';
+  'MYBF membership registration is open to applicants aged 35 years or below.';
 export const UNDER_AGE_ERROR_MESSAGE =
-  'MYBF membership registration requires applicants to be at least 18 years of age.';
+  'MYBF membership registration is open to applicants aged 35 years or below.';
 
 /**
  * Calculates exact age from date of birth against a reference date.
@@ -44,9 +44,8 @@ export interface YouthAgeValidationResult {
 
 /**
  * Validates age eligibility for youth registration.
- * - Eligible if applicant is aged 18 to 35 (has NOT yet reached 36th birthday).
+ * - Eligible if applicant is aged 35 or below (has NOT yet reached 36th birthday).
  * - Requires age exception if applicant has reached their 36th birthday (age >= 36).
- * - Rejects applicants under 18 years of age.
  * - Rejects future dates of birth.
  */
 export function validateYouthAgeEligibility(
@@ -71,13 +70,8 @@ export function validateYouthAgeEligibility(
 
   const age = calculateAge(dob, referenceDate);
 
-  if (age < MIN_ELIGIBLE_AGE) {
-    return {
-      eligible: false,
-      age,
-      error: UNDER_AGE_ERROR_MESSAGE,
-      isUnderAge: true,
-    };
+  if (age < 0) {
+    return { eligible: false, age: -1, error: 'Date of birth cannot be in the future.' };
   }
 
   if (age > MAX_ELIGIBLE_AGE) {
@@ -100,9 +94,6 @@ export function validateAgeExceptionEligibility(
   referenceDate: Date = new Date()
 ): { validForException: boolean; age: number; error?: string } {
   const result = validateYouthAgeEligibility(dateOfBirth, referenceDate);
-  if (result.isUnderAge) {
-    return { validForException: false, age: result.age, error: result.error };
-  }
   if (result.age < 0 || result.error === 'Date of birth cannot be in the future.') {
     return { validForException: false, age: result.age, error: result.error };
   }

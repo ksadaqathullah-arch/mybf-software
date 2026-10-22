@@ -13,17 +13,15 @@ import {
   AlertCircle,
   Target,
   Palette,
-  Users2,
   ShieldCheck,
   Check,
   KeyRound,
   Eye,
   EyeOff,
-  X,
-  Sparkles,
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Arrow } from '@/components/arrow';
 import { MybfLogo } from '@/components/brand/mybf-logo';
 import { INITIAL_16_CHAPTERS } from '@/features/chapters/constants/founding-chapters';
 import {
@@ -36,7 +34,6 @@ import { LocationSelector } from '@/features/geography/components/location-selec
 import {
   EXPECTATION_OPTIONS,
   TALENT_CATEGORIES,
-  PARTICIPATION_PREFERENCES,
   GENDER_OPTIONS,
   validateYouthAgeEligibility,
   calculateAge,
@@ -44,87 +41,99 @@ import {
 } from '@/features/memberships/constants/youth-discovery';
 
 export interface YouthRegistrationFormProps {
+  className?: string;
+  // Legacy optional props preserved as no-ops for backward compatibility
   asModal?: boolean;
   isOpen?: boolean;
   onClose?: () => void;
   triggerLabel?: string;
-  className?: string;
 }
 
 const STEPS = [
-  { id: 1, title: 'Personal Identity', shortLabel: 'Identity', subtitle: 'Name, contact details & youth age eligibility' },
-  { id: 2, title: 'Location & Chapter', shortLabel: 'Location', subtitle: 'Malappuram residence & constituency chapter' },
-  { id: 3, title: 'Professional Profile', shortLabel: 'Profile', subtitle: 'Current position, occupation & classification' },
-  { id: 4, title: 'Goals & Talents', shortLabel: 'Interests', subtitle: 'Community expectations & extracurricular skills' },
-  { id: 5, title: 'Account Credentials', shortLabel: 'Account', subtitle: 'Portal credentials & DPDP compliance' },
+  {
+    id: 1,
+    title: 'Personal Identity & Contact',
+    shortLabel: 'Identity',
+    subtitle: 'Your official identity, contact details, and youth eligibility verification for chapter enrollment.',
+    badge: 'Step 01 • Age 35 or Below',
+    color: 'text-blue',
+  },
+  {
+    id: 2,
+    title: 'Location & Chapter Selection',
+    shortLabel: 'Location',
+    subtitle: 'Verify your administrative residence using the PIN code lookup, then choose your constituency chapter.',
+    badge: 'Step 02 • 16 Chapters',
+    color: 'text-magenta',
+  },
+  {
+    id: 3,
+    title: 'Professional Profile & Role',
+    shortLabel: 'Profile',
+    subtitle: 'Categorize your current professional role to connect with relevant mentors and chapter activities.',
+    badge: 'Step 03 • Member Role',
+    color: 'text-cyan',
+  },
+  {
+    id: 4,
+    title: 'Goals, Talents & Expectations',
+    shortLabel: 'Goals',
+    subtitle: 'What you walk away with: select collaboration areas and unique skills you bring to the chapter.',
+    badge: 'Step 04 • Alignment',
+    color: 'text-blue',
+  },
+  {
+    id: 5,
+    title: 'Account Credentials & Charter',
+    shortLabel: 'Account',
+    subtitle: 'Establish your secure digital credentials and agree to the MYBF Organizational Charter.',
+    badge: 'Step 05 • DPDP Compliant',
+    color: 'text-ink',
+  },
+];
+
+const STRIP_WORDS = [
+  'Startup Founders',
+  'Business Owners',
+  'Students with an Idea',
+  'Professionals',
+  'Mentors',
+  '16 Chapters',
+  '100% Free Membership',
+  'Age 35 or Below',
 ];
 
 export function YouthRegistrationForm({
-  asModal = true,
-  isOpen: controlledIsOpen,
-  onClose: controlledOnClose,
-  triggerLabel = 'Apply for Membership Now',
   className = '',
+  asModal = false,
+  isOpen = true,
+  onClose,
 }: YouthRegistrationFormProps) {
-  const [internalOpen, setInternalOpen] = React.useState(false);
-  const isModalOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalOpen;
+  // Step state (1 through 5)
+  const [step, setStep] = React.useState(1);
+  const formTopRef = React.useRef<HTMLDivElement>(null);
+  const formBodyRef = React.useRef<HTMLDivElement>(null);
 
-  const handleClose = React.useCallback(() => {
-    if (controlledOnClose) {
-      controlledOnClose();
-    } else {
-      setInternalOpen(false);
-    }
-    if (typeof window !== 'undefined' && (window.location.hash === '#register-form' || window.location.hash === '#register-modal')) {
-      history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-  }, [controlledOnClose]);
-
-  // Open modal via hash change or global custom event
+  // Body overflow locking and escape key handling when rendered as modal
   React.useEffect(() => {
-    const handleHash = () => {
-      if (typeof window !== 'undefined') {
-        const hash = window.location.hash;
-        if (hash === '#register-form' || hash === '#register-modal' || hash === '#register') {
-          setInternalOpen(true);
-        }
+    if (!asModal && onClose === undefined) return;
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
       }
     };
 
-    const handleCustomOpen = () => {
-      setInternalOpen(true);
-    };
-
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    window.addEventListener('open-registration-modal', handleCustomOpen);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener('hashchange', handleHash);
-      window.removeEventListener('open-registration-modal', handleCustomOpen);
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
-
-  // Lock background scroll when modal is open
-  React.useEffect(() => {
-    if (asModal && isModalOpen) {
-      document.body.style.overflow = 'hidden';
-      const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          handleClose();
-        }
-      };
-      window.addEventListener('keydown', onKeyDown);
-      return () => {
-        document.body.style.overflow = '';
-        window.removeEventListener('keydown', onKeyDown);
-      };
-    }
-  }, [asModal, isModalOpen, handleClose]);
-
-  // Step state (1 through 5)
-  const [step, setStep] = React.useState(1);
-  const modalScrollRef = React.useRef<HTMLDivElement>(null);
+  }, [isOpen, asModal, onClose]);
 
   // Form data state
   const [formData, setFormData] = React.useState({
@@ -239,7 +248,7 @@ export function YouthRegistrationForm({
     }
   };
 
-  // Field-wise step validation (WITHOUT HTML5 required attribute)
+  // Field-wise step validation
   const validateStep = (stepNumber: number): boolean => {
     const errors: Record<string, string> = {};
 
@@ -257,8 +266,8 @@ export function YouthRegistrationForm({
         errors.dateOfBirth = 'Please select your date of birth.';
       } else {
         const check = validateYouthAgeEligibility(formData.dateOfBirth);
-        if (check.isUnderAge) {
-          errors.dateOfBirth = 'MYBF membership requires applicants to be at least 18 years of age.';
+        if (check.error === 'Date of birth cannot be in the future.') {
+          errors.dateOfBirth = 'Date of birth cannot be in the future.';
         } else if (check.requiresAgeException) {
           if (!formData.requestAgeException) {
             errors.requestAgeException = 'Applicants 36 and above must check "Request Special Super Admin Approval".';
@@ -345,20 +354,24 @@ export function YouthRegistrationForm({
     return true;
   };
 
+  const scrollToTop = () => {
+    if (formBodyRef.current) {
+      formBodyRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (formTopRef.current) {
+      formTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const handleNext = () => {
     if (validateStep(step)) {
       setStep((prev) => Math.min(prev + 1, 5));
-      if (modalScrollRef.current) {
-        modalScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      scrollToTop();
     }
   };
 
   const handlePrev = () => {
     setStep((prev) => Math.max(prev - 1, 1));
-    if (modalScrollRef.current) {
-      modalScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    scrollToTop();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -367,6 +380,7 @@ export function YouthRegistrationForm({
     for (let s = 1; s <= 5; s++) {
       if (!validateStep(s)) {
         setStep(s);
+        scrollToTop();
         return;
       }
     }
@@ -424,6 +438,7 @@ export function YouthRegistrationForm({
         username: data.username || formData.username.trim(),
       });
       setSubmitted(true);
+      scrollToTop();
     } catch (err: any) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -437,195 +452,223 @@ export function YouthRegistrationForm({
   const progressPercent = Math.round((step / 5) * 100);
   const currentStepMeta = STEPS[step - 1];
 
-  // Inner form view (shared between modal and standalone)
-  const formContent = (
+  const formElement = (
     <div
+      ref={formTopRef}
       className={cn(
-        'flex flex-col bg-white dark:bg-[#0A0F1D] text-slate-900 dark:text-slate-100',
-        asModal ? 'h-full w-full min-h-0 flex-1 overflow-hidden' : 'w-full'
+        'w-full border-2 border-ink bg-paper text-ink shadow-[8px_8px_0px_#14161c] overflow-hidden flex flex-col',
+        asModal ? 'border-0 shadow-none h-full' : '',
+        className
       )}
     >
       {/* ==================================================== */}
-      {/* STICKY / FIXED-HEIGHT HEADER */}
+      {/* MEMBERSHIP PAGE HERO HEADER (Yellow & Ink Signature Identity) */}
       {/* ==================================================== */}
-      <header className="shrink-0 border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-[#0A0F1D]/95 px-5 py-4 sm:px-6 sm:py-4.5 backdrop-blur-md z-10">
-        <div className="flex items-center justify-between gap-3">
-          {/* Brand logo & attribution */}
-          <div className="flex items-center gap-3">
-            <MybfLogo size="sm" className="h-6 w-auto" priority />
-            <div className="hidden sm:flex flex-col border-l border-slate-200 dark:border-slate-800 pl-3">
-              <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                Membership Portal
+      <header className="shrink-0 border-b-2 border-ink bg-yellow text-ink">
+        <div className="px-5 pt-5 pb-4 sm:px-8 sm:pt-6 sm:pb-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Index & Eyebrow like PageHero: "04 —— MEMBERSHIP" */}
+            <div className="flex items-center gap-3">
+              <p className="flex items-center gap-2.5 font-display text-[0.72rem] font-bold tracking-[0.22em] uppercase text-ink">
+                <span>04</span>
+                <span aria-hidden="true" className="h-px w-8 bg-current opacity-60" />
+                <span>Membership Application</span>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              {/* Step Pill */}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-ink text-paper font-display text-xs font-black uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                Step 0{step} of 05 <span className="opacity-75 font-mono font-normal">({progressPercent}%)</span>
               </span>
-              <span className="text-[9px] text-amber-600 dark:text-amber-400 font-medium">
-                An Initiative Under Mission Malappuram 2050
-              </span>
+
+              {/* Close Button when inside modal */}
+              {onClose && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close application modal"
+                  className="inline-flex size-9 sm:size-10 items-center justify-center border-2 border-ink bg-paper text-ink font-display text-sm font-black uppercase hover:bg-ink hover:text-paper shadow-[2px_2px_0px_#14161c] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer shrink-0"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Step badge & close button */}
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 text-[#035AFC] dark:text-blue-400 text-xs font-semibold border border-blue-200/60 dark:border-blue-900/60">
-              Step {step} of 5 <span className="opacity-60 font-normal">({progressPercent}%)</span>
-            </span>
-            {asModal && (
-              <button
-                type="button"
-                onClick={handleClose}
-                aria-label="Close dialog"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Title & subtitle */}
-        <div className="mt-3 flex items-baseline justify-between">
-          <div>
-            <h2 id="registration-modal-title" className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          {/* Large Hero Title & Lead like the Membership Page */}
+          <div className="mt-3">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-ink tracking-tight leading-[1.08]">
               {currentStepMeta.title}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="font-serif text-sm sm:text-base text-ink/90 mt-1.5 leading-relaxed max-w-2xl">
               {currentStepMeta.subtitle}
             </p>
           </div>
+
+          {/* Progress Bar (Ink fill with ink/20 track) */}
+          <div className="mt-4 w-full bg-ink/15 h-2 border border-ink/25 overflow-hidden">
+            <div
+              className="h-full bg-ink transition-all duration-300 ease-out shadow-[0_0_8px_rgba(20,22,28,0.3)]"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
 
-        {/* Elegant Progress bar */}
-        <div className="mt-3 w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[#035AFC] transition-all duration-300 ease-out rounded-full shadow-[0_0_8px_rgba(3,90,252,0.4)]"
-            style={{ width: `${progressPercent}%` }}
-          />
+        {/* Marquee Ticker Strip: Exact replica of the Membership Page Marquee Strip */}
+        <div className="overflow-hidden border-t-2 border-ink bg-ink text-paper py-2">
+          <ul aria-hidden="true" className="marquee-track flex w-max">
+            {[...STRIP_WORDS, ...STRIP_WORDS].map((word, i) => (
+              <li
+                key={`${word}-${i}`}
+                className="flex items-center gap-5 px-5 font-display text-xs font-bold tracking-[0.18em] whitespace-nowrap uppercase text-paper"
+              >
+                {word}
+                <span className="size-1.5 rotate-45 bg-yellow" />
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Desktop Compact Stepper */}
-        <nav aria-label="Registration steps" className="hidden sm:grid grid-cols-5 gap-1.5 mt-3 pt-1">
+        {/* Step Separations Stepper Navigation */}
+        <nav
+          aria-label="Registration steps"
+          className="grid grid-cols-5 gap-1 sm:gap-2 px-3 sm:px-8 py-2 bg-paper-2 border-t-2 border-ink"
+        >
           {STEPS.map((s) => {
             const isCompleted = s.id < step;
             const isCurrent = s.id === step;
             return (
-              <div
+              <button
+                type="button"
                 key={s.id}
+                onClick={() => {
+                  if (isCompleted) {
+                    setStep(s.id);
+                    scrollToTop();
+                  }
+                }}
+                disabled={!isCompleted && s.id !== step}
                 className={cn(
-                  'px-2 py-1.5 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 text-xs',
+                  'px-1.5 sm:px-2.5 py-1.5 sm:py-2 text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-xs font-display tracking-wider uppercase border-2',
                   isCurrent
-                    ? 'bg-[#035AFC] text-white font-semibold shadow-sm'
+                    ? 'bg-ink text-paper border-ink font-black shadow-[2px_2px_0px_#fcc000]'
                     : isCompleted
-                    ? 'bg-blue-50/70 dark:bg-blue-950/30 text-[#035AFC] dark:text-blue-400 font-medium border border-blue-200/50 dark:border-blue-900/40'
-                    : 'bg-slate-50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 border border-slate-100 dark:border-slate-800/80'
+                    ? 'bg-blue text-paper border-ink font-bold shadow-[1px_1px_0px_#14161c] hover:bg-blue-deep cursor-pointer'
+                    : 'bg-paper text-ink/40 border-ink/20 font-medium cursor-not-allowed'
                 )}
               >
                 {isCompleted ? (
-                  <Check className="h-3 w-3 stroke-[2.5]" />
+                  <Check className="h-3.5 w-3.5 stroke-[3] text-yellow shrink-0" />
                 ) : (
-                  <span className="text-[10px] font-mono opacity-80">{s.id}.</span>
+                  <span className="font-mono text-[11px] font-bold opacity-80 shrink-0">0{s.id}.</span>
                 )}
-                <span className="truncate">{s.shortLabel}</span>
-              </div>
+                <span className="truncate hidden md:inline">{s.shortLabel}</span>
+              </button>
             );
           })}
         </nav>
       </header>
 
       {/* ==================================================== */}
-      {/* INDEPENDENTLY SCROLLABLE FORM BODY (min-h-0 is essential) */}
+      {/* FORM BODY */}
       {/* ==================================================== */}
       <div
-        ref={modalScrollRef}
+        ref={formBodyRef}
         className={cn(
-          'px-5 py-5 sm:px-6 sm:py-6 space-y-6',
-          asModal ? 'flex-1 min-h-0 overflow-y-auto overscroll-contain' : ''
+          'px-5 py-6 sm:px-8 sm:py-8 space-y-6 bg-paper text-ink',
+          asModal ? 'flex-1 overflow-y-auto' : ''
         )}
       >
         {/* Global Error Banner */}
         {fieldErrors.form && (
-          <div className="p-3.5 rounded-xl border border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 text-xs flex items-center gap-2.5 font-medium">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+          <div className="p-4 border-2 border-rose-500 bg-rose-50 text-rose-950 text-xs sm:text-sm flex items-center gap-3 font-semibold shadow-[3px_3px_0px_#14161c]">
+            <AlertCircle className="h-5 w-5 shrink-0 text-rose-600" />
             <span>{fieldErrors.form}</span>
           </div>
         )}
 
         {submitted ? (
-          /* Submission Confirmation View */
-          <div className="py-8 sm:py-10 text-center space-y-6 max-w-lg mx-auto">
+          /* ==================================================== */
+          /* SUBMISSION SUCCESS CONFIRMATION */
+          /* ==================================================== */
+          <div className="py-8 sm:py-12 text-center space-y-6 max-w-xl mx-auto">
             <div
               className={cn(
-                'h-16 w-16 mx-auto rounded-2xl flex items-center justify-center shadow-lg',
+                'size-20 mx-auto flex items-center justify-center shadow-[4px_4px_0px_#14161c] border-2 border-ink',
                 submissionResult?.isAgeException
-                  ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-800'
-                  : 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800'
+                  ? 'bg-yellow text-ink'
+                  : 'bg-emerald-400 text-ink'
               )}
             >
               {submissionResult?.isAgeException ? (
-                <ShieldCheck className="h-9 w-9" />
+                <ShieldCheck className="h-10 w-10 stroke-[2.5]" />
               ) : (
-                <CheckCircle2 className="h-9 w-9" />
+                <CheckCircle2 className="h-10 w-10 stroke-[2.5]" />
               )}
             </div>
 
             <div>
               <span
                 className={cn(
-                  'inline-flex px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase',
+                  'inline-flex px-3.5 py-1 text-xs font-display font-extrabold uppercase tracking-widest border-2 border-ink shadow-[2px_2px_0px_#14161c]',
                   submissionResult?.isAgeException
-                    ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300'
-                    : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300'
+                    ? 'bg-yellow text-ink'
+                    : 'bg-emerald-100 text-emerald-950'
                 )}
               >
-                {submissionResult?.isAgeException ? 'Special Age Exception Pending' : 'Youth Application Received'}
+                {submissionResult?.isAgeException ? 'Special Age Exception Pending' : 'Youth Application Enrolled'}
               </span>
-              <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="mt-4 font-display text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">
                 {submissionResult?.isAgeException
-                  ? 'Application Submitted for Super Admin Review'
+                  ? 'Submitted for Super Admin Review'
                   : 'Application Registered Successfully'}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto mt-2 leading-relaxed">
+              <p className="font-serif text-sm sm:text-base text-muted max-w-md mx-auto mt-2 leading-relaxed">
                 {submissionResult?.isAgeException
                   ? 'Standard youth eligibility ends at 35. Because your age exceeds 35, your application has been securely routed to the Super Administrator for exceptional authorization.'
-                  : 'Your account credentials have been created. Your registration is now under chapter officer verification. Once approved, you can immediately access your digital member space.'}
+                  : 'Your account credentials have been established. Your registration is now under chapter officer verification. Once approved, you can immediately access your digital member space.'}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 p-5 text-left text-xs text-slate-700 dark:text-slate-300 space-y-3.5 shadow-sm">
-              <div className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+            {/* Application Summary Card */}
+            <div className="border-2 border-ink bg-white p-6 text-left text-xs sm:text-sm text-ink space-y-4 shadow-[4px_4px_0px_#14161c]">
+              <div className="grid grid-cols-2 gap-4 pb-4 border-b-2 border-ink/15">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
                     Applicant & Username
                   </span>
-                  <strong className="text-sm font-bold text-slate-900 dark:text-white block mt-0.5">
+                  <strong className="text-sm font-bold text-ink block mt-0.5">
                     {formData.fullName}
                   </strong>
-                  <span className="font-mono text-xs font-semibold text-[#035AFC] dark:text-blue-400 block mt-0.5">
+                  <span className="font-mono text-xs font-bold text-blue block mt-0.5">
                     @{submissionResult?.username || formData.username}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                    Reference ID
+                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
+                    Official Reference ID
                   </span>
-                  <span className="font-mono text-xs font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-800 px-2.5 py-1 inline-block rounded-lg border border-slate-200 dark:border-slate-700 mt-1">
+                  <span className="font-mono text-xs font-black text-ink bg-yellow px-2.5 py-1 inline-block border-2 border-ink mt-1 shadow-[2px_2px_0px_#14161c]">
                     {submissionResult?.referenceNumber || 'REF-REGISTERED'}
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-4 pb-4 border-b-2 border-ink/15">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
                     Enrolled Chapter
                   </span>
-                  <strong className="text-xs font-semibold text-slate-900 dark:text-white block mt-0.5">
+                  <strong className="text-xs sm:text-sm font-bold text-ink block mt-0.5">
                     {INITIAL_16_CHAPTERS.find((c) => c.slug === formData.chapterId)?.name || formData.chapterId}
                   </strong>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
                     Age Standing
                   </span>
-                  <span className="text-xs font-semibold block mt-0.5 text-slate-900 dark:text-white">
+                  <span className="text-xs sm:text-sm font-semibold block mt-0.5 text-ink">
                     {submissionResult?.isAgeException
                       ? `Exception Review (${submissionResult.applicantAge} years)`
                       : `Eligible Youth (${submissionResult?.applicantAge} years)`}
@@ -633,55 +676,73 @@ export function YouthRegistrationForm({
                 </div>
               </div>
 
-              <div className="pt-1 flex items-center justify-between text-xs font-semibold">
-                <span className="text-slate-500">Registration Status:</span>
-                <span className="text-[#035AFC] dark:text-blue-400 uppercase tracking-wide">
+              <div className="pt-1 flex items-center justify-between text-xs font-bold font-display uppercase tracking-wide">
+                <span className="text-muted">Status:</span>
+                <span className="text-blue">
                   {submissionResult?.isAgeException ? 'Super Admin Review Queue' : 'Under Chapter Review (Zero Fees)'}
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-3 pt-2">
-              {asModal && (
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
+              {onClose && (
                 <button
                   type="button"
-                  onClick={handleClose}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+                  onClick={onClose}
+                  className="btn btn-outline-dark min-h-12 px-6 border-2 border-ink cursor-pointer"
                 >
                   Close Window
                 </button>
               )}
               <Link
                 href="/login"
-                className="px-6 py-2.5 rounded-xl bg-[#035AFC] hover:bg-[#0246C7] text-white text-xs font-semibold shadow-sm transition-colors"
+                className="btn btn-yellow min-h-12 px-6 border-2 border-ink shadow-[3px_3px_0px_#14161c]"
               >
-                Member Sign In →
+                Sign In to Member Portal <Arrow />
+              </Link>
+              <Link
+                href="/"
+                className="btn btn-outline-dark min-h-12 px-6 border-2 border-ink"
+              >
+                Return to Homepage
               </Link>
             </div>
           </div>
         ) : (
-          /* Form Sections */
+          /* ==================================================== */
+          /* FORM STEPS */
+          /* ==================================================== */
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
             {/* ==================================================== */}
             {/* STEP 1: Personal & Contact Identity */}
             {/* ==================================================== */}
             {step === 1 && (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <User className="h-4 w-4 text-[#035AFC]" />
-                    <span>Personal Identity & Contact Information</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Your official identity, contact details, and youth eligibility verification.
+              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+                <div className="border-b-2 border-ink/15 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="font-display text-xs sm:text-sm font-bold tracking-[0.18em] text-blue uppercase">
+                        01 &bull; Personal Identity
+                      </p>
+                      <h3 className="font-display text-xl sm:text-2xl font-extrabold text-ink mt-1 flex items-center gap-2">
+                        <User className="h-5 w-5 text-blue" />
+                        <span>Personal Identity & Contact Information</span>
+                      </h3>
+                    </div>
+                    <span className="self-start sm:self-auto px-2.5 py-1 bg-yellow text-ink font-display text-[0.68rem] font-extrabold uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                      Age 35 or Below
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm text-muted mt-1.5 leading-relaxed">
+                    Your official identity, contact details, and youth eligibility verification for chapter enrollment.
                   </p>
                 </div>
 
                 {/* Full Name & Phone */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label htmlFor="field-fullName" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                      Full Name <span className="text-rose-500">*</span>
+                    <label htmlFor="field-fullName" className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5">
+                      Full Name <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <input
                       id="field-fullName"
@@ -693,14 +754,14 @@ export function YouthRegistrationForm({
                       }}
                       placeholder="e.g. Mohammed Anas"
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.fullName
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60 focus:ring-2 focus:ring-rose-500/20'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.fullName && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.fullName}</span>
                       </p>
@@ -708,8 +769,8 @@ export function YouthRegistrationForm({
                   </div>
 
                   <div>
-                    <label htmlFor="field-primaryPhone" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                      Mobile Number (10 Digits) <span className="text-rose-500">*</span>
+                    <label htmlFor="field-primaryPhone" className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5">
+                      Mobile Number (10 Digits) <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <input
                       id="field-primaryPhone"
@@ -722,14 +783,14 @@ export function YouthRegistrationForm({
                       placeholder="e.g. 9847012345"
                       maxLength={10}
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.primaryPhone
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60 focus:ring-2 focus:ring-rose-500/20'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.primaryPhone && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.primaryPhone}</span>
                       </p>
@@ -738,10 +799,10 @@ export function YouthRegistrationForm({
                 </div>
 
                 {/* Email, Date of Birth & Gender */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                   <div className="sm:col-span-1">
-                    <label htmlFor="field-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                      Email Address <span className="text-rose-500">*</span>
+                    <label htmlFor="field-email" className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5">
+                      Email Address <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <input
                       id="field-email"
@@ -753,14 +814,14 @@ export function YouthRegistrationForm({
                       }}
                       placeholder="e.g. anas@enterprise.in"
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.email
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60 focus:ring-2 focus:ring-rose-500/20'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.email && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.email}</span>
                       </p>
@@ -769,10 +830,10 @@ export function YouthRegistrationForm({
 
                   <div className="sm:col-span-1">
                     <div className="flex items-center justify-between mb-1.5">
-                      <label htmlFor="field-dateOfBirth" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        Date of Birth <span className="text-rose-500">*</span>
+                      <label htmlFor="field-dateOfBirth" className="font-display text-xs font-bold uppercase tracking-wider text-ink">
+                        Date of Birth <span className="text-rose-600 font-bold">*</span>
                       </label>
-                      <span className="text-[10px] text-slate-400 font-medium">Max Age: 35</span>
+                      <span className="text-[10px] font-display font-bold uppercase tracking-wider text-ink/60">Max Age: 35</span>
                     </div>
                     <input
                       id="field-dateOfBirth"
@@ -783,45 +844,50 @@ export function YouthRegistrationForm({
                         clearFieldError('dateOfBirth');
                       }}
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.dateOfBirth
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60 focus:ring-2 focus:ring-rose-500/20'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.dateOfBirth && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.dateOfBirth}</span>
                       </p>
                     )}
 
                     {ageValidation && !fieldErrors.dateOfBirth && (
-                      <div className="mt-1.5 text-xs font-semibold">
+                      <div className="mt-2 text-xs font-bold">
                         {ageValidation.eligible ? (
-                          <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                            <Check className="h-3.5 w-3.5" /> Eligible Youth ({ageValidation.age} years old)
-                          </span>
-                        ) : ageValidation.isUnderAge ? (
-                          <span className="text-rose-600 dark:text-rose-400">{ageValidation.error}</span>
+                          <div className="p-2.5 border-2 border-ink bg-emerald-50 text-emerald-950 font-display text-xs font-bold flex items-center gap-2 shadow-[2px_2px_0px_#14161c]">
+                            <Check className="h-4 w-4 text-emerald-700 stroke-[3]" />
+                            <span>Eligible Youth ({ageValidation.age} years old) &bull; Standard Age 35 or Below</span>
+                          </div>
+                        ) : ageValidation.error === 'Date of birth cannot be in the future.' ? (
+                          <div className="p-2.5 border-2 border-ink bg-rose-50 text-rose-950 font-display text-xs font-bold flex items-center gap-2 shadow-[2px_2px_0px_#14161c]">
+                            <AlertCircle className="h-4 w-4 text-rose-600" />
+                            <span>{ageValidation.error}</span>
+                          </div>
                         ) : (
-                          <span className="text-amber-600 dark:text-amber-400">
-                            Age {ageValidation.age} (Standard limit is 35. Super Admin review required).
-                          </span>
+                          <div className="p-2.5 border-2 border-ink bg-yellow/30 text-ink font-display text-xs font-bold flex items-center gap-2 shadow-[2px_2px_0px_#14161c]">
+                            <AlertCircle className="h-4 w-4 text-ink shrink-0" />
+                            <span>Age {ageValidation.age}: Standard limit is 35. Super Admin authorization requested.</span>
+                          </div>
                         )}
                       </div>
                     )}
                   </div>
 
                   <div className="sm:col-span-1">
-                    <label htmlFor="field-gender" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
+                    <label htmlFor="field-gender" className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5">
                       Gender (Optional)
                     </label>
                     <select
                       id="field-gender"
                       value={formData.gender}
                       onChange={(e) => setFormData({ ...formData, gender: e.target.value as GenderOptionValue })}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                      className="w-full border-2 border-ink bg-white px-4 py-3 text-sm text-ink transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                     >
                       <option value="">Select Gender (Optional)</option>
                       {GENDER_OPTIONS.map((g) => (
@@ -830,26 +896,26 @@ export function YouthRegistrationForm({
                         </option>
                       ))}
                     </select>
-                    <span className="text-[10px] text-slate-400 block mt-1">Kept confidential; not published</span>
+                    <span className="text-[10px] text-muted font-serif block mt-1">Kept confidential; not published</span>
                   </div>
                 </div>
 
                 {/* Special Age Exception Request Workflow (Age >= 36) */}
                 {ageValidation && ageValidation.requiresAgeException && (
-                  <div className="p-4 rounded-xl border border-amber-300 dark:border-amber-800/80 bg-amber-50/70 dark:bg-amber-950/30 space-y-3">
-                    <div className="flex items-start gap-2.5">
-                      <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="p-5 border-2 border-ink bg-yellow/20 space-y-3 shadow-[4px_4px_0px_#14161c]">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-ink shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wide">
+                        <p className="font-display text-xs font-extrabold text-ink uppercase tracking-wider">
                           Super Admin Age Exception Review ({ageValidation.age} Years Old)
                         </p>
-                        <p className="text-xs text-amber-800 dark:text-amber-400 mt-0.5 leading-relaxed">
+                        <p className="font-serif text-xs text-ink/85 mt-1 leading-relaxed">
                           Standard MYBF membership is curated for youth up to 35. Applicants aged 36+ require review and exceptional authorization by the Super Administrator before chapter approval.
                         </p>
                       </div>
                     </div>
 
-                    <label className="flex items-center gap-2.5 cursor-pointer pt-1 font-semibold text-xs text-slate-800 dark:text-slate-200">
+                    <label className="flex items-center gap-2.5 cursor-pointer pt-2 font-display text-xs font-bold text-ink">
                       <input
                         type="checkbox"
                         checked={formData.requestAgeException}
@@ -857,24 +923,24 @@ export function YouthRegistrationForm({
                           setFormData({ ...formData, requestAgeException: e.target.checked });
                           clearFieldError('requestAgeException');
                         }}
-                        className="h-4 w-4 rounded border-slate-300 text-[#035AFC] focus:ring-[#035AFC]"
+                        className="size-4 border-2 border-ink text-blue focus:ring-yellow"
                       />
                       <span>Request Special Super Admin Approval</span>
                     </label>
                     {fieldErrors.requestAgeException && (
-                      <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                      <p className="text-xs font-bold text-rose-600 flex items-center gap-1">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.requestAgeException}</span>
                       </p>
                     )}
 
                     {formData.requestAgeException && (
-                      <div className="space-y-1.5 pt-1">
+                      <div className="space-y-1.5 pt-2">
                         <label
                           htmlFor="field-ageExceptionReason"
-                          className="text-xs font-semibold text-slate-700 dark:text-slate-300 block"
+                          className="font-display text-xs font-bold uppercase tracking-wider text-ink block"
                         >
-                          Justification for Exception <span className="text-rose-500">*</span> (Minimum 10 Characters)
+                          Justification for Exception <span className="text-rose-600 font-bold">*</span> (Min 10 Chars)
                         </label>
                         <textarea
                           id="field-ageExceptionReason"
@@ -886,14 +952,14 @@ export function YouthRegistrationForm({
                           }}
                           placeholder="Please explain your professional background, mentorship capacity, or contribution to Malappuram youth leadership..."
                           className={cn(
-                            'w-full rounded-xl border bg-white dark:bg-slate-900 p-2.5 text-xs text-slate-900 dark:text-white transition-all outline-none',
+                            'w-full border-2 p-3 text-xs sm:text-sm text-ink transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                             fieldErrors.ageExceptionReason
-                              ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                              : 'border-slate-200 dark:border-slate-700 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                              ? 'border-rose-500 bg-rose-50/50'
+                              : 'border-ink bg-white focus:ring-2 focus:ring-yellow'
                           )}
                         />
                         {fieldErrors.ageExceptionReason && (
-                          <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                          <p className="text-xs font-bold text-rose-600 flex items-center gap-1">
                             <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                             <span>{fieldErrors.ageExceptionReason}</span>
                           </p>
@@ -909,20 +975,31 @@ export function YouthRegistrationForm({
             {/* STEP 2: Location & Chapter Selection */}
             {/* ==================================================== */}
             {step === 2 && (
-              <div className="space-y-5 animate-in fade-in duration-200">
-                <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-[#035AFC]" />
-                    <span>Malappuram Administrative Location & Chapter</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+                <div className="border-b-2 border-ink/15 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="font-display text-xs sm:text-sm font-bold tracking-[0.18em] text-magenta uppercase">
+                        02 &bull; Location & Chapter
+                      </p>
+                      <h3 className="font-display text-xl sm:text-2xl font-extrabold text-ink mt-1 flex items-center gap-2">
+                        <MapPin className="h-5 w-5 text-magenta" />
+                        <span>Malappuram Administrative Location & Chapter</span>
+                      </h3>
+                    </div>
+                    <span className="self-start sm:self-auto px-2.5 py-1 bg-ink text-paper font-display text-[0.68rem] font-extrabold uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                      16 Chapters
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm text-muted mt-1.5 leading-relaxed">
                     Verify your administrative residence using the PIN code lookup, then choose your constituency chapter.
                   </p>
                 </div>
 
                 {/* Location Selector Component */}
-                <div className="rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/20 p-3.5 sm:p-4.5">
+                <div className="border-2 border-ink bg-paper/40 p-4 sm:p-6 shadow-[2px_2px_0px_#14161c]">
                   <LocationSelector
+                    variant="editorial"
                     value={{
                       district: formData.district || 'Malappuram',
                       taluk: formData.taluk,
@@ -949,19 +1026,19 @@ export function YouthRegistrationForm({
                 </div>
 
                 {fieldErrors.pinCode && (
-                  <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1.5">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                     <span>{fieldErrors.pinCode}</span>
                   </p>
                 )}
                 {fieldErrors.taluk && (
-                  <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1.5">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                     <span>{fieldErrors.taluk}</span>
                   </p>
                 )}
                 {fieldErrors.localBody && (
-                  <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1.5">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                     <span>{fieldErrors.localBody}</span>
                   </p>
@@ -972,13 +1049,13 @@ export function YouthRegistrationForm({
                   <div className="flex items-center justify-between mb-1.5">
                     <label
                       htmlFor="field-chapterId"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5"
                     >
-                      <Building2 className="h-3.5 w-3.5 text-[#035AFC]" />
+                      <Building2 className="h-4 w-4 text-blue" />
                       <span>Select Constituency Chapter</span>
-                      <span className="text-rose-500">*</span>
+                      <span className="text-rose-600 font-bold">*</span>
                     </label>
-                    <span className="text-[10px] text-slate-400 font-medium">16 Chapters in Malappuram</span>
+                    <span className="text-[10px] font-display font-bold uppercase tracking-wider text-ink/60">16 Chapters in Malappuram</span>
                   </div>
                   <select
                     id="field-chapterId"
@@ -988,10 +1065,10 @@ export function YouthRegistrationForm({
                       clearFieldError('chapterId');
                     }}
                     className={cn(
-                      'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all outline-none',
+                      'w-full border-2 px-4 py-3 text-sm text-ink transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                       fieldErrors.chapterId
-                        ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                        : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                        ? 'border-rose-500 bg-rose-50/60'
+                        : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                     )}
                   >
                     <option value="">Select your Constituency Chapter...</option>
@@ -1002,12 +1079,12 @@ export function YouthRegistrationForm({
                     ))}
                   </select>
                   {fieldErrors.chapterId && (
-                    <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                    <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                       <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                       <span>{fieldErrors.chapterId}</span>
                     </p>
                   )}
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                  <p className="text-xs text-muted mt-1.5 font-serif leading-relaxed">
                     Choose the chapter closest to your business operations or residence. Chapter transfer requests can be submitted post-approval.
                   </p>
                 </div>
@@ -1018,24 +1095,34 @@ export function YouthRegistrationForm({
             {/* STEP 3: Professional Profile */}
             {/* ==================================================== */}
             {step === 3 && (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Briefcase className="h-4 w-4 text-[#035AFC]" />
-                    <span>Professional & Career Profile</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+                <div className="border-b-2 border-ink/15 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="font-display text-xs sm:text-sm font-bold tracking-[0.18em] text-cyan uppercase">
+                        03 &bull; Professional Profile
+                      </p>
+                      <h3 className="font-display text-xl sm:text-2xl font-extrabold text-ink mt-1 flex items-center gap-2">
+                        <Briefcase className="h-5 w-5 text-cyan" />
+                        <span>Professional & Career Profile</span>
+                      </h3>
+                    </div>
+                    <span className="self-start sm:self-auto px-2.5 py-1 bg-cyan text-ink font-display text-[0.68rem] font-extrabold uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                      Classification
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm text-muted mt-1.5 leading-relaxed">
                     Categorize your current professional role to connect with relevant mentors and chapter activities.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label
                       htmlFor="field-memberCategory"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                     >
-                      Member Category / Interest <span className="text-rose-500">*</span>
+                      Member Category / Interest <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <select
                       id="field-memberCategory"
@@ -1044,7 +1131,7 @@ export function YouthRegistrationForm({
                         setFormData({ ...formData, memberCategory: e.target.value as MemberCategoryValue });
                         clearFieldError('memberCategory');
                       }}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                      className="w-full border-2 border-ink bg-white px-4 py-3 text-sm text-ink transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                     >
                       {MEMBER_CATEGORIES.map((cat) => (
                         <option key={cat.value} value={cat.value}>
@@ -1052,7 +1139,7 @@ export function YouthRegistrationForm({
                         </option>
                       ))}
                     </select>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-muted mt-1.5 font-serif leading-relaxed">
                       {MEMBER_CATEGORIES.find((c) => c.value === formData.memberCategory)?.description}
                     </p>
                   </div>
@@ -1060,9 +1147,9 @@ export function YouthRegistrationForm({
                   <div>
                     <label
                       htmlFor="field-currentPosition"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                     >
-                      Current Position <span className="text-rose-500">*</span>
+                      Current Position <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <select
                       id="field-currentPosition"
@@ -1071,7 +1158,7 @@ export function YouthRegistrationForm({
                         setFormData({ ...formData, currentPosition: e.target.value as CurrentPositionValue });
                         clearFieldError('currentPosition');
                       }}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                      className="w-full border-2 border-ink bg-white px-4 py-3 text-sm text-ink transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                     >
                       {CURRENT_POSITIONS.map((pos) => (
                         <option key={pos.value} value={pos.value}>
@@ -1079,19 +1166,19 @@ export function YouthRegistrationForm({
                         </option>
                       ))}
                     </select>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-muted mt-1.5 font-serif leading-relaxed">
                       {CURRENT_POSITIONS.find((p) => p.value === formData.currentPosition)?.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
                   <div>
                     <label
                       htmlFor="field-occupation"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                     >
-                      Occupation / Role <span className="text-rose-500">*</span>
+                      Occupation / Role <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <input
                       id="field-occupation"
@@ -1103,14 +1190,14 @@ export function YouthRegistrationForm({
                       }}
                       placeholder="e.g. Founder, Freelancer, Engineer, Student"
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.occupation
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.occupation && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.occupation}</span>
                       </p>
@@ -1120,7 +1207,7 @@ export function YouthRegistrationForm({
                   <div>
                     <label
                       htmlFor="field-companyName"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                     >
                       Company / Firm / College (Optional)
                     </label>
@@ -1130,7 +1217,7 @@ export function YouthRegistrationForm({
                       value={formData.companyName}
                       onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                       placeholder="e.g. Malabar Tech Labs / MES College"
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                      className="w-full border-2 border-ink bg-white px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                     />
                   </div>
                 </div>
@@ -1138,7 +1225,7 @@ export function YouthRegistrationForm({
                 <div>
                   <label
                     htmlFor="field-businessSector"
-                    className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                    className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                   >
                     Primary Sector / Industry
                   </label>
@@ -1146,7 +1233,7 @@ export function YouthRegistrationForm({
                     id="field-businessSector"
                     value={formData.businessSector}
                     onChange={(e) => setFormData({ ...formData, businessSector: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                    className="w-full border-2 border-ink bg-white px-4 py-3 text-sm text-ink transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                   >
                     <option value="Information Technology">Information Technology & Software</option>
                     <option value="Retail & Commerce">Retail, Wholesale & E-Commerce</option>
@@ -1167,27 +1254,37 @@ export function YouthRegistrationForm({
             {/* STEP 4: Goals, Talents & Interests */}
             {/* ==================================================== */}
             {step === 4 && (
-              <div className="space-y-5 animate-in fade-in duration-200">
-                <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Target className="h-4 w-4 text-[#035AFC]" />
-                    <span>What Do You Expect from MYBF?</span>
-                    <span className="text-rose-500">*</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Select the key areas where you want to collaborate and grow (at least 1 required).
+              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+                <div className="border-b-2 border-ink/15 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="font-display text-xs sm:text-sm font-bold tracking-[0.18em] text-blue uppercase">
+                        04 &bull; Goals & Talents
+                      </p>
+                      <h3 className="font-display text-xl sm:text-2xl font-extrabold text-ink mt-1 flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue" />
+                        <span>What You Walk Away With & Bring In</span>
+                        <span className="text-rose-600 font-bold">*</span>
+                      </h3>
+                    </div>
+                    <span className="self-start sm:self-auto px-2.5 py-1 bg-yellow text-ink font-display text-[0.68rem] font-extrabold uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                      Alignment
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm text-muted mt-1.5 leading-relaxed">
+                    Select the key areas where you want to collaborate and what unique skills you bring to the chapter (at least 1 required).
                   </p>
                 </div>
 
                 {fieldErrors.expectations && (
-                  <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1.5">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                     <span>{fieldErrors.expectations}</span>
                   </p>
                 )}
 
-                {/* Expectation Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                {/* Expectation Cards (Landing Page Sticker Style) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                   {EXPECTATION_OPTIONS.map((exp) => {
                     const isSelected = formData.expectations.includes(exp.key);
                     return (
@@ -1196,27 +1293,27 @@ export function YouthRegistrationForm({
                         type="button"
                         onClick={() => toggleSelection('expectations', exp.key)}
                         className={cn(
-                          'p-3.5 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer',
+                          'p-4 border-2 text-left transition-all flex items-start gap-3 cursor-pointer',
                           isSelected
-                            ? 'border-[#035AFC] bg-blue-50/50 dark:bg-blue-950/30 ring-1 ring-[#035AFC]/40 shadow-sm'
-                            : 'border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 hover:border-slate-300 dark:hover:border-slate-700'
+                            ? 'border-ink bg-yellow text-ink shadow-[4px_4px_0px_#14161c] font-bold'
+                            : 'border-ink bg-paper/40 text-ink hover:bg-yellow/15 shadow-[2px_2px_0px_#14161c]'
                         )}
                       >
                         <div
                           className={cn(
-                            'size-4 rounded-md border mt-0.5 shrink-0 flex items-center justify-center transition-colors',
+                            'size-5 border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors',
                             isSelected
-                              ? 'bg-[#035AFC] border-[#035AFC] text-white'
-                              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800'
+                              ? 'bg-ink border-ink text-yellow'
+                              : 'border-ink bg-white'
                           )}
                         >
-                          {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
+                          {isSelected && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </div>
                         <div>
-                          <div className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
+                          <div className="text-xs sm:text-sm font-display font-extrabold leading-tight">
                             {exp.label}
                           </div>
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                          <div className="text-xs mt-1 leading-snug font-serif text-muted">
                             {exp.description}
                           </div>
                         </div>
@@ -1230,9 +1327,9 @@ export function YouthRegistrationForm({
                   <div className="pt-2">
                     <label
                       htmlFor="field-otherExpectationText"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block mb-1.5"
                     >
-                      Please Specify Your Other Expectation <span className="text-rose-500">*</span>
+                      Please Specify Your Other Expectation <span className="text-rose-600 font-bold">*</span>
                     </label>
                     <input
                       id="field-otherExpectationText"
@@ -1245,14 +1342,14 @@ export function YouthRegistrationForm({
                       placeholder="e.g. Cross-border trade guidance, clean technology mentorship..."
                       maxLength={300}
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none',
+                        'w-full border-2 px-4 py-3 text-sm text-ink placeholder:text-muted/60 transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.otherExpectationText
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
                     {fieldErrors.otherExpectationText && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.otherExpectationText}</span>
                       </p>
@@ -1261,15 +1358,15 @@ export function YouthRegistrationForm({
                 )}
 
                 {/* Optional 3-Year Future Goal */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="pt-4 border-t-2 border-ink/15">
                   <div className="flex items-center justify-between mb-1.5">
                     <label
                       htmlFor="field-futureGoal"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block"
                     >
                       Biggest 3-Year Vision / Goal (Optional)
                     </label>
-                    <span className="text-[10px] text-slate-400 font-mono">{formData.futureGoal.length} / 500</span>
+                    <span className="text-[10px] text-muted font-mono">{formData.futureGoal.length} / 500</span>
                   </div>
                   <textarea
                     id="field-futureGoal"
@@ -1278,39 +1375,39 @@ export function YouthRegistrationForm({
                     value={formData.futureGoal}
                     onChange={(e) => setFormData({ ...formData, futureGoal: e.target.value })}
                     placeholder="e.g. Build a 20-person export team from Manjeri; launch our robotics product into GCC markets."
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 p-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 outline-none"
+                    className="w-full border-2 border-ink bg-white p-3.5 text-sm text-ink placeholder:text-muted/60 transition-all focus:bg-white focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-1">
+                  <span className="text-[11px] text-muted block mt-1 font-serif">
                     Kept confidential; shared only with chapter mentors to align programs with your ambition.
                   </span>
                 </div>
 
                 {/* Extracurricular Talents & Skills (Optional) */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
+                <div className="pt-4 border-t-2 border-ink/15 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                        <Palette className="h-3.5 w-3.5 text-[#035AFC]" />
+                      <h4 className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                        <Palette className="h-4 w-4 text-blue" />
                         <span>Extracurricular Talents & Skills (Optional)</span>
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <p className="font-serif text-xs text-muted mt-0.5">
                         Share your unique creative, technical, or athletic talents.
                       </p>
                     </div>
                     {formData.talents.length > 0 && (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#035AFC] dark:text-blue-400 border border-blue-200/60">
+                      <span className="text-xs font-display font-bold px-2.5 py-1 bg-yellow text-ink border-2 border-ink shadow-[1px_1px_0px_#14161c]">
                         {formData.talents.length} Selected
                       </span>
                     )}
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
                     {TALENT_CATEGORIES.map((cat) => (
-                      <div key={cat.key} className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/30 space-y-2">
-                        <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">
+                      <div key={cat.key} className="p-4 border-2 border-ink/20 bg-paper/50 space-y-2.5">
+                        <span className="font-display text-xs font-bold text-ink block uppercase tracking-wider">
                           {cat.title}
                         </span>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-2">
                           {cat.options.map((t) => {
                             const isSelected = formData.talents.includes(t.key);
                             return (
@@ -1319,13 +1416,13 @@ export function YouthRegistrationForm({
                                 type="button"
                                 onClick={() => toggleSelection('talents', t.key)}
                                 className={cn(
-                                  'px-2.5 py-1 text-xs rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer',
+                                  'px-3 py-1.5 text-xs border-2 transition-all flex items-center gap-1.5 cursor-pointer font-sans',
                                   isSelected
-                                    ? 'bg-[#035AFC] text-white border-[#035AFC] font-medium shadow-sm'
-                                    : 'bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:border-slate-300'
+                                    ? 'bg-blue text-paper border-ink font-bold shadow-[2px_2px_0px_#14161c]'
+                                    : 'bg-white text-ink border-ink/30 hover:border-ink hover:bg-yellow/20'
                                 )}
                               >
-                                {isSelected && <Check className="h-3 w-3 stroke-[2.5]" />}
+                                {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
                                 <span>{t.label}</span>
                               </button>
                             );
@@ -1342,20 +1439,30 @@ export function YouthRegistrationForm({
             {/* STEP 5: Account Credentials & Consent */}
             {/* ==================================================== */}
             {step === 5 && (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <KeyRound className="h-4 w-4 text-[#035AFC]" />
-                    <span>Create Your Login Credentials</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Set up your secure username and password for the MYBF member portal.
+              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+                <div className="border-b-2 border-ink/15 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <p className="font-display text-xs sm:text-sm font-bold tracking-[0.18em] text-ink uppercase">
+                        05 &bull; Member Account
+                      </p>
+                      <h3 className="font-display text-xl sm:text-2xl font-extrabold text-ink mt-1 flex items-center gap-2">
+                        <KeyRound className="h-5 w-5 text-blue" />
+                        <span>Portal Credentials & Charter Agreement</span>
+                      </h3>
+                    </div>
+                    <span className="self-start sm:self-auto px-2.5 py-1 bg-ink text-paper font-display text-[0.68rem] font-extrabold uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                      DPDP Compliant
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm text-muted mt-1.5 leading-relaxed">
+                    Set up your secure username and password, and agree to the MYBF Organizational Charter.
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-blue-200/70 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2.5">
-                  <ShieldCheck className="h-4 w-4 shrink-0 text-[#035AFC] dark:text-blue-400" />
-                  <span>Your account credentials will be created immediately and activated upon Super Administrator review.</span>
+                <div className="p-4 border-2 border-ink bg-blue/10 text-ink text-xs sm:text-sm flex items-center gap-3 shadow-[2px_2px_0px_#14161c]">
+                  <ShieldCheck className="h-5 w-5 shrink-0 text-blue" />
+                  <span>Your account credentials will be created immediately and activated upon chapter / administrator review.</span>
                 </div>
 
                 {/* Username Input with Live Availability Check */}
@@ -1363,14 +1470,14 @@ export function YouthRegistrationForm({
                   <div className="flex items-center justify-between mb-1.5">
                     <label
                       htmlFor="field-username"
-                      className="text-xs font-semibold text-slate-700 dark:text-slate-300 block"
+                      className="font-display text-xs font-bold uppercase tracking-wider text-ink block"
                     >
-                      Choose Username <span className="text-rose-500">*</span>
+                      Choose Username <span className="text-rose-600 font-bold">*</span>
                     </label>
-                    <span className="text-[10px] text-slate-400">Letters, numbers, underscores and periods (3-30 chars)</span>
+                    <span className="text-[10px] text-muted font-mono">Letters, numbers, underscores and periods (3-30 chars)</span>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs">@</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-mono text-sm font-bold">@</span>
                     <input
                       id="field-username"
                       type="text"
@@ -1378,26 +1485,28 @@ export function YouthRegistrationForm({
                       onChange={(e) => handleUsernameChange(e.target.value)}
                       placeholder="e.g. salman_faris"
                       className={cn(
-                        'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 pl-8 pr-24 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono transition-all outline-none',
+                        'w-full border-2 pl-9 pr-28 py-3 text-sm text-ink font-mono transition-all outline-none shadow-[2px_2px_0px_#14161c]',
                         fieldErrors.username
-                          ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                          : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                          ? 'border-rose-500 bg-rose-50/60'
+                          : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                       )}
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs">
+                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs">
                       {usernameChecking ? (
-                        <span className="text-slate-400 text-[11px]">Checking...</span>
+                        <span className="text-muted text-[11px] font-sans">Checking...</span>
                       ) : usernameAvailable === true ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5 text-[11px]">
-                          <Check className="h-3 w-3 stroke-[2.5]" /> Available
+                        <span className="text-emerald-900 bg-emerald-100 font-display font-bold flex items-center gap-1 text-[11px] px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
+                          <Check className="h-3 w-3 stroke-[3]" /> Available
                         </span>
                       ) : usernameAvailable === false ? (
-                        <span className="text-rose-500 font-bold text-[11px]">Unavailable</span>
+                        <span className="text-rose-700 bg-rose-100 font-display font-bold text-[11px] px-2 py-0.5 border border-rose-300">
+                          Unavailable
+                        </span>
                       ) : null}
                     </div>
                   </div>
                   {fieldErrors.username && (
-                    <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                    <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                       <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                       <span>{fieldErrors.username}</span>
                     </p>
@@ -1405,16 +1514,16 @@ export function YouthRegistrationForm({
                 </div>
 
                 {/* Password & Confirm Password */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label
                         htmlFor="field-password"
-                        className="text-xs font-semibold text-slate-700 dark:text-slate-300 block"
+                        className="font-display text-xs font-bold uppercase tracking-wider text-ink block"
                       >
-                        Password <span className="text-rose-500">*</span>
+                        Password <span className="text-rose-600 font-bold">*</span>
                       </label>
-                      <span className="text-[10px] text-slate-400 font-mono">Min 12 characters</span>
+                      <span className="text-[10px] text-muted font-mono">Min 12 characters</span>
                     </div>
                     <div className="relative">
                       <input
@@ -1427,23 +1536,23 @@ export function YouthRegistrationForm({
                         }}
                         placeholder="••••••••••••"
                         className={cn(
-                          'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 pr-10 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all outline-none',
+                          'w-full border-2 px-4 pr-11 py-3 text-sm text-ink transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                           fieldErrors.password
-                            ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                            : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                            ? 'border-rose-500 bg-rose-50/60'
+                            : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                         )}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink cursor-pointer"
                         aria-label="Toggle password view"
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
                     {fieldErrors.password && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.password}</span>
                       </p>
@@ -1454,11 +1563,11 @@ export function YouthRegistrationForm({
                     <div className="flex items-center justify-between mb-1.5">
                       <label
                         htmlFor="field-confirmPassword"
-                        className="text-xs font-semibold text-slate-700 dark:text-slate-300 block"
+                        className="font-display text-xs font-bold uppercase tracking-wider text-ink block"
                       >
-                        Confirm Password <span className="text-rose-500">*</span>
+                        Confirm Password <span className="text-rose-600 font-bold">*</span>
                       </label>
-                      <span className="text-[10px] text-slate-400">Must match password</span>
+                      <span className="text-[10px] text-muted font-mono">Must match password</span>
                     </div>
                     <div className="relative">
                       <input
@@ -1471,23 +1580,23 @@ export function YouthRegistrationForm({
                         }}
                         placeholder="••••••••••••"
                         className={cn(
-                          'w-full rounded-xl border bg-slate-50/50 dark:bg-slate-900/40 px-3.5 pr-10 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white transition-all outline-none',
+                          'w-full border-2 px-4 pr-11 py-3 text-sm text-ink transition-all outline-none font-sans shadow-[2px_2px_0px_#14161c]',
                           fieldErrors.confirmPassword
-                            ? 'border-rose-400 dark:border-rose-600 bg-rose-50/30 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                            : 'border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10'
+                            ? 'border-rose-500 bg-rose-50/60'
+                            : 'border-ink bg-white focus:bg-white focus:ring-2 focus:ring-yellow'
                         )}
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink cursor-pointer"
                         aria-label="Toggle confirm password view"
                       >
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
                     {fieldErrors.confirmPassword && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.confirmPassword}</span>
                       </p>
@@ -1496,10 +1605,10 @@ export function YouthRegistrationForm({
                 </div>
 
                 {/* DPDP Privacy Notice & Consent Checkbox */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
-                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-xs text-slate-600 dark:text-slate-400 space-y-1.5 leading-relaxed">
-                    <p className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-[#035AFC]" />
+                <div className="pt-4 border-t-2 border-ink/15 space-y-4">
+                  <div className="p-5 border-2 border-ink bg-paper text-xs text-ink space-y-2 leading-relaxed font-serif shadow-[3px_3px_0px_#14161c]">
+                    <p className="font-display font-bold text-ink flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                      <ShieldCheck className="h-4 w-4 text-blue" />
                       <span>DPDP Data Protection & Charter Acknowledgment</span>
                     </p>
                     <p>
@@ -1511,7 +1620,7 @@ export function YouthRegistrationForm({
                   </div>
 
                   <div>
-                    <label className="flex items-start gap-2.5 cursor-pointer text-xs font-medium text-slate-800 dark:text-slate-200">
+                    <label className="flex items-start gap-3 cursor-pointer text-xs sm:text-sm font-medium text-ink">
                       <input
                         id="field-consent"
                         type="checkbox"
@@ -1520,14 +1629,14 @@ export function YouthRegistrationForm({
                           setFormData({ ...formData, consent: e.target.checked });
                           clearFieldError('consent');
                         }}
-                        className="mt-0.5 size-4 rounded border-slate-300 text-[#035AFC] focus:ring-[#035AFC]"
+                        className="mt-0.5 size-4.5 border-2 border-ink text-blue focus:ring-yellow"
                       />
                       <span className="leading-snug">
                         I confirm that my submitted information is true and accurate, agree to the MYBF Organizational Charter, and consent to purpose-specific verification under DPDP guidelines.
                       </span>
                     </label>
                     {fieldErrors.consent && (
-                      <p className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <p className="mt-1.5 text-xs font-bold text-rose-600 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                         <span>{fieldErrors.consent}</span>
                       </p>
@@ -1536,76 +1645,74 @@ export function YouthRegistrationForm({
                 </div>
               </div>
             )}
+
           </form>
         )}
       </div>
 
       {/* ==================================================== */}
-      {/* ALWAYS-VISIBLE STICKY FOOTER CONTROLS (shrink-0) */}
+      {/* ACTION CONTROLS FOOTER ("NEXT SEPARATIONS") */}
       {/* ==================================================== */}
       {!submitted && (
-        <footer className="shrink-0 border-t border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-[#0A0F1D]/95 px-5 py-3.5 sm:px-6 sm:py-4 backdrop-blur-md z-10 flex items-center justify-between gap-3 pb-[max(0.875rem,env(safe-area-inset-bottom))]">
-          {/* Left: Previous / Cancel */}
+        <footer className="shrink-0 border-t-2 border-ink bg-paper-2 px-5 py-4 sm:px-8 flex flex-wrap items-center justify-between gap-4 shadow-[0_-4px_12px_rgba(20,22,28,0.06)]">
           <div>
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="btn btn-outline-dark min-h-12 px-6 border-2 border-ink cursor-pointer"
               >
-                <ArrowLeft className="h-3.5 w-3.5" /> Previous
+                <ArrowLeft className="h-4 w-4" /> Previous Step
               </button>
-            ) : asModal ? (
-              <button
-                type="button"
-                onClick={handleClose}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-            ) : null}
+            ) : (
+              <span className="font-display text-xs font-bold uppercase tracking-wider text-muted">
+                Step 01 of 05 &bull; Personal Identity
+              </span>
+            )}
           </div>
 
-          {/* Center validation hint (visible on desktop) */}
           {Object.keys(fieldErrors).length > 0 && (
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 animate-in fade-in">
-              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-              <span>Please fill in required fields to continue</span>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 px-3 py-1.5 shadow-[1px_1px_0px_#14161c]">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>Please check required fields</span>
             </div>
           )}
 
-          {/* Right: Continue / Submit */}
-          <div>
+          <div className="flex items-center gap-3">
             {step < 5 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#035AFC] hover:bg-[#0246C7] active:scale-[0.99] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
-              >
-                <span>Continue</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              <div className="flex items-center gap-3">
+                <span className="hidden md:inline font-display text-xs font-bold uppercase tracking-wider text-muted">
+                  Next up: <strong className="text-ink font-black">0{step + 1}. {STEPS[step].shortLabel}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="btn btn-yellow min-h-12 px-8 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
+                >
+                  <span>Continue to Step 0{step + 1}</span> <Arrow />
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#035AFC] hover:bg-[#0246C7] active:scale-[0.99] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                className="btn btn-yellow min-h-12 px-9 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 disabled:opacity-50 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Submitting Application...</span>
                   </>
                 ) : formData.requestAgeException ? (
                   <>
                     <span>Submit for Super Admin Review</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <Arrow />
                   </>
                 ) : (
                   <>
-                    <span>Submit Application</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <span>Complete Enrollment</span>
+                    <Arrow />
                   </>
                 )}
               </button>
@@ -1616,94 +1723,31 @@ export function YouthRegistrationForm({
     </div>
   );
 
-  // Standalone page render mode (e.g. on /register)
-  if (!asModal) {
+  if (asModal || onClose !== undefined) {
+    if (!isOpen) return null;
+
     return (
-      <div className={`rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] shadow-xl overflow-hidden ${className}`}>
-        {formContent}
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-ink/80 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && onClose) onClose();
+        }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="MYBF Official Youth Membership Application"
+      >
+        <div
+          className="relative flex flex-col w-full max-w-4xl h-[95vh] sm:h-[90vh] max-h-[880px] border-2 border-ink bg-paper text-ink shadow-[12px_12px_0px_#14161c] overflow-hidden my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {formElement}
+        </div>
       </div>
     );
   }
 
-  // Modal Render Mode: Page Invitation Trigger Card + Fullscreen Accessible Modal
-  return (
-    <div className={className}>
-      {/* On-page Editorial Invitation Card replacing the plain form */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-6 sm:p-10 shadow-xl text-slate-900 dark:text-white relative overflow-hidden">
-        {/* Subtle ambient futuristic glow */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#035AFC] dark:text-blue-400 text-xs font-semibold border border-blue-200/60 dark:border-blue-900/60">
-                Official Chapter Enrollment
-              </span>
-              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                • Mission Malappuram 2050
-              </span>
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              MYBF Youth Membership Registration
-            </h3>
-            <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-              Join 16 constituency chapters across Malappuram district. Zero registration fees, tamper-proof digital ID card, democratic chapter voting, and youth leadership discovery.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium">
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center gap-1">
-                <Check className="h-3 w-3 stroke-[2.5]" /> 100% Free Membership
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
-                16 Constituency Chapters
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
-                Ages 18–35 (Exception Eligible)
-              </span>
-            </div>
-          </div>
-
-          <div className="shrink-0 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setInternalOpen(true);
-                setStep(1);
-              }}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#035AFC] hover:bg-[#0246C7] active:scale-[0.99] text-white text-sm font-semibold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all cursor-pointer whitespace-nowrap"
-            >
-              <span>{triggerLabel}</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <span className="text-[11px] text-slate-500 text-center">
-              Opens 5-step application modal
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal Dialog Overlay */}
-      {isModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="registration-modal-title"
-          className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 md:p-6 bg-slate-950/75 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleClose();
-            }
-          }}
-        >
-          <div
-            className="relative flex flex-col w-full max-w-3xl h-[100dvh] sm:h-[88vh] sm:max-h-[820px] bg-white dark:bg-[#0A0F1D] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {formContent}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  return formElement;
 }
 
-// Export named alias for explicit modal usage
+// Named alias for backward compatibility
 export const YouthRegistrationModal = YouthRegistrationForm;

@@ -13,7 +13,7 @@ export const MEMBERSHIP_CATEGORIES: MembershipCategoryMeta[] = [
     name: 'Youth Entrepreneur',
     description: 'Founders and directors under 35 operating high-potential enterprises in Malappuram.',
     annualFeeINR: 0,
-    minAge: 18,
+    minAge: 0,
     maxAge: 35,
   },
   {

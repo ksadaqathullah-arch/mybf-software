@@ -6,7 +6,7 @@ const paths = [
   "/about",
   "/what-we-offer",
   "/initiatives",
-  "/founders",
+  "/mission",
   "/membership",
   "/members",
   "/contact",

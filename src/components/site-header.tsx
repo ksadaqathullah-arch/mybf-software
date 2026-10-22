@@ -64,12 +64,7 @@ export function SiteHeader() {
             Login
           </Link>
           <Link
-            href="/membership#register-form"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('open-registration-modal'));
-              }
-            }}
+            href="/register"
             className="btn btn-yellow min-h-11 px-4 max-sm:min-h-10 max-sm:px-3 max-sm:text-[0.72rem]"
           >
             Join
@@ -119,13 +114,8 @@ export function SiteHeader() {
             ))}
           </ul>
           <Link
-            href="/membership#register-form"
-            onClick={() => {
-              setOpenPath(null);
-              if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('open-registration-modal'));
-              }
-            }}
+            href="/register"
+            onClick={() => setOpenPath(null)}
             className="mt-6 flex min-h-12 items-center justify-center bg-yellow px-5 font-display text-sm font-extrabold tracking-[0.14em] text-ink uppercase hover:bg-yellow/90 transition-colors"
           >
             Join the forum
