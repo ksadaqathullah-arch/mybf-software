@@ -6,8 +6,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { useMembershipModal } from '@/features/memberships/context/membership-modal-context';
 
 export function LoginForm() {
+  const { openModal } = useMembershipModal();
   const [identifier, setIdentifier] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -125,9 +127,13 @@ export function LoginForm() {
         </div>
         <div>
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="ml-1 text-[#035AFC] font-semibold hover:underline">
+          <button
+            type="button"
+            onClick={openModal}
+            className="ml-1 text-[#035AFC] font-semibold hover:underline cursor-pointer"
+          >
             Apply for Youth Membership
-          </Link>
+          </button>
         </div>
       </CardFooter>
     </Card>

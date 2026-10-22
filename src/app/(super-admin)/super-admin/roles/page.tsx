@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getCurrentActor } from '@/server/auth/session';
 import { db } from '@/server/db';
 import { SuperAdminUnifiedRolesTabs } from '@/features/super-admin/components/super-admin-unified-roles-tabs';
+import { PortalPageHeader } from '@/components/ui/portal-elements';
 import { Badge } from '@/components/ui/badge';
 import { Key } from 'lucide-react';
 
@@ -124,22 +125,12 @@ export default async function SuperAdminRolesPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
-              Access Governance
-            </span>
-            <Badge variant="primary">STRICT DENY-BY-DEFAULT RBAC</Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
-            Roles, Permissions & Chapter Leadership
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Centrally manage global tenant roles (Super Admin, District Admin) and constituency chapter appointments (President, Secretary, Treasurer).
-          </p>
-        </div>
-      </div>
+      <PortalPageHeader
+        badge="ACCESS GOVERNANCE"
+        tag="STRICT DENY-BY-DEFAULT RBAC"
+        title="Roles, Permissions & Chapter Leadership"
+        description="Centrally manage global tenant roles (Super Admin, District Admin) and constituency chapter appointments (President, Secretary, Treasurer)."
+      />
 
       <SuperAdminUnifiedRolesTabs
         initialUsers={formattedSystemUsers}

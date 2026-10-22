@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { OpenMembershipModalButton } from "@/features/memberships/components/open-membership-modal-button";
 import {
   TrendingUp,
   Sparkles,
@@ -568,9 +569,9 @@ export default function MissionPage() {
                 </p>
               </div>
               <div className="mt-8 pt-6 border-t border-paper/15">
-                <Link href="/register" className="btn btn-yellow w-full justify-center">
+                <OpenMembershipModalButton className="btn btn-yellow w-full justify-center cursor-pointer">
                   Join the forum <Arrow />
-                </Link>
+                </OpenMembershipModalButton>
               </div>
             </div>
 

@@ -137,56 +137,58 @@ export function EventBookingCard({ onTicketBooked, registeredEventIds = [] }: Ev
               return (
                 <div
                   key={evt.id}
-                  className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-[#070A10] flex flex-col justify-between space-y-3"
+                  className="border-2 border-ink p-4 bg-paper flex flex-col justify-between space-y-3 shadow-[3px_3px_0px_#14161c]"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Badge variant="neutral" className="text-[10px]">
                         {evt.chapter?.name || 'District Wide'}
                       </Badge>
-                      <span className="text-[10px] font-semibold text-emerald-600 flex items-center gap-1">
+                      <span className="text-[10px] font-mono font-bold text-blue flex items-center gap-1 uppercase">
                         <Sparkles className="h-3 w-3" /> Free NGO Ticket
                       </span>
                     </div>
 
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug">
+                    <h4 className="font-display font-black text-sm text-ink uppercase tracking-tight leading-snug">
                       {evt.title}
                     </h4>
 
-                    <p className="text-xs text-slate-500 line-clamp-2">
+                    <p className="font-serif italic text-xs text-ink/70 line-clamp-2">
                       {evt.description}
                     </p>
 
-                    <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 pt-1">
+                    <div className="space-y-1 text-xs font-mono text-ink/80 pt-1">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <Calendar className="h-3.5 w-3.5 text-blue shrink-0" />
                         <span>{formattedDate}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <MapPin className="h-3.5 w-3.5 text-yellow shrink-0" />
                         <span className="truncate">{evt.venueName}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                        <Users className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[11px] text-ink/60">
+                        <Users className="h-3.5 w-3.5 text-ink/60 shrink-0" />
                         <span>{evt.registeredCount} / {evt.capacity} seats confirmed</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <span className="text-[11px] font-mono text-slate-400">₹0 Fee (Free)</span>
+                  <div className="pt-2 border-t-2 border-ink/20 flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold text-ink/60 uppercase">₹0 Pass</span>
                     <Button
-                      variant={isRegistered ? 'secondary' : 'primary'}
+                      variant={isRegistered ? 'secondary' : 'default'}
                       size="sm"
                       disabled={isRegistered || isFull || bookingId === evt.id}
                       onClick={() => handleBook(evt.id, evt.title)}
-                      className="h-8 text-xs px-3"
+                      className={`h-8 text-xs px-3 font-display uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c] ${
+                        !isRegistered && !isFull ? 'bg-blue text-paper' : ''
+                      }`}
                     >
                       {bookingId === evt.id ? (
                         'Confirming...'
                       ) : isRegistered ? (
                         <>
-                          <Check className="h-3.5 w-3.5 mr-1 text-emerald-500" /> Booked
+                          <Check className="h-3.5 w-3.5 mr-1 text-ink" /> Booked
                         </>
                       ) : isFull ? (
                         'Capacity Full'

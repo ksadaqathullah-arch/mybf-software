@@ -72,34 +72,34 @@ export function CommunityOpportunitiesCard({ chapterName = 'Manjeri Chapter' }: 
             return (
               <div
                 key={opp.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#070A10] flex flex-col justify-between space-y-3"
+                className="border-2 border-ink p-4 bg-paper flex flex-col justify-between space-y-3 shadow-[3px_3px_0px_#14161c]"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Badge variant="neutral" className="text-[10px]">{opp.category}</Badge>
-                    <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-[10px] font-mono font-bold text-blue uppercase">
                       {opp.badge}
                     </span>
                   </div>
 
                   <div className="flex items-start gap-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950 text-[#035AFC] flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="h-8 w-8 border border-ink bg-yellow text-ink flex items-center justify-center shrink-0 mt-0.5 shadow-[1px_1px_0px_#14161c]">
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug">
+                      <h4 className="font-display font-black text-sm text-ink uppercase tracking-tight leading-snug">
                         {opp.title}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      <p className="font-serif italic text-xs text-ink/70 mt-1 leading-relaxed">
                         {opp.description}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">100% Free for Members</span>
-                  <Button variant="outline" size="sm" className="h-7 text-xs px-2.5">
+                <div className="pt-2 border-t-2 border-ink/20 flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold text-ink/60 uppercase">100% Free Member Access</span>
+                  <Button variant="outline" size="sm" className="h-7 text-xs px-2.5 font-display uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
                     {opp.actionLabel} <ArrowRight className="h-3 w-3 ml-1" />
                   </Button>
                 </div>

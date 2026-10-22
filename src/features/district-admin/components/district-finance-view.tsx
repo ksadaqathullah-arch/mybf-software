@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -13,6 +14,7 @@ import {
   Calendar,
   FileSpreadsheet,
   AlertCircle,
+  Coins,
 } from 'lucide-react';
 
 export interface DistrictFinanceData {
@@ -75,99 +77,77 @@ export function DistrictFinanceView({ finance }: DistrictFinanceViewProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <ShieldCheck className="h-6 w-6 text-emerald-600" /> NGO Financial Governance & Fee Compliance
-            </h1>
-            <Badge variant="success">100% FREE MEMBERSHIP MODEL</Badge>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Authoritative NGO compliance: zero membership dues, zero ticketing barriers, and legitimate operational transparency
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <PortalPageHeader
+        tag="100% FREE MEMBERSHIP MODEL"
+        badge="Financial Governance"
+        title="NGO Financial Governance & Fee Compliance"
+        description="Authoritative NGO compliance: zero membership dues, zero ticketing barriers, and operational transparency."
+        actions={
           <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
             <Download className="h-3.5 w-3.5 mr-1.5" /> Export Compliance Statement (CSV)
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Free NGO Policy Banner */}
-      <div className="rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20 p-5 text-emerald-950 dark:text-emerald-200 space-y-3">
-        <div className="flex items-center gap-2 font-bold text-base">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600" /> Free Membership NGO Charter
+      <div className="border-2 border-ink bg-emerald-50 text-ink p-5 shadow-[4px_4px_0px_#14161c] space-y-2">
+        <div className="flex items-center gap-2 font-display font-black text-sm uppercase tracking-wider text-emerald-950">
+          <CheckCircle2 className="h-5 w-5 text-emerald-700" /> Free Membership NGO Charter
         </div>
-        <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+        <p className="text-xs text-ink/80 font-serif leading-relaxed">
           {finance.membershipPolicy.policyStatement} In accordance with the Malappuram Youth Business Forum constitution, all registration, onboarding, digital ID cards, youth conclaves, and chapter memberships are completely free of charge. No commercial subscription fees or membership payment plans exist in the platform.
         </p>
       </div>
 
       {/* Financial Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Membership Fee</span>
-            <div className="text-2xl font-black text-emerald-600 mt-1">
-              ₹0.00
-            </div>
-            <p className="text-[11px] text-slate-500">100% Free Lifetime</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Membership Fee"
+          value="₹0.00"
+          subValue="100% Free Lifetime"
+          icon={Coins}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Annual Dues</span>
-            <div className="text-2xl font-black text-emerald-600 mt-1">
-              ₹0.00
-            </div>
-            <p className="text-[11px] text-slate-500">Zero recurring charges</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Annual Dues"
+          value="₹0.00"
+          subValue="Zero recurring charges"
+          icon={Coins}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Collected Dues</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              ₹{finance.membershipPolicy.collectedMembershipFees}.00
-            </div>
-            <p className="text-[11px] text-emerald-600 font-semibold">Strict zero-collection policy</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Collected Dues"
+          value={`₹${finance.membershipPolicy.collectedMembershipFees}.00`}
+          subValue="Strict zero-collection policy"
+          icon={ShieldCheck}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Monitored Conclaves</span>
-            <div className="text-2xl font-black text-[#035AFC] mt-1">
-              {finance.districtSummary.totalEventsTracked}
-            </div>
-            <p className="text-[11px] text-slate-500">Across 16 chapters</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Monitored Conclaves"
+          value={finance.districtSummary.totalEventsTracked}
+          subValue="Across 16 chapters"
+          icon={Calendar}
+        />
       </div>
 
       {/* Event Financial Transparency Registry */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-5 pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-bold">Community Conclaves Financial Transparency</CardTitle>
-              <CardDescription className="text-xs">
-                Authoritative event ticket pricing and attendee registry for Malappuram district programs
-              </CardDescription>
-            </div>
-            <Badge variant="neutral">NGO RECONCILIATION</Badge>
+      <Card>
+        <CardHeader className="p-5 pb-3 border-b-2 border-ink flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <CardTitle className="text-xl font-black font-display uppercase tracking-wider text-ink">Community Conclaves Financial Transparency</CardTitle>
+            <CardDescription className="text-xs text-ink/70 font-serif mt-1">
+              Authoritative event ticket pricing and attendee registry for Malappuram district programs
+            </CardDescription>
           </div>
+          <Badge variant="neutral">NGO RECONCILIATION</Badge>
         </CardHeader>
 
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="border-b-2 border-ink bg-paper-sunken text-ink font-display font-extrabold uppercase text-[10px] tracking-wider">
                 <tr>
                   <th className="py-3 px-4">Conclave / Program</th>
                   <th className="py-3 px-4">Event Type</th>
@@ -177,17 +157,17 @@ export function DistrictFinanceView({ finance }: DistrictFinanceViewProps) {
                   <th className="py-3 px-4 text-right">Policy Verification</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+              <tbody className="divide-y divide-ink/10 font-mono text-[11px]">
                 {finance.recentEvents.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-slate-400 text-xs">
+                    <td colSpan={6} className="py-8 text-center text-ink/50 font-serif italic text-sm">
                       No events currently scheduled.
                     </td>
                   </tr>
                 ) : (
                   finance.recentEvents.map((e) => (
-                    <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
-                      <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">
+                    <tr key={e.id} className="hover:bg-yellow/10 transition-colors">
+                      <td className="py-3 px-4 font-bold text-ink font-sans text-xs">
                         {e.title}
                       </td>
                       <td className="py-3 px-4">
@@ -195,13 +175,13 @@ export function DistrictFinanceView({ finance }: DistrictFinanceViewProps) {
                           {e.eventType}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 font-extrabold text-emerald-600">
+                      <td className="py-3 px-4 font-black text-emerald-800 font-mono">
                         {e.basePriceINR === 0 ? '₹0.00 (Free)' : `₹${e.basePriceINR}`}
                       </td>
-                      <td className="py-3 px-4 text-center font-bold text-slate-700 dark:text-slate-300">
+                      <td className="py-3 px-4 text-center font-bold text-ink font-mono">
                         {e.registeredCount}
                       </td>
-                      <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
+                      <td className="py-3 px-4 text-ink/70 font-mono text-[11px]">
                         {e.startsAt.split('T')[0]}
                       </td>
                       <td className="py-3 px-4 text-right">

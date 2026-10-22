@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import logoMark from "../../public/logo-mark.png";
+import { useMembershipModal } from "@/features/memberships/context/membership-modal-context";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const open = openPath === pathname;
+  const { openModal } = useMembershipModal();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -63,12 +65,13 @@ export function SiteHeader() {
           >
             Login
           </Link>
-          <Link
-            href="/register"
-            className="btn btn-yellow min-h-11 px-4 max-sm:min-h-10 max-sm:px-3 max-sm:text-[0.72rem]"
+          <button
+            type="button"
+            onClick={openModal}
+            className="btn btn-yellow min-h-11 px-4 max-sm:min-h-10 max-sm:px-3 max-sm:text-[0.72rem] cursor-pointer"
           >
             Join
-          </Link>
+          </button>
           <button
             type="button"
             onClick={() => setOpenPath(open ? null : pathname)}
@@ -113,13 +116,16 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
-          <Link
-            href="/register"
-            onClick={() => setOpenPath(null)}
-            className="mt-6 flex min-h-12 items-center justify-center bg-yellow px-5 font-display text-sm font-extrabold tracking-[0.14em] text-ink uppercase hover:bg-yellow/90 transition-colors"
+          <button
+            type="button"
+            onClick={() => {
+              setOpenPath(null);
+              openModal();
+            }}
+            className="mt-6 flex min-h-12 w-full items-center justify-center bg-yellow px-5 font-display text-sm font-extrabold tracking-[0.14em] text-ink uppercase hover:bg-yellow/90 transition-colors cursor-pointer"
           >
             Join the forum
-          </Link>
+          </button>
           <Link
             href="/login"
             className="mt-3 flex min-h-11 items-center justify-center border-2 border-paper/80 bg-transparent px-5 font-display text-xs font-bold tracking-[0.14em] text-paper uppercase hover:bg-paper hover:text-blue transition-colors"

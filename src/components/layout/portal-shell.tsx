@@ -4,8 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X, Globe, ShieldCheck } from 'lucide-react';
 import { MybfLogo } from '@/components/brand/mybf-logo';
 
 export interface NavItem {
@@ -35,20 +34,22 @@ export function PortalShell({
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#080C14] text-paper flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-paper text-ink flex flex-col md:flex-row font-sans selection:bg-yellow selection:text-ink">
       {/* Mobile Top Header */}
-      <div className="md:hidden flex items-center justify-between border-b-2 border-yellow bg-ink px-4 py-3 text-paper">
-        <div className="flex items-center space-x-2">
+      <div className="md:hidden flex items-center justify-between border-b-2 border-ink bg-ink px-4 py-3 text-paper sticky top-0 z-50">
+        <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-lg text-paper hover:bg-white/10 hover:text-yellow transition-colors"
+            className="p-1.5 border border-white/20 text-paper hover:bg-yellow hover:text-ink transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
           >
-            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <span className="font-display font-bold text-sm tracking-tight text-paper">{portalTitle}</span>
+          <span className="font-display font-extrabold text-sm tracking-tight text-paper uppercase">
+            {portalTitle}
+          </span>
         </div>
-        <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 rounded shadow-sm">
+        <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 border border-ink shadow-[2px_2px_0px_#14161c]">
           {roleBadgeText}
         </span>
       </div>
@@ -56,39 +57,48 @@ export function PortalShell({
       {/* Sidebar Navigation */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 w-64 border-r-2 border-white/10 bg-ink text-paper flex flex-col transition-transform duration-200 ease-in-out md:static md:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 w-72 border-r-2 border-ink bg-ink text-paper flex flex-col transition-transform duration-200 ease-in-out md:static md:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
         {/* Brand Header */}
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <Link href="/" className="flex flex-col space-y-1 group" aria-label="MYBF - Malappuram Youth Business Forum">
+        <div className="p-5 border-b-2 border-white/10 flex items-center justify-between bg-black/20">
+          <Link href="/" className="flex flex-col space-y-1.5 group" aria-label="MYBF - Malappuram Youth Business Forum">
             <MybfLogo size="sm" className="group-hover:opacity-90 transition-opacity" />
             <div className="flex items-center gap-1.5 pt-0.5">
-              <span className="text-[10px] font-display font-bold text-paper/85 uppercase tracking-wider">{portalTitle}</span>
-              <span className="text-[9px] font-display font-bold text-yellow uppercase tracking-widest">• Mission 2050</span>
+              <span className="text-[10px] font-display font-extrabold text-yellow uppercase tracking-[0.18em]">
+                {portalTitle}
+              </span>
+              <span className="text-[9px] font-display font-bold text-paper/60 uppercase tracking-widest">
+                • 2050
+              </span>
             </div>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-1 text-paper/60 hover:text-yellow"
+            className="md:hidden p-1 text-paper/70 hover:text-yellow cursor-pointer"
+            aria-label="Close sidebar"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Scope Indicators */}
-        <div className="px-5 py-3 border-b border-white/10 bg-white/[0.03]">
+        {/* Scope & Role Badge Box */}
+        <div className="p-4 mx-3 my-3 border-2 border-white/15 bg-white/[0.04] space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-semibold">Role:</span>
-            <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 rounded shadow-sm">
+            <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-bold">
+              Access Role
+            </span>
+            <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
               {roleBadgeText}
             </span>
           </div>
           {scopeBadgeText && (
-            <div className="flex items-center justify-between text-xs mt-1.5">
-              <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-semibold">Scope:</span>
-              <span className="text-[11px] font-mono font-semibold text-paper/90 truncate max-w-[140px]">
+            <div className="flex items-center justify-between text-xs pt-1 border-t border-white/10">
+              <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-bold">
+                Scope
+              </span>
+              <span className="text-[11px] font-mono font-bold text-paper truncate max-w-[150px]" title={scopeBadgeText}>
                 {scopeBadgeText}
               </span>
             </div>
@@ -96,7 +106,7 @@ export function PortalShell({
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isRootPortalPath =
@@ -112,20 +122,20 @@ export function PortalShell({
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'flex items-center justify-between px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all',
+                  'flex items-center justify-between px-3 py-2.5 text-xs font-display font-bold uppercase tracking-wider transition-all border-2',
                   isActive
-                    ? 'bg-blue text-paper font-display font-bold shadow-md border-l-4 border-yellow'
-                    : 'text-paper/75 hover:bg-white/10 hover:text-yellow'
+                    ? 'bg-blue text-paper border-ink shadow-[3px_3px_0px_#fcc000]'
+                    : 'border-transparent text-paper/75 hover:bg-white/10 hover:text-yellow hover:border-white/20'
                 )}
               >
                 <div className="flex items-center space-x-3">
-                  <Icon className={cn('h-4 w-4', isActive ? 'text-yellow' : 'text-paper/50')} />
+                  <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-yellow' : 'text-paper/60')} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
                   <span
                     className={cn(
-                      'text-[10px] px-1.5 py-0.5 rounded font-mono font-bold',
+                      'text-[10px] px-1.5 py-0.5 font-mono font-bold border border-ink',
                       isActive ? 'bg-yellow text-ink' : 'bg-white/15 text-paper'
                     )}
                   >
@@ -137,19 +147,24 @@ export function PortalShell({
           })}
         </nav>
 
-        {/* User Footer */}
-        <div className="p-4 border-t border-white/10 bg-white/[0.02]">
+        {/* User / Session Footer */}
+        <div className="p-4 border-t-2 border-white/10 bg-black/25">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2.5">
-              <div className="h-8 w-8 rounded-full bg-yellow text-ink flex items-center justify-center font-display font-black text-xs shadow-sm">
-                U
+            <div className="flex items-center space-x-2.5 truncate">
+              <div className="h-8 w-8 shrink-0 bg-yellow text-ink border-2 border-ink flex items-center justify-center font-display font-black text-xs shadow-[2px_2px_0px_#14161c]">
+                MY
               </div>
               <div className="truncate">
-                <p className="text-xs font-display font-bold text-paper truncate">Current Session</p>
-                <p className="text-[10px] text-paper/60 truncate font-mono">Secured Layer</p>
+                <p className="text-xs font-display font-bold text-paper truncate uppercase">Authenticated</p>
+                <p className="text-[10px] text-paper/60 truncate font-mono">Mission Malappuram 2050</p>
               </div>
             </div>
-            <Link href="/" className="text-paper/60 hover:text-yellow p-1.5 transition-colors" title="Exit to Public Site">
+            <Link
+              href="/"
+              className="text-paper/70 hover:text-yellow hover:bg-white/10 p-2 border border-white/20 transition-colors"
+              title="Exit to Public Site"
+              aria-label="Exit to Public Site"
+            >
               <LogOut className="h-4 w-4" />
             </Link>
           </div>
@@ -157,9 +172,40 @@ export function PortalShell({
       </aside>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 min-w-0 overflow-y-auto bg-paper dark:bg-[#080C14] text-ink dark:text-paper">
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
-      </main>
+      <div className="flex-1 min-w-0 flex flex-col bg-paper">
+        {/* Desktop Top Header Bar */}
+        <header className="hidden md:flex items-center justify-between px-8 py-3.5 border-b-2 border-ink bg-paper-2/60 sticky top-0 z-30">
+          <div className="flex items-center space-x-3 text-xs">
+            <span className="font-display font-bold uppercase tracking-[0.14em] text-muted">
+              MYBF Platform
+            </span>
+            <span className="text-muted/60">•</span>
+            <span className="font-display font-extrabold text-ink uppercase tracking-wider">
+              {portalTitle}
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-4 text-xs">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-950 border border-emerald-800 font-display text-[10px] font-bold uppercase tracking-wider">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
+              <span>PostgreSQL Live</span>
+            </div>
+
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 px-3 py-1 font-display text-[11px] font-bold uppercase tracking-wider text-ink border-2 border-ink bg-paper hover:bg-ink hover:text-paper shadow-[2px_2px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span>Public Website</span>
+            </Link>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

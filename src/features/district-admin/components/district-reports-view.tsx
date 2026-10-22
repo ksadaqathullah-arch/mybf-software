@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   BarChart3,
   TrendingUp,
@@ -14,6 +15,8 @@ import {
   Award,
   Briefcase,
   Layers,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   getMemberCategoryLabel,
@@ -81,96 +84,76 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
   const totalMembers = analytics.totalActiveMembers || 1;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <BarChart3 className="h-6 w-6 text-[#035AFC]" /> Growth Analytics & Reports
-            </h1>
-            <Badge variant="primary">{analytics.districtCode} DISTRICT</Badge>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Authoritative district analytics: monthly trends, chapter benchmarking, and demographic distributions
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <PortalPageHeader
+        tag={`${analytics.districtCode} DISTRICT`}
+        badge="Analytics Engine"
+        title="Growth Analytics & Reports"
+        description="Authoritative district analytics: monthly trends, chapter benchmarking, and demographic distributions."
+        actions={
           <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
             <Download className="h-3.5 w-3.5 mr-1.5" /> Export Full Report (CSV)
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Active Membership</span>
-            <div className="text-2xl font-black text-[#035AFC] mt-1">
-              {analytics.totalActiveMembers.toLocaleString()}
-            </div>
-            <p className="text-[11px] text-slate-500">Across 16 constituency chapters</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Active Membership"
+          value={analytics.totalActiveMembers.toLocaleString()}
+          subValue="Across 16 constituency chapters"
+          icon={Users}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Total Approved</span>
-            <div className="text-2xl font-black text-emerald-600 mt-1">
-              {analytics.totalApprovedApplications.toLocaleString()}
-            </div>
-            <p className="text-[11px] text-slate-500">Super Admin approved records</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Total Approved"
+          value={analytics.totalApprovedApplications.toLocaleString()}
+          subValue="Super Admin approved records"
+          icon={ShieldCheck}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Pending Review Queue</span>
-            <div className="text-2xl font-black text-amber-500 mt-1">
-              {analytics.totalPendingApplications}
-            </div>
-            <p className="text-[11px] text-slate-500">Applications under review</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Pending Review Queue"
+          value={analytics.totalPendingApplications}
+          subValue="Applications under review"
+          icon={Clock}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">16 Chapters</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              100%
-            </div>
-            <p className="text-[11px] text-slate-500">Constituency representation</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="16 Chapters"
+          value="100%"
+          subValue="Constituency representation"
+          icon={Building2}
+        />
       </div>
 
       {/* Monthly Timeline & Chapter Benchmarking */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Monthly Registration Timeline */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[#035AFC]" /> Monthly Registration Momentum
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink">
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue" /> Monthly Registration Momentum
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-ink/70 font-serif mt-1">
               Chronological applicant registrations across Malappuram district
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
+          <CardContent className="p-5 space-y-3">
             {analytics.monthlyTimeline.length === 0 ? (
-              <span className="text-xs text-slate-400 italic">No timeline records available.</span>
+              <span className="text-xs text-ink/50 italic font-serif">No timeline records available.</span>
             ) : (
               analytics.monthlyTimeline.map((item) => (
                 <div key={item.month} className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="font-mono text-slate-700 dark:text-slate-300 font-bold">{item.month}</span>
-                    <span className="font-bold text-[#035AFC]">{item.count} registrations</span>
+                    <span className="font-mono text-ink font-bold">{item.month}</span>
+                    <span className="font-bold text-blue font-mono">{item.count} registrations</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div className="h-2.5 w-full bg-paper-sunken border border-ink/20 overflow-hidden">
                     <div
-                      className="h-full bg-[#035AFC] rounded-full"
+                      className="h-full bg-blue transition-all duration-300"
                       style={{
                         width: `${Math.min(100, Math.round((item.count / Math.max(...analytics.monthlyTimeline.map((m) => m.count))) * 100))}%`,
                       }}
@@ -183,42 +166,42 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
         </Card>
 
         {/* Chapter Comparison Ranking */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#FBC206]" /> 16 Chapter Benchmarking
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink">
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-yellow" /> 16 Chapter Benchmarking
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-ink/70 font-serif mt-1">
               Active verified members and pending review throughput
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-5 pt-0">
+          <CardContent className="p-0">
             <div className="overflow-y-auto max-h-[300px]">
-              <table className="w-full text-xs text-left">
-                <thead className="border-b border-slate-100 dark:border-slate-800 text-slate-400 font-semibold uppercase text-[10px]">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead className="border-b-2 border-ink bg-paper-sunken text-ink font-display font-extrabold uppercase text-[10px] tracking-wider">
                   <tr>
-                    <th className="py-2">Constituency</th>
-                    <th className="py-2 text-center">Active Members</th>
-                    <th className="py-2 text-right">Pending Reviews</th>
+                    <th className="py-2.5 px-4">Constituency</th>
+                    <th className="py-2.5 px-4 text-center">Active Members</th>
+                    <th className="py-2.5 px-4 text-right">Pending Reviews</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <tbody className="divide-y divide-ink/10 font-mono text-[11px]">
                   {analytics.chapterComparisons.map((c) => (
-                    <tr key={c.code} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
-                      <td className="py-2">
-                        <span className="font-bold text-slate-900 dark:text-white">{c.name}</span>
-                        <span className="text-[10px] text-slate-400 font-mono ml-1">({c.code})</span>
+                    <tr key={c.code} className="hover:bg-yellow/10 transition-colors">
+                      <td className="py-2.5 px-4 font-sans">
+                        <span className="font-bold text-ink">{c.name}</span>
+                        <span className="text-[10px] text-ink/60 font-mono ml-1">({c.code})</span>
                       </td>
-                      <td className="py-2 text-center font-extrabold text-[#035AFC]">
+                      <td className="py-2.5 px-4 text-center font-black text-ink text-sm">
                         {c.activeMembers}
                       </td>
-                      <td className="py-2 text-right">
+                      <td className="py-2.5 px-4 text-right">
                         {c.pendingReviews > 0 ? (
                           <Badge variant="warning" className="text-[9px]">
                             {c.pendingReviews}
                           </Badge>
                         ) : (
-                          <span className="text-slate-400 text-[10px]">0</span>
+                          <span className="text-ink/40 text-[10px]">0</span>
                         )}
                       </td>
                     </tr>
@@ -233,13 +216,13 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
       {/* Demographic Distributions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Breakdown */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Award className="h-4 w-4 text-[#035AFC]" /> Member Category Distribution
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink">
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <Award className="h-5 w-5 text-blue" /> Member Category Distribution
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
+          <CardContent className="p-5 space-y-3">
             {analytics.categoryDistribution.map((cg) => {
               const label = cg.category === 'UNCLASSIFIED' ? 'Unclassified (Historical)' : getMemberCategoryLabel(cg.category as any);
               const pct = Math.round((cg.count / totalMembers) * 100);
@@ -247,13 +230,13 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
               return (
                 <div key={cg.category} className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{label}</span>
-                    <span className="font-mono text-slate-500 font-semibold">
+                    <span className="font-medium text-ink font-serif">{label}</span>
+                    <span className="font-mono text-ink font-bold">
                       {cg.count} ({pct}%)
                     </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
+                  <div className="h-2.5 w-full bg-paper-sunken border border-ink/20 overflow-hidden">
+                    <div className="h-full bg-emerald-600 transition-all duration-300" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );
@@ -262,13 +245,13 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
         </Card>
 
         {/* Position Breakdown */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-[#FBC206]" /> Current Position Breakdown
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink">
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-yellow" /> Current Position Breakdown
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
+          <CardContent className="p-5 space-y-3">
             {analytics.positionDistribution.map((pg) => {
               const label = pg.position === 'UNCLASSIFIED' ? 'Unclassified (Historical)' : getCurrentPositionLabel(pg.position as any);
               const pct = Math.round((pg.count / totalMembers) * 100);
@@ -276,13 +259,13 @@ export function DistrictReportsView({ analytics }: DistrictReportsViewProps) {
               return (
                 <div key={pg.position} className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{label}</span>
-                    <span className="font-mono text-slate-500 font-semibold">
+                    <span className="font-medium text-ink font-serif">{label}</span>
+                    <span className="font-mono text-ink font-bold">
                       {pg.count} ({pct}%)
                     </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full" style={{ width: `${pct}%` }} />
+                  <div className="h-2.5 w-full bg-paper-sunken border border-ink/20 overflow-hidden">
+                    <div className="h-full bg-yellow transition-all duration-300" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );

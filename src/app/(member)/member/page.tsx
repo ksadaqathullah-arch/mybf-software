@@ -17,6 +17,8 @@ import { CommunityOpportunitiesCard } from '@/features/memberships/components/co
 import { Building2, Award, ArrowRight, ShieldCheck, LogOut, Ticket, User } from 'lucide-react';
 import type { MemberCategoryValue, CurrentPositionValue } from '@/features/memberships/constants/member-classifications';
 
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
+
 export default function MemberDashboardPage() {
   const [memberProfile, setMemberProfile] = React.useState({
     fullName: 'Mohammed Anas',
@@ -108,99 +110,96 @@ export default function MemberDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Welcome, {memberProfile.fullName}
-            </h1>
-            <Badge variant="success">ACTIVE</Badge>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Permanent Member ID: <span className="font-mono font-bold text-[#035AFC]">{memberProfile.membershipNumber}</span> • {memberProfile.chapterName}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <Link href="/member/profile">
-            <Button variant="primary" size="sm" className="bg-[#035AFC] hover:bg-[#0248ca] text-white">
-              <User className="h-4 w-4 mr-1.5" /> Manage Profile
+      {/* Editorial Page Header */}
+      <PortalPageHeader
+        eyebrow="Mission Malappuram 2050 • Official Member Pass"
+        title={`Welcome, ${memberProfile.fullName}`}
+        description={`Permanent Member ID: ${memberProfile.membershipNumber} • Assigned to ${memberProfile.chapterName} • 100% Free Non-Profit Pass`}
+        badgeText="ACTIVE MEMBER"
+        actions={
+          <>
+            <Link href="/member/profile">
+              <Button variant="default" size="sm" className="bg-blue hover:bg-blue/90 text-paper font-display uppercase tracking-wider text-xs">
+                <User className="h-4 w-4 mr-1.5" /> Manage Profile
+              </Button>
+            </Link>
+            <Link href="/member/membership/id-card">
+              <Button variant="secondary" size="sm" className="font-display uppercase tracking-wider text-xs bg-yellow text-ink border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+                <Award className="h-4 w-4 mr-1.5" /> Digital ID Card
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="font-display uppercase tracking-wider text-xs border-2 border-ink text-ink hover:bg-rose-50 hover:text-rose-700"
+            >
+              <LogOut className="h-4 w-4 mr-1.5" /> Sign Out
             </Button>
-          </Link>
-          <Link href="/member/membership/id-card">
-            <Button variant="secondary" size="sm">
-              <Award className="h-4 w-4 mr-1.5" /> View Digital ID Card
-            </Button>
-          </Link>
-          <Button variant="outline" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-rose-600">
-            <LogOut className="h-4 w-4 mr-1.5" /> Sign Out
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Main Grid: Digital ID Card + Member Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Digital ID Card Preview */}
         <div className="lg:col-span-5 flex flex-col items-center">
-          <DigitalIdCard card={memberProfile} />
-          <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            <span>Cryptographic pass recognized at all 16 chapters</span>
+          <div className="w-full flex justify-center p-6 border-2 border-ink bg-paper shadow-[6px_6px_0px_#14161c]">
+            <DigitalIdCard card={memberProfile} />
+          </div>
+          <div className="mt-3 flex items-center gap-2 text-xs font-mono font-bold text-ink/70 uppercase">
+            <ShieldCheck className="h-4 w-4 text-blue" />
+            <span>Cryptographic pass recognized across all 16 chapters</span>
           </div>
         </div>
 
         {/* Member Metrics & Chapter Link */}
         <div className="lg:col-span-7 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="p-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Assigned Chapter</span>
-                <CardTitle className="text-sm mt-1 text-[#035AFC]">{memberProfile.chapterName}</CardTitle>
-                <p className="text-[11px] text-slate-500">Malappuram Constituency</p>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader className="p-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Membership Standing</span>
-                <CardTitle className="text-sm mt-1 text-emerald-600">Active Member</CardTitle>
-                <p className="text-[11px] text-slate-500">100% Free NGO Pass</p>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader className="p-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Active Tickets</span>
-                <CardTitle className="text-sm mt-1 text-slate-900 dark:text-white">
-                  {registeredTickets.length} Confirmed
-                </CardTitle>
-                <p className="text-[11px] text-slate-500">Free Event Passes</p>
-              </CardHeader>
-            </Card>
+            <PortalStatCard
+              label="Assigned Chapter"
+              value={memberProfile.chapterName.replace(' Chapter', '')}
+              subtext="Malappuram Constituency"
+              color="blue"
+            />
+            <PortalStatCard
+              label="Membership Standing"
+              value="Active"
+              subtext="100% Free NGO Pass"
+              color="yellow"
+            />
+            <PortalStatCard
+              label="Active Passes"
+              value={registeredTickets.length}
+              subtext="Confirmed Event Tickets"
+              color="default"
+            />
           </div>
 
-          {/* Chapter Quick Access */}
-          <Card className="border-blue-500/30 bg-gradient-to-r from-blue-500/5 via-transparent to-transparent">
-            <CardHeader className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 rounded-xl bg-[#035AFC] text-white flex items-center justify-center">
-                    <Building2 className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base">Your Chapter Hub: {memberProfile.chapterName}</h3>
-                    <p className="text-xs text-slate-500">Constituency Chapter • Monthly Executive Meeting</p>
-                  </div>
+          {/* Chapter Quick Access Editorial Banner */}
+          <div className="border-2 border-ink bg-blue text-paper p-6 shadow-[6px_6px_0px_#14161c]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 border-2 border-ink bg-yellow text-ink flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#14161c]">
+                  <Building2 className="h-6 w-6" />
                 </div>
-                <Link href={`/chapters/${memberProfile.chapterSlug}`}>
-                  <Button variant="outline" size="sm">
-                    Chapter Page <ArrowRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </Link>
+                <div>
+                  <span className="font-mono text-[10px] font-black uppercase tracking-widest text-yellow">Constituency Chapter</span>
+                  <h3 className="font-display font-black text-xl text-paper uppercase tracking-tight">
+                    {memberProfile.chapterName}
+                  </h3>
+                  <p className="font-serif italic text-xs text-paper/80 mt-0.5">
+                    Monthly executive meetings & youth networking sessions
+                  </p>
+                </div>
               </div>
-            </CardHeader>
-          </Card>
+              <Link href={`/chapters/${memberProfile.chapterSlug}`}>
+                <Button variant="secondary" size="sm" className="bg-yellow hover:bg-yellow/90 text-ink border-2 border-ink font-display uppercase tracking-wider text-xs whitespace-nowrap shadow-[2px_2px_0px_#14161c]">
+                  Chapter Hub <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 

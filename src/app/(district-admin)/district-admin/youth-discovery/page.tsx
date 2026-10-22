@@ -1,8 +1,7 @@
 import { getCurrentActor } from '@/server/auth/session';
 import { DistrictAdminService } from '@/features/district-admin/server/district-admin.service';
 import { DistrictClassificationAnalytics, type DistrictMemberRecord } from '@/features/memberships/components/district-classification-analytics';
-import { Badge } from '@/components/ui/badge';
-import { Target, Sparkles } from 'lucide-react';
+import { PortalPageHeader } from '@/components/ui/portal-elements';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,19 +28,13 @@ export default async function DistrictYouthDiscoveryPage() {
   }));
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Target className="h-6 w-6 text-[#035AFC]" /> Youth Discovery & Talent Intelligence Hub
-          </h1>
-          <Badge variant="primary">MALAPPURAM DISTRICT</Badge>
-        </div>
-        <p className="text-xs text-slate-500 mt-1">
-          Multi-dimensional exploration across youth aspirations, member expectations, extracurricular talents, and engagement channels
-        </p>
-      </div>
+    <div className="space-y-6 animate-fade-in">
+      <PortalPageHeader
+        tag="MALAPPURAM DISTRICT"
+        badge="Talent Intelligence"
+        title="Youth Discovery & Talent Intelligence Hub"
+        description="Multi-dimensional exploration across youth aspirations, member expectations, extracurricular talents, and engagement channels."
+      />
 
       {/* Interactive Youth Discovery & Classification Engine */}
       <DistrictClassificationAnalytics initialMembers={initialMembers} />

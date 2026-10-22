@@ -133,35 +133,35 @@ export function SuperAdminOfficersView({
     <div className="space-y-8">
       {notice && (
         <div
-          className={`p-4 rounded-xl text-xs flex items-center gap-2 border ${
+          className={`p-4 border-2 text-xs font-bold flex items-center gap-2 shadow-[2px_2px_0px_#14161c] ${
             notice.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-              : 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
+              ? 'border-emerald-800 bg-emerald-50 text-emerald-950'
+              : 'border-rose-800 bg-rose-50 text-rose-950'
           }`}
         >
-          {notice.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
+          {notice.type === 'success' ? <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" /> : <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />}
           {notice.message}
         </div>
       )}
 
       {/* Appointment Form */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-[#035AFC]" /> Appoint Chapter Executive Officer
+      <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
+        <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
+          <CardTitle className="font-display font-extrabold text-lg text-ink uppercase tracking-tight flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-blue" /> Appoint Chapter Executive Officer
           </CardTitle>
-          <CardDescription className="text-xs text-slate-500">
+          <CardDescription className="font-serif text-xs text-muted">
             Grant chapter administrative authority to an active MYBF member with an immutable audit record.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <form onSubmit={handleAppoint} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+          <form onSubmit={handleAppoint} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
                 Select Member / Candidate *
               </label>
               <select
-                className="w-full h-9 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 required
@@ -176,11 +176,11 @@ export function SuperAdminOfficersView({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
                 Constituency Chapter *
               </label>
               <select
-                className="w-full h-9 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 value={selectedChapterId}
                 onChange={(e) => setSelectedChapterId(e.target.value)}
                 required
@@ -195,11 +195,11 @@ export function SuperAdminOfficersView({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
                 Executive Role *
               </label>
               <select
-                className="w-full h-9 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
                 required
@@ -214,111 +214,130 @@ export function SuperAdminOfficersView({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
                 Custom Title (Optional)
               </label>
               <input
                 type="text"
                 placeholder="e.g. Executive Committee Head"
-                className="w-full h-9 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
                 Tenure End Date (Optional)
               </label>
               <input
                 type="date"
-                className="w-full h-9 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
 
             <div className="md:col-span-2 flex items-end">
-              <Button type="submit" disabled={isSubmitting} className="w-full h-9 text-xs">
-                {isSubmitting ? 'Appointing...' : 'Authorize & Appoint Officer'}
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={isSubmitting}
+                className="w-full"
+              >
+                {isSubmitting ? 'Registering...' : 'Appoint Chapter Officer'}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
 
-      {/* Active Officers Directory */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-base font-semibold">Active Chapter Executive Officers</CardTitle>
-            <CardDescription className="text-xs text-slate-500">
-              Legitimate appointed leadership across all 16 Malappuram chapters.
-            </CardDescription>
-          </div>
-          <Badge variant="primary">{officers.length} APPOINTED</Badge>
+      {/* Officers List Table */}
+      <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
+        <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
+          <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
+            Active Constituency Chapter Leadership ({officers.length})
+          </CardTitle>
+          <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+            All current chapter executives endowed with regional membership review authority.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          {officers.length === 0 ? (
-            <div className="py-12 text-center text-xs text-slate-500">
-              No chapter executive leadership appointments recorded in the database yet.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4 text-paper">Officer Name</th>
+                  <th className="py-3 px-4 text-paper">Chapter</th>
+                  <th className="py-3 px-4 text-paper">Role & Title</th>
+                  <th className="py-3 px-4 text-paper">Tenure Period</th>
+                  <th className="py-3 px-4 text-paper text-center">Status</th>
+                  <th className="py-3 px-4 text-paper text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/15 font-sans">
+                {officers.length === 0 ? (
                   <tr>
-                    <th className="p-3.5 pl-6">Officer Name</th>
-                    <th className="p-3.5">Assigned Chapter</th>
-                    <th className="p-3.5">Executive Role</th>
-                    <th className="p-3.5">Tenure Start</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 pr-6 text-right">Actions</th>
+                    <td colSpan={6} className="py-12 text-center text-muted font-serif">
+                      No chapter leadership appointments found in database.
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {officers.map((o) => (
-                    <tr key={o.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="p-3.5 pl-6">
-                        <div className="font-semibold text-slate-900 dark:text-white">
-                          {o.user.profile?.fullName || o.user.username || 'Officer'}
+                ) : (
+                  officers.map((officer) => (
+                    <tr key={officer.id} className="hover:bg-yellow/15 transition-colors">
+                      <td className="py-3.5 px-4 font-semibold text-ink">
+                        <div className="font-display font-extrabold text-sm uppercase">
+                          {officer.user.profile?.fullName || officer.user.username || 'Unnamed'}
                         </div>
-                        <div className="text-[11px] text-slate-500">{o.user.email}</div>
+                        <div className="font-serif text-[11px] text-muted">
+                          {officer.user.email} • {officer.user.profile?.primaryPhone || 'No Phone'}
+                        </div>
                       </td>
-                      <td className="p-3.5">
-                        <div className="font-medium text-slate-900 dark:text-white">{o.chapter.name}</div>
-                        <div className="text-[11px] text-slate-500 font-mono">{o.chapter.code}</div>
+
+                      <td className="py-3.5 px-4">
+                        <div className="font-display font-bold text-xs uppercase">{officer.chapter.name}</div>
+                        <div className="font-mono text-[10px] text-muted">{officer.chapter.code}</div>
                       </td>
-                      <td className="p-3.5">
-                        <Badge variant="primary" className="text-[10px]">
-                          {o.role.replace(/_/g, ' ')}
+
+                      <td className="py-3.5 px-4">
+                        <Badge variant="primary" className="mb-0.5">
+                          {officer.role.replace(/_/g, ' ')}
                         </Badge>
-                        {o.title && <span className="text-[11px] text-slate-500 block mt-0.5">{o.title}</span>}
+                        {officer.title && (
+                          <div className="font-serif text-[11px] text-muted">{officer.title}</div>
+                        )}
                       </td>
-                      <td className="p-3.5 text-slate-500">
-                        {new Date(o.startDate).toLocaleDateString()}
+
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-ink">
+                        <div>Since: {new Date(officer.startDate).toLocaleDateString()}</div>
+                        {officer.endDate && (
+                          <div className="text-muted">Until: {new Date(officer.endDate).toLocaleDateString()}</div>
+                        )}
                       </td>
-                      <td className="p-3.5">
-                        <Badge variant={o.isActive ? 'success' : 'neutral'} className="text-[10px]">
-                          {o.isActive ? 'ACTIVE' : 'EXPIRED'}
+
+                      <td className="py-3.5 px-4 text-center">
+                        <Badge variant={officer.isActive ? 'success' : 'neutral'}>
+                          {officer.isActive ? 'ACTIVE' : 'INACTIVE'}
                         </Badge>
                       </td>
-                      <td className="p-3.5 pr-6 text-right">
+
+                      <td className="py-3.5 px-4 text-right">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          onClick={() => handleRevoke(o.chapter.id, o.id)}
-                          className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                          onClick={() => handleRevoke(officer.chapter.id, officer.id)}
+                          className="h-7 px-2.5 text-rose-700 border-rose-700 hover:bg-rose-50"
                         >
-                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Revoke
+                          <Trash2 className="h-3 w-3 mr-1" /> Revoke
                         </Button>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { OpenMembershipModalButton } from '@/features/memberships/components/open-membership-modal-button';
 import { ShieldCheck, EyeOff, QrCode, Lock, ArrowRight, UserCheck, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -143,11 +144,9 @@ export default function PrivacyPage() {
             DPDP Inquiries: secretariat@mybf.in | MYBF Central Secretariat, Malappuram, Kerala - 676505.
           </p>
         </div>
-        <Link href="/register">
-          <Button className="shrink-0" size="sm">
-            Apply for Youth Membership <ArrowRight className="h-4 w-4 ml-1.5" />
-          </Button>
-        </Link>
+        <OpenMembershipModalButton className="btn btn-yellow min-h-10 px-4 text-xs font-display font-extrabold uppercase tracking-wider shrink-0 cursor-pointer justify-center">
+          Apply for Youth Membership <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+        </OpenMembershipModalButton>
       </div>
     </div>
   );

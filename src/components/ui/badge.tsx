@@ -7,18 +7,18 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Badge({ className, variant = 'primary', ...props }: BadgeProps) {
   const variants = {
-    primary: 'bg-[#EBF2FF] dark:bg-[#035AFC]/20 text-[#035AFC] dark:text-[#3B82F6] border border-[#035AFC]/20',
-    secondary: 'bg-[#FEF8E6] dark:bg-[#FBC206]/15 text-[#946800] dark:text-[#FBC206] border border-[#FBC206]/30',
-    success: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40',
-    warning: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40',
-    danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40',
-    neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
+    primary: 'bg-blue text-paper border border-ink',
+    secondary: 'bg-yellow text-ink border border-ink',
+    success: 'bg-emerald-100 text-emerald-950 border border-emerald-900',
+    warning: 'bg-amber-100 text-amber-950 border border-amber-900',
+    danger: 'bg-rose-100 text-rose-950 border border-rose-900',
+    neutral: 'bg-paper-2 text-ink border border-ink/40',
   };
 
   return (
     <div
       className={cn(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider',
+        'inline-flex items-center gap-1 px-2.5 py-0.5 font-display text-[10px] font-black uppercase tracking-wider shadow-[1px_1px_0px_#14161c]',
         variants[variant],
         className
       )}

@@ -501,25 +501,25 @@ export function MemberProfileManagement({
     <div className="space-y-8 max-w-6xl mx-auto pb-12">
       {/* Notifications Toast */}
       {successMsg && (
-        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" />
-          <span className="font-medium">{successMsg}</span>
+        <div className="p-4 border-2 border-ink bg-paper text-ink text-sm flex items-center gap-3 shadow-[4px_4px_0px_#14161c] animate-in fade-in slide-in-from-top-2">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-blue" />
+          <span className="font-display font-bold">{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-          <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
-          <span className="font-medium">{errorMsg}</span>
+        <div className="p-4 border-2 border-ink bg-rose-50 text-rose-900 text-sm flex items-center gap-3 shadow-[4px_4px_0px_#14161c] animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="h-5 w-5 shrink-0 text-rose-600" />
+          <span className="font-display font-bold">{errorMsg}</span>
         </div>
       )}
 
       {/* Header Profile Identity Strip */}
-      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-6 sm:p-8 shadow-sm">
+      <div className="border-2 border-ink bg-paper p-6 sm:p-8 shadow-[6px_6px_0px_#14161c]">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center space-x-5">
             <div className="relative">
-              <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#035AFC] to-[#022D80] text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-blue-500/10 border-2 border-white dark:border-slate-800">
+              <div className="h-20 w-20 border-2 border-ink bg-blue text-paper flex items-center justify-center font-display font-black text-2xl shadow-[4px_4px_0px_#14161c]">
                 {data.profile.fullName
                   .split(' ')
                   .map((n) => n[0])
@@ -527,14 +527,14 @@ export function MemberProfileManagement({
                   .join('')
                   .toUpperCase()}
               </div>
-              <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-500 border-2 border-white dark:border-[#0A0F1D] flex items-center justify-center text-white" title="Active Verified Member">
+              <div className="absolute -bottom-1 -right-1 h-6 w-6 border-2 border-ink bg-yellow text-ink flex items-center justify-center font-bold" title="Active Verified Member">
                 <ShieldCheck className="h-3.5 w-3.5" />
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                <h1 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight text-ink">
                   {data.profile.fullName}
                 </h1>
                 <Badge variant="success">ACTIVE PASS</Badge>
@@ -545,28 +545,28 @@ export function MemberProfileManagement({
                 )}
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+              <div className="flex items-center gap-3 text-xs font-mono text-ink/70 flex-wrap">
                 <span className="flex items-center gap-1">
-                  <Building2 className="h-3.5 w-3.5 text-[#035AFC]" /> {data.profile.chapter.name}
+                  <Building2 className="h-3.5 w-3.5 text-blue" /> {data.profile.chapter.name}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-amber-500" /> {data.profile.taluk || 'Malappuram'} Taluk
+                  <MapPin className="h-3.5 w-3.5 text-yellow" /> {data.profile.taluk || 'Malappuram'} Taluk
                 </span>
                 <span>•</span>
-                <span className="text-slate-400">100% Free NGO Membership</span>
+                <span className="font-serif italic text-ink/60">100% Free NGO Pass</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap self-stretch sm:self-auto">
             <Link href="/member/membership/id-card">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
+              <Button variant="outline" size="sm" className="gap-2 text-xs font-display uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
                 <KeyRound className="h-4 w-4" /> View Digital ID
               </Button>
             </Link>
             <Link href="/member">
-              <Button variant="secondary" size="sm" className="gap-2 text-xs">
+              <Button variant="secondary" size="sm" className="gap-2 text-xs font-display uppercase tracking-wider bg-yellow text-ink border-2 border-ink shadow-[2px_2px_0px_#14161c]">
                 Dashboard Overview
               </Button>
             </Link>
@@ -574,50 +574,50 @@ export function MemberProfileManagement({
         </div>
 
         {/* Verification Strip Indicators */}
-        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="mt-6 pt-6 border-t-2 border-ink/20 grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="flex items-center space-x-3">
-            <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${data.user.phoneVerified ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}`}>
+            <div className={`h-8 w-8 border border-ink flex items-center justify-center ${data.user.phoneVerified ? 'bg-blue text-paper' : 'bg-yellow text-ink'}`}>
               <Phone className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Mobile Verified</div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <div className="text-[10px] font-mono font-bold text-ink/60 uppercase">Mobile Verified</div>
+              <div className="text-xs font-mono font-bold text-ink">
                 {data.user.phoneVerified ? 'Verified Phone' : 'Pending Verification'}
               </div>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${data.user.emailVerified ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}`}>
+            <div className={`h-8 w-8 border border-ink flex items-center justify-center ${data.user.emailVerified ? 'bg-blue text-paper' : 'bg-yellow text-ink'}`}>
               <Mail className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Email Verified</div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <div className="text-[10px] font-mono font-bold text-ink/60 uppercase">Email Verified</div>
+              <div className="text-xs font-mono font-bold text-ink">
                 {data.user.emailVerified ? 'Verified Email' : 'Pending Verification'}
               </div>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-[#035AFC] flex items-center justify-center">
-              <Building2 className="h-4 w-4" />
+            <div className="h-8 w-8 border border-ink bg-paper text-ink flex items-center justify-center">
+              <Building2 className="h-4 w-4 text-blue" />
             </div>
             <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Chapter Status</div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <div className="text-[10px] font-mono font-bold text-ink/60 uppercase">Chapter Status</div>
+              <div className="text-xs font-mono font-bold text-ink truncate max-w-[130px]">
                 {data.profile.chapter.name}
               </div>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center">
+            <div className="h-8 w-8 border border-ink bg-yellow text-ink flex items-center justify-center">
               <Briefcase className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Classification</div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[130px]">
+              <div className="text-[10px] font-mono font-bold text-ink/60 uppercase">Classification</div>
+              <div className="text-xs font-mono font-bold text-ink truncate max-w-[130px]">
                 {data.profile.currentPosition?.replace(/_/g, ' ') || 'Member'}
               </div>
             </div>
@@ -626,7 +626,7 @@ export function MemberProfileManagement({
       </div>
 
       {/* Navigation Tabs Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto pb-3 border-b-2 border-ink no-scrollbar">
         {[
           { id: 'overview', label: 'Overview', icon: User },
           { id: 'personal', label: 'Personal Details', icon: FileText },
@@ -644,16 +644,16 @@ export function MemberProfileManagement({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-display uppercase tracking-wider shrink-0 transition-all border-2 border-ink ${
                 isActive
-                  ? 'bg-[#035AFC] text-white shadow-md shadow-blue-500/20'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                  ? 'bg-blue text-paper shadow-[3px_3px_0px_#14161c]'
+                  : 'bg-paper text-ink hover:bg-yellow hover:text-ink shadow-[1px_1px_0px_#14161c]'
               }`}
             >
               <Icon className="h-4 w-4" />
               <span>{tab.label}</span>
               {tab.count !== undefined && tab.count > 0 && (
-                <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+                <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] ${isActive ? 'bg-yellow text-ink' : 'bg-ink text-paper'}`}>
                   {tab.count}
                 </span>
               )}

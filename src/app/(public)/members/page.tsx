@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Arrow } from "@/components/arrow";
 import { PageHero } from "@/components/page-hero";
 import { members } from "@/lib/members";
+import { OpenMembershipModalButton } from "@/features/memberships/components/open-membership-modal-button";
 
 export const metadata: Metadata = {
   title: "Members",
@@ -26,9 +27,9 @@ export default function MembersPage() {
         photoStart={3}
         strip={["Founders", "Owners", "Students", "Mentors", "Operators"]}
       >
-        <Link href="/contact" className="btn btn-yellow">
-          Ask to join <Arrow />
-        </Link>
+        <OpenMembershipModalButton className="btn btn-yellow cursor-pointer">
+          Apply to join <Arrow />
+        </OpenMembershipModalButton>
         <Link href="/membership" className="btn btn-outline-light">
           How membership works
         </Link>

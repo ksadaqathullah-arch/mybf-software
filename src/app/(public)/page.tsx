@@ -5,6 +5,7 @@ import { PhotoCycle } from "@/components/photo-cycle";
 import { Swipe } from "@/components/swipe";
 import { forumPhotos } from "@/lib/photos";
 import { initiatives, slugify } from "@/lib/site";
+import { OpenMembershipModalButton } from "@/features/memberships/components/open-membership-modal-button";
 
 const chapters = [
   {
@@ -199,9 +200,9 @@ export default function HomePage() {
                 Founders, owners, students, and the mentors willing to be useful across 16 chapters in Malappuram. Zero fees. Tamper-proof digital ID cards and democratic chapter governance.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link href="/register" className="btn btn-yellow">
+                <OpenMembershipModalButton className="btn btn-yellow cursor-pointer">
                   Apply for membership <Arrow />
-                </Link>
+                </OpenMembershipModalButton>
                 <Link href="/membership" className="btn btn-outline-light">
                   How membership works
                 </Link>
@@ -250,14 +251,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="shrink-0 flex flex-col items-start md:items-end gap-2">
-                  <Link
-                    href="/register"
-                    className="btn btn-yellow min-h-12 px-6 text-sm"
-                  >
+                  <OpenMembershipModalButton className="btn btn-yellow min-h-12 px-6 text-sm cursor-pointer">
                     Open Application Form <Arrow />
-                  </Link>
+                  </OpenMembershipModalButton>
                   <span className="text-xs text-paper/60 font-sans">
-                    Full-page 5-step registration · Zero fees
+                    Step-by-step application modal · Zero fees
                   </span>
                 </div>
               </div>

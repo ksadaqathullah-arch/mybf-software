@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCurrentActor } from '@/server/auth/session';
 import { SuperAdminService } from '@/features/super-admin/server/super-admin.service';
 import { SuperAdminAuditLogsView } from '@/features/super-admin/components/super-admin-audit-logs-view';
-import { Badge } from '@/components/ui/badge';
+import { PortalPageHeader } from '@/components/ui/portal-elements';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,22 +20,12 @@ export default async function SuperAdminAuditLogsPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
-              Audit Trail Telemetry
-            </span>
-            <Badge variant="primary">DATABASE PERSISTENT AUDIT</Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
-            System & Administrative Audit Logs
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Historical trace of membership approvals, age exception decisions, leadership role changes, and security events.
-          </p>
-        </div>
-      </div>
+      <PortalPageHeader
+        badge="AUDIT TRAIL TELEMETRY"
+        tag="DATABASE PERSISTENT AUDIT"
+        title="System & Administrative Audit Logs"
+        description="Historical trace of membership approvals, age exception decisions, leadership role changes, and security events."
+      />
 
       <SuperAdminAuditLogsView
         initialLogs={data.logs}

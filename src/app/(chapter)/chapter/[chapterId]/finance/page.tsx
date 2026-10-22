@@ -5,6 +5,7 @@ import { ChapterAccessDenied } from '@/features/chapters/components/chapter-acce
 import { db } from '@/server/db';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   Wallet,
   ShieldCheck,
@@ -63,31 +64,21 @@ export default async function ChapterFinancePage({ params }: FinancePageProps) {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
-              {chapter.code}
-            </span>
-            <span className="text-xs text-slate-500 font-medium">Financial Governance</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
-            Chapter Finance & Grants
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Financial reporting, NGO activity grants, and treasury oversight for {chapter.name}.
-          </p>
-        </div>
-      </div>
+      <PortalPageHeader
+        tag={chapter.code}
+        badge="Financial Governance"
+        title="Chapter Finance & Grants"
+        description={`Financial reporting, NGO activity grants, and treasury oversight for ${chapter.name}.`}
+      />
 
       {/* Mandatory Policy Banner: 100% Free Membership */}
-      <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-800 dark:text-emerald-300 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-        <div className="text-sm">
-          <p className="font-semibold text-emerald-900 dark:text-emerald-200">
+      <div className="border-2 border-ink bg-emerald-50 text-ink p-4 shadow-[3px_3px_0px_#14161c] flex items-start gap-3">
+        <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+        <div className="text-xs">
+          <p className="font-display font-black uppercase tracking-wider text-emerald-950">
             MYBF Zero Membership Fee Policy
           </p>
-          <p className="mt-0.5 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+          <p className="mt-1 text-ink/80 font-serif leading-relaxed">
             MYBF membership is 100% free for all qualified entrepreneurs and youth in Malappuram. Chapter executives are strictly prohibited from soliciting, assessing, or collecting membership dues, subscription fees, or processing charges. All operational activities are funded through philanthropic grants and central NGO treasury allocations.
           </p>
         </div>
@@ -95,104 +86,59 @@ export default async function ChapterFinancePage({ params }: FinancePageProps) {
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-2">
-            <CardDescription className="text-xs font-medium uppercase tracking-wider text-slate-500">
-              NGO Activity Budget
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white flex items-center justify-between mt-1">
-              <span>₹0.00</span>
-              <Landmark className="h-5 w-5 text-slate-400" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-5 pt-0">
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="warning" className="text-[10px]">
-                Central Allocation Pending
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-              Annual initiative budget allocation will be assigned by the Central Treasury upon summit proposal approval.
-            </p>
-          </CardContent>
-        </Card>
+        <PortalStatCard
+          label="NGO Activity Budget"
+          value="₹0.00"
+          subValue="Central Allocation Pending"
+          icon={Landmark}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-2">
-            <CardDescription className="text-xs font-medium uppercase tracking-wider text-slate-500">
-              Approved Expenditure
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white flex items-center justify-between mt-1">
-              <span>₹0.00</span>
-              <Receipt className="h-5 w-5 text-slate-400" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-5 pt-0">
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="neutral" className="text-[10px]">
-                Audited & Cleared
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-              No outstanding reimbursement requests or unvouched chapter expenditures for current quarter.
-            </p>
-          </CardContent>
-        </Card>
+        <PortalStatCard
+          label="Approved Expenditure"
+          value="₹0.00"
+          subValue="Audited & Cleared"
+          icon={Receipt}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-2">
-            <CardDescription className="text-xs font-medium uppercase tracking-wider text-slate-500">
-              Authorized Chapter Receipts
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white flex items-center justify-between mt-1">
-              <span>{paymentRecords.length}</span>
-              <Wallet className="h-5 w-5 text-slate-400" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-5 pt-0">
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="success" className="text-[10px]">
-                Event / CSR Sponsorships
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-              Receipts registered for chapter summits and approved NGO community workshops.
-            </p>
-          </CardContent>
-        </Card>
+        <PortalStatCard
+          label="Authorized Chapter Receipts"
+          value={paymentRecords.length}
+          subValue="Event / CSR Sponsorships"
+          icon={Wallet}
+        />
       </div>
 
       {/* Backend Status & Implementation Scope Notice */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm bg-slate-50/50 dark:bg-slate-900/50">
-        <CardHeader className="p-6">
+      <Card>
+        <CardHeader className="p-6 border-b-2 border-ink">
           <div className="flex items-center gap-2">
-            <Info className="h-5 w-5 text-[#035AFC]" />
-            <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
+            <Info className="h-5 w-5 text-blue" />
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink">
               Chapter Treasury & Ledger Architecture
             </CardTitle>
           </div>
-          <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <CardDescription className="text-xs text-ink/70 font-serif mt-1">
             Status of financial workflows under the MYBF NGO governance charter.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6 pt-0 space-y-4">
+        <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <p className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div className="p-4 bg-paper border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+              <p className="font-display font-black uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 bg-emerald-600 border border-ink"></span>
                 Central Disbursal System
               </p>
-              <p className="text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              <p className="text-ink/80 font-serif mt-1.5 leading-relaxed">
                 Chapter operational funds for large assemblies (such as the Malappuram Youth Business Conclave) are disbursed directly by the Central Governing Council upon submission of a formal project charter.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <p className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div className="p-4 bg-paper border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+              <p className="font-display font-black uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 bg-yellow border border-ink"></span>
                 Voucher & Expense Submission (Next Phase)
               </p>
-              <p className="text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              <p className="text-ink/80 font-serif mt-1.5 leading-relaxed">
                 Direct chapter expense claim submission, digital bill scanning, and automated auditor sign-off will be integrated into the Central Finance ledger upon final auditor certification.
               </p>
             </div>
@@ -201,14 +147,14 @@ export default async function ChapterFinancePage({ params }: FinancePageProps) {
       </Card>
 
       {/* Chapter Financial Records Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-6 border-b border-slate-200 dark:border-slate-800">
+      <Card>
+        <CardHeader className="p-6 border-b-2 border-ink">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
+              <CardTitle className="text-xl font-black font-display uppercase tracking-wider text-ink">
                 Chapter Transaction Records
               </CardTitle>
-              <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <CardDescription className="text-xs text-ink/70 font-serif mt-1">
                 Authorized receipts and transactions scoped to {chapter.name}.
               </CardDescription>
             </div>
@@ -217,48 +163,48 @@ export default async function ChapterFinancePage({ params }: FinancePageProps) {
         <CardContent className="p-0">
           {paymentRecords.length === 0 ? (
             <div className="py-12 px-4 text-center">
-              <FileSpreadsheet className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <FileSpreadsheet className="h-10 w-10 text-ink/30 mx-auto mb-3" />
+              <p className="text-sm font-bold text-ink font-display uppercase tracking-wider">
                 No Financial Transactions Recorded
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+              <p className="text-xs text-ink/60 font-serif mt-1 max-w-md mx-auto">
                 No event ticket fees, summit receipts, or CSR sponsorships have been recorded under this chapter code ({chapter.code}).
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead className="bg-paper-sunken text-ink font-display font-extrabold uppercase text-[10px] tracking-wider border-b-2 border-ink">
                   <tr>
-                    <th className="p-3.5 pl-6">Reference ID</th>
-                    <th className="p-3.5">Contributor / Payer</th>
-                    <th className="p-3.5">Purpose</th>
-                    <th className="p-3.5">Amount (INR)</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 pr-6">Date</th>
+                    <th className="py-3 px-4">Reference ID</th>
+                    <th className="py-3 px-4">Contributor / Payer</th>
+                    <th className="py-3 px-4">Purpose</th>
+                    <th className="py-3 px-4">Amount (INR)</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-ink/10 font-mono text-[11px]">
                   {paymentRecords.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="p-3.5 pl-6 font-mono text-slate-600 dark:text-slate-400">
+                    <tr key={p.id} className="hover:bg-yellow/10 transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-blue">
                         {p.idempotencyKey.slice(0, 12)}...
                       </td>
-                      <td className="p-3.5">
-                        <div className="font-medium text-slate-900 dark:text-white">
+                      <td className="py-3 px-4 font-sans">
+                        <div className="font-bold text-ink">
                           {p.user?.profile?.fullName || 'Anonymous'}
                         </div>
-                        <div className="text-[11px] text-slate-500">{p.user?.email}</div>
+                        <div className="text-[10px] text-ink/60">{p.user?.email}</div>
                       </td>
-                      <td className="p-3.5">
+                      <td className="py-3 px-4">
                         <Badge variant="neutral" className="text-[10px]">
                           {p.purpose.replace('_', ' ')}
                         </Badge>
                       </td>
-                      <td className="p-3.5 font-semibold text-slate-900 dark:text-white">
+                      <td className="py-3 px-4 font-black text-ink">
                         ₹{p.amountINR.toLocaleString('en-IN')}
                       </td>
-                      <td className="p-3.5">
+                      <td className="py-3 px-4">
                         <Badge
                           variant={p.status === 'PAID' ? 'success' : 'warning'}
                           className="text-[10px]"
@@ -266,7 +212,7 @@ export default async function ChapterFinancePage({ params }: FinancePageProps) {
                           {p.status}
                         </Badge>
                       </td>
-                      <td className="p-3.5 pr-6 text-slate-500">
+                      <td className="py-3 px-4 text-ink/70">
                         {new Date(p.createdAt).toLocaleDateString()}
                       </td>
                     </tr>

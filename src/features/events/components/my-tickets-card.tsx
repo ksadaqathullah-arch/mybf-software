@@ -107,7 +107,7 @@ export function MyTicketsCard({ refreshTrigger, onTicketsLoaded }: MyTicketsCard
           return (
             <div
               key={t.id}
-              className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-[#070A10] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="border-2 border-ink p-4 bg-paper flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[3px_3px_0px_#14161c]"
             >
               <div className="space-y-1.5 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -133,31 +133,31 @@ export function MyTicketsCard({ refreshTrigger, onTicketsLoaded }: MyTicketsCard
                   )}
                 </div>
 
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 className="font-display font-black text-sm text-ink uppercase tracking-tight">
                   {t.event.title}
                 </h4>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono text-ink/70">
                   <span className="flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5 text-slate-400" /> {formattedDate}
+                    <Calendar className="h-3.5 w-3.5 text-blue" /> {formattedDate}
                   </span>
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400" /> {t.event.venueName}
+                    <MapPin className="h-3.5 w-3.5 text-yellow" /> {t.event.venueName}
                   </span>
                 </div>
               </div>
 
               {/* QR Code and Pass Details */}
-              <div className="shrink-0 flex items-center gap-3 p-2.5 rounded-lg bg-white dark:bg-[#0d121f] border border-slate-200 dark:border-slate-800">
-                <div className="h-14 w-14 rounded bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300">
-                  <QrCode className="h-10 w-10 text-[#035AFC]" />
+              <div className="shrink-0 flex items-center gap-3 p-3 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c]">
+                <div className="h-14 w-14 border border-ink bg-paper flex items-center justify-center text-ink">
+                  <QrCode className="h-10 w-10 text-blue" />
                 </div>
                 <div className="text-left space-y-0.5">
-                  <span className="text-[10px] font-bold text-slate-400 block uppercase">QR Verification Code</span>
-                  <span className="font-mono font-bold text-xs text-[#035AFC] block truncate max-w-[130px]">
+                  <span className="text-[10px] font-mono font-bold text-ink/60 block uppercase">QR Verification</span>
+                  <span className="font-mono font-bold text-xs text-blue block truncate max-w-[130px]">
                     {t.ticketCode}
                   </span>
-                  <span className="text-[10px] text-emerald-600 font-semibold block">
+                  <span className="text-[10px] font-mono font-bold text-ink/70 block uppercase">
                     {t.ticketPriceINR && t.ticketPriceINR > 0 ? `Paid Pass (₹${t.ticketPriceINR})` : 'Free Admission Pass'}
                   </span>
                 </div>

@@ -113,7 +113,7 @@ export function MemberClassificationCard({
           <form onSubmit={handleSave} className="space-y-4 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="edit-member-category" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="edit-member-category" className="text-xs font-mono font-bold uppercase tracking-wider text-ink">
                   Member Category / Interest *
                 </label>
                 <select
@@ -121,7 +121,7 @@ export function MemberClassificationCard({
                   required
                   value={category}
                   onChange={(e) => setCategory(e.target.value as MemberCategoryValue)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                  className="w-full border-2 border-ink bg-paper px-3 py-2 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-blue shadow-[2px_2px_0px_#14161c]"
                 >
                   <option value="" disabled>Select category...</option>
                   {MEMBER_CATEGORIES.map((cat) => (
@@ -130,13 +130,13 @@ export function MemberClassificationCard({
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] font-serif italic text-ink/70">
                   {MEMBER_CATEGORIES.find((c) => c.value === category)?.description || 'Select your primary interest category'}
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="edit-current-position" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="edit-current-position" className="text-xs font-mono font-bold uppercase tracking-wider text-ink">
                   Current Position *
                 </label>
                 <select
@@ -144,7 +144,7 @@ export function MemberClassificationCard({
                   required
                   value={position}
                   onChange={(e) => setPosition(e.target.value as CurrentPositionValue)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-3 py-2 text-xs focus:ring-2 focus:ring-[#035AFC]"
+                  className="w-full border-2 border-ink bg-paper px-3 py-2 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-blue shadow-[2px_2px_0px_#14161c]"
                 >
                   <option value="" disabled>Select current position...</option>
                   {CURRENT_POSITIONS.map((pos) => (
@@ -153,13 +153,13 @@ export function MemberClassificationCard({
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] font-serif italic text-ink/70">
                   {CURRENT_POSITIONS.find((p) => p.value === position)?.description || 'Select your current vocational position'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t-2 border-ink/20">
               <Button
                 type="button"
                 variant="ghost"
@@ -170,16 +170,16 @@ export function MemberClassificationCard({
                   setIsEditing(false);
                 }}
                 disabled={saving}
-                className="h-8 text-xs"
+                className="h-8 text-xs font-display uppercase tracking-wider border-2 border-ink"
               >
                 <X className="h-3.5 w-3.5 mr-1" /> Cancel
               </Button>
               <Button
                 type="submit"
-                variant="primary"
+                variant="default"
                 size="sm"
                 disabled={saving || !category || !position}
-                className="h-8 text-xs"
+                className="h-8 text-xs font-display uppercase tracking-wider bg-blue text-paper border-2 border-ink shadow-[2px_2px_0px_#14161c]"
               >
                 <Save className="h-3.5 w-3.5 mr-1" /> {saving ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -187,30 +187,30 @@ export function MemberClassificationCard({
           </form>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 p-4 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                <Award className="h-4 w-4 text-[#035AFC]" />
+            <div className="border-2 border-ink bg-paper p-4 space-y-1.5 shadow-[2px_2px_0px_#14161c]">
+              <div className="flex items-center gap-1.5 text-xs text-ink/60 font-mono font-bold uppercase tracking-wider">
+                <Award className="h-4 w-4 text-blue" />
                 <span>Field A: Member Category / Interest</span>
               </div>
-              <div className="text-base font-bold text-slate-900 dark:text-white">
+              <div className="text-base font-display font-black text-ink uppercase tracking-tight">
                 {getMemberCategoryLabel(category)}
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="font-serif italic text-[11px] text-ink/70">
                 {category
                   ? MEMBER_CATEGORIES.find((c) => c.value === category)?.description
                   : 'Historical record lacking category assignment'}
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 p-4 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                <Briefcase className="h-4 w-4 text-[#FBC206]" />
+            <div className="border-2 border-ink bg-paper p-4 space-y-1.5 shadow-[2px_2px_0px_#14161c]">
+              <div className="flex items-center gap-1.5 text-xs text-ink/60 font-mono font-bold uppercase tracking-wider">
+                <Briefcase className="h-4 w-4 text-yellow" />
                 <span>Field B: Current Position</span>
               </div>
-              <div className="text-base font-bold text-slate-900 dark:text-white">
+              <div className="text-base font-display font-black text-ink uppercase tracking-tight">
                 {getCurrentPositionLabel(position)}
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="font-serif italic text-[11px] text-ink/70">
                 {position
                   ? CURRENT_POSITIONS.find((p) => p.value === position)?.description
                   : 'Historical record lacking current position assignment'}

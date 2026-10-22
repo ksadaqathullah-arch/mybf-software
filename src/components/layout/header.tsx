@@ -7,10 +7,12 @@ import { Menu, X, ShieldCheck, ChevronDown } from 'lucide-react';
 
 import { MybfLogo } from '@/components/brand/mybf-logo';
 import { MissionMalappuramLogo } from '@/components/brand/mission-malappuram-logo';
+import { useMembershipModal } from '@/features/memberships/context/membership-modal-context';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [portalsOpen, setPortalsOpen] = React.useState(false);
+  const { openModal } = useMembershipModal();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b-2 border-[#FBC206] bg-[#035AFC] text-white shadow-md transition-colors">
@@ -113,11 +115,14 @@ export function Header() {
                 Sign In
               </Button>
             </Link>
-            <Link href="/register">
-              <Button variant="primary" size="sm" className="bg-[#FBC206] text-slate-900 hover:bg-[#E5B005]">
-                Apply for Membership
-              </Button>
-            </Link>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={openModal}
+              className="bg-[#FBC206] text-slate-900 hover:bg-[#E5B005] cursor-pointer"
+            >
+              Apply for Membership
+            </Button>
           </div>
         </div>
       </div>
@@ -140,11 +145,14 @@ export function Header() {
             className="h-6 sm:h-7"
           />
 
-          <Link href="/register" className="hidden sm:inline-flex">
-            <Button variant="primary" size="sm" className="text-xs px-3 h-8 bg-[#FBC206] text-slate-900 hover:bg-[#E5B005]">
-              Apply
-            </Button>
-          </Link>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={openModal}
+            className="hidden sm:inline-flex text-xs px-3 h-8 bg-[#FBC206] text-slate-900 hover:bg-[#E5B005] cursor-pointer"
+          >
+            Apply
+          </Button>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -202,9 +210,16 @@ export function Header() {
             <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="outline" className="w-full border-white/60 text-white hover:bg-white hover:text-[#035AFC]">Sign In</Button>
             </Link>
-            <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="primary" className="w-full bg-[#FBC206] text-slate-900 hover:bg-[#E5B005]">Apply for Membership</Button>
-            </Link>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openModal();
+              }}
+              className="w-full bg-[#FBC206] text-slate-900 hover:bg-[#E5B005] cursor-pointer"
+            >
+              Apply for Membership
+            </Button>
           </div>
         </div>
       )}

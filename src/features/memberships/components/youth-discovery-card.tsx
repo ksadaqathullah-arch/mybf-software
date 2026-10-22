@@ -156,16 +156,16 @@ export function YouthDiscoveryCard({
 
             {/* 3-Year Future Goal */}
             {data.futureGoal && (
-              <div className="p-3.5 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#035AFC] dark:text-blue-400">
+              <div className="p-4 border-2 border-ink bg-paper shadow-[3px_3px_0px_#14161c] space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-blue">
                   <Sparkles className="h-3.5 w-3.5" />
                   3-Year Vision & Goal
                 </div>
-                <p className="text-xs text-slate-700 dark:text-slate-300 italic">
+                <p className="font-serif italic text-sm text-ink leading-relaxed">
                   &ldquo;{data.futureGoal}&rdquo;
                 </p>
-                <div className="flex items-center gap-1 text-[10px] text-slate-400 pt-1">
-                  <Lock className="h-3 w-3 text-slate-400" />
+                <div className="flex items-center gap-1 text-[10px] font-mono text-ink/60 pt-1">
+                  <Lock className="h-3 w-3 text-ink/60" />
                   <span>Private to chapter mentoring leadership</span>
                 </div>
               </div>
@@ -173,28 +173,28 @@ export function YouthDiscoveryCard({
 
             {/* Talents & Extracurriculars */}
             <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                <Palette className="h-3 w-3 text-[#035AFC]" />
+              <span className="text-[10px] font-mono uppercase font-bold text-ink/60 flex items-center gap-1">
+                <Palette className="h-3 w-3 text-blue" />
                 Extracurricular Skills & Talents ({data.talents.length})
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {data.talents.length > 0 ? (
                   data.talents.map((t) => (
-                    <Badge key={t} variant="secondary" className="text-xs py-0.5 px-2.5">
+                    <Badge key={t} variant="secondary" className="text-xs py-0.5 px-2.5 font-mono">
                       {getTalentLabel(t)}
                       {t === 'OTHER_TALENT' && data.otherTalentDescription && ` (${data.otherTalentDescription})`}
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-xs text-slate-400 italic">No specific talents logged.</span>
+                  <span className="text-xs font-serif italic text-ink/60">No specific talents logged.</span>
                 )}
               </div>
             </div>
 
             {/* Participation Preferences */}
             <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                <Users2 className="h-3 w-3 text-[#035AFC]" />
+              <span className="text-[10px] font-mono uppercase font-bold text-ink/60 flex items-center gap-1">
+                <Users2 className="h-3 w-3 text-blue" />
                 Participation Preferences ({data.participationPreferences.length})
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -202,13 +202,13 @@ export function YouthDiscoveryCard({
                   data.participationPreferences.map((p) => (
                     <span
                       key={p}
-                      className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md"
+                      className="text-xs border-2 border-ink bg-paper text-ink font-mono font-bold px-2.5 py-1 shadow-[2px_2px_0px_#14161c]"
                     >
                       {getParticipationPreferenceLabel(p)}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-slate-400 italic">No participation preferences set.</span>
+                  <span className="text-xs font-serif italic text-ink/60">No participation preferences set.</span>
                 )}
               </div>
             </div>

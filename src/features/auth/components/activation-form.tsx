@@ -146,8 +146,8 @@ export function ActivationForm() {
           <Link href="/login">
             <Button variant="primary" size="sm">Go to Sign In</Button>
           </Link>
-          <Link href="/register">
-            <Button variant="outline" size="sm">Membership Portal</Button>
+          <Link href="/membership">
+            <Button variant="outline" size="sm">Membership Information</Button>
           </Link>
         </div>
       </Card>

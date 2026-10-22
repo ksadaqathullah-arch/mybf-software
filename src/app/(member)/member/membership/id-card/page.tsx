@@ -6,6 +6,7 @@ import { getCurrentActor } from '@/server/auth/session';
 import { db } from '@/server/db';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import type { DigitalIdCardPayload } from '@/features/membership-id-cards/types/card.types';
+import { PortalPageHeader } from '@/components/ui/portal-elements';
 
 export default async function MemberIdCardPage() {
   const sampleCard: DigitalIdCardPayload = {
@@ -79,43 +80,43 @@ export default async function MemberIdCardPage() {
       <div className="print:hidden">
         <Link
           href="/member"
-          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-[#035AFC] transition-colors"
+          className="inline-flex items-center text-xs font-mono font-bold uppercase tracking-wider text-ink/70 hover:text-blue transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1.5" /> Back to Dashboard
         </Link>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4 print:hidden">
-        <div>
-          <Badge variant="primary" className="mb-1.5">Official Credential</Badge>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Digital Membership Pass
-          </h1>
-          <p className="text-xs text-slate-500">
-            Cryptographically signed identity pass with live QR status resolution
-          </p>
-        </div>
-
-        <IdCardActions
-          verificationToken={cardData.verificationToken}
-          membershipNumber={cardData.membershipNumber}
+      <div className="print:hidden">
+        <PortalPageHeader
+          eyebrow="Mission Malappuram 2050 • Official Credential"
+          title="Digital Membership Pass"
+          description="Cryptographically signed identity pass with live QR verification and cross-chapter validity"
+          badgeText="OFFICIAL PASS"
+          actions={
+            <IdCardActions
+              verificationToken={cardData.verificationToken}
+              membershipNumber={cardData.membershipNumber}
+            />
+          }
         />
       </div>
 
       <div className="flex flex-col items-center justify-center py-4 print:py-0 print:m-0">
-        <DigitalIdCard card={cardData} className="max-w-[380px]" />
+        <div className="p-8 border-2 border-ink bg-paper shadow-[8px_8px_0px_#14161c]">
+          <DigitalIdCard card={cardData} className="max-w-[380px]" />
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-6 text-xs text-slate-500 space-y-3 print:hidden">
-        <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold">
-          <ShieldCheck className="h-4 w-4 text-emerald-500" />
+      <div className="border-2 border-ink bg-paper p-6 text-xs text-ink/80 space-y-3 print:hidden shadow-[4px_4px_0px_#14161c]">
+        <div className="flex items-center gap-2 text-ink font-display font-black text-sm uppercase tracking-tight">
+          <ShieldCheck className="h-4 w-4 text-blue" />
           <span>Security & Governance Policies</span>
         </div>
         <p>
-          • <strong>Transfer Policy:</strong> If you transfer chapters, your permanent 10-digit ID (<span className="font-mono text-[#035AFC]">{cardData.membershipNumber}</span>) remains identical. Only the assigned chapter and QR token version are updated.
+          • <strong>Transfer Policy:</strong> If you transfer chapters, your permanent 10-digit ID (<span className="font-mono font-bold text-blue">{cardData.membershipNumber}</span>) remains identical. Only the assigned chapter and QR token version are updated.
         </p>
         <p>
-          • <strong>Event Admission:</strong> Event organizers scan the QR code using any modern camera. Attendance check-ins are idempotent to prevent duplicate scanning.
+          • <strong>Event Admission:</strong> Event organizers scan the QR code using any modern smartphone or tablet camera. Attendance check-ins are idempotent to prevent duplicate scanning.
         </p>
       </div>
     </div>

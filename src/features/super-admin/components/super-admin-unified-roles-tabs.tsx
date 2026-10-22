@@ -26,14 +26,14 @@ export function SuperAdminUnifiedRolesTabs({
 
   return (
     <div className="space-y-6">
-      {/* Tab Switcher */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800">
+      {/* Editorial Tab Switcher */}
+      <div className="flex border-b-2 border-ink gap-2">
         <button
           onClick={() => setActiveTab('system')}
-          className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold border-b-2 transition-colors ${
+          className={`flex items-center gap-2 pb-3 px-4 font-display text-xs font-bold uppercase tracking-wider border-b-2 -mb-0.5 transition-all cursor-pointer ${
             activeTab === 'system'
-              ? 'border-[#035AFC] text-[#035AFC]'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              ? 'border-ink text-ink bg-yellow px-4 py-2 border-2 shadow-[2px_2px_0px_#14161c]'
+              : 'border-transparent text-muted hover:text-ink'
           }`}
         >
           <Key className="h-4 w-4" />
@@ -42,10 +42,10 @@ export function SuperAdminUnifiedRolesTabs({
 
         <button
           onClick={() => setActiveTab('chapter')}
-          className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold border-b-2 transition-colors ${
+          className={`flex items-center gap-2 pb-3 px-4 font-display text-xs font-bold uppercase tracking-wider border-b-2 -mb-0.5 transition-all cursor-pointer ${
             activeTab === 'chapter'
-              ? 'border-[#035AFC] text-[#035AFC]'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              ? 'border-ink text-ink bg-yellow px-4 py-2 border-2 shadow-[2px_2px_0px_#14161c]'
+              : 'border-transparent text-muted hover:text-ink'
           }`}
         >
           <Users className="h-4 w-4" />

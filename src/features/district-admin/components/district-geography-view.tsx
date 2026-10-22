@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader } from '@/components/ui/portal-elements';
 import {
   MapPin,
   Building,
@@ -245,29 +246,15 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <MapPin className="h-6 w-6 text-[#035AFC]" /> Malappuram Location & Postal Management
-            </h1>
-            <Badge variant="primary">MALAPPURAM DISTRICT</Badge>
-            <Badge
-              variant="secondary"
-              className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
-            >
-              <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% Database Driven
-            </Badge>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Authoritative administrative hierarchy: District &rarr; 7 Taluks &rarr; 106 Residential Local Bodies &rarr; Wards (Pending Delimitation) &rarr; Postal Locality &rarr; PIN Code
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {activeTab === 'POSTAL' ? (
+      <PortalPageHeader
+        tag="100% DATABASE DRIVEN"
+        badge="Malappuram District"
+        title="Location & Postal Management"
+        description="Authoritative administrative hierarchy: District → 7 Taluks → 106 Residential Local Bodies → Wards (Pending Delimitation) → Postal Locality → PIN Code."
+        actions={
+          activeTab === 'POSTAL' ? (
             <Button
               variant="outline"
               size="sm"
@@ -285,54 +272,54 @@ export function DistrictGeographyView({ distribution }: DistrictGeographyViewPro
             >
               <Download className="h-3.5 w-3.5 mr-1.5" /> Export Verified Master (CSV)
             </Button>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="p-3.5 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c]">
+          <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">
             Administrative Taluks
           </span>
-          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+          <span className="text-2xl font-black text-ink mt-1 block font-mono">
             {VERIFIED_TALUKS.length}
           </span>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 block">
+          <span className="text-[10px] text-emerald-700 font-bold mt-0.5 block font-display uppercase tracking-wider">
             100% Verified in Database
           </span>
         </div>
 
-        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="p-3.5 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c]">
+          <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">
             Residential Local Bodies
           </span>
-          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+          <span className="text-2xl font-black text-ink mt-1 block font-mono">
             {ALL_RESIDENTIAL_LOCAL_BODIES.length}
           </span>
-          <span className="text-[10px] text-slate-500 mt-0.5 block">
+          <span className="text-[10px] text-ink/70 mt-0.5 block font-serif">
             12 Municipalities + 94 Panchayats
           </span>
         </div>
 
-        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="p-3.5 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c]">
+          <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">
             Verified Post Offices
           </span>
-          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+          <span className="text-2xl font-black text-ink mt-1 block font-mono">
             {VERIFIED_POSTAL_OFFICES.length}
           </span>
-          <span className="text-[10px] text-[#035AFC] font-medium mt-0.5 block">
+          <span className="text-[10px] text-blue font-bold mt-0.5 block font-display uppercase tracking-wider">
             {UNIQUE_MALAPPURAM_PIN_CODES.length} PIN Codes Mapped
           </span>
         </div>
 
-        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="p-3.5 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c]">
+          <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">
             Postal Divisions
           </span>
-          <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">2</span>
-          <span className="text-[10px] text-slate-500 mt-0.5 block">
+          <span className="text-2xl font-black text-ink mt-1 block font-mono">2</span>
+          <span className="text-[10px] text-ink/70 mt-0.5 block font-serif">
             Manjeri Div & Tirur Div
           </span>
         </div>

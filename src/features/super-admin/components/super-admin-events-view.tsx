@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   Calendar,
   Search,
@@ -12,6 +14,8 @@ import {
   QrCode,
   X,
   FileSpreadsheet,
+  MapPin,
+  Users,
 } from 'lucide-react';
 import { EventCreationModal } from '@/features/events/components/event-creation-modal';
 import { EventAttendanceScanner } from '@/features/events/components/event-attendance-scanner';
@@ -78,22 +82,14 @@ export function SuperAdminEventsView({ events: initialEvents }: SuperAdminEvents
   const chapterEventsCount = events.filter((e) => e.scope === 'CHAPTER').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-[#035AFC]" /> Centralized Multi-Level Event Governance
-            </h1>
-            <Badge variant="primary">SUPER ADMIN AUTHORITY</Badge>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Global lifecycle administration for Main Forum Events, Malappuram District Conclaves, and 16 Chapter Workshops
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <PortalPageHeader
+        badge="SUPER ADMIN AUTHORITY"
+        tag="MULTI-LEVEL CONCLAVES"
+        title="Centralized Multi-Level Event Governance"
+        description="Global lifecycle administration for Main Forum Events, Malappuram District Conclaves, and 16 Chapter Workshops."
+        actions={
           <EventCreationModal
             allowedScopes={['MAIN', 'DISTRICT', 'CHAPTER']}
             triggerButtonText="Create Global Event"
@@ -110,280 +106,213 @@ export function SuperAdminEventsView({ events: initialEvents }: SuperAdminEvents
               ]);
             }}
           />
-        </div>
-      </div>
+        }
+      />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Total Events</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
-              {events.length}
-            </div>
-            <p className="text-[11px] text-slate-500">Across all 3 tiers</p>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Main Forum</span>
-            <div className="text-2xl font-black text-[#035AFC] mt-0.5">
-              {mainEventsCount}
-            </div>
-            <p className="text-[11px] text-slate-500">Central Summits</p>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">District Tier</span>
-            <div className="text-2xl font-black text-purple-600 mt-0.5">
-              {districtEventsCount}
-            </div>
-            <p className="text-[11px] text-slate-500">Malappuram District</p>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Chapter Tier</span>
-            <div className="text-2xl font-black text-emerald-600 mt-0.5">
-              {chapterEventsCount}
-            </div>
-            <p className="text-[11px] text-slate-500">16 Constituencies</p>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Total Attendees</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
-              {totalRegistrations.toLocaleString()}
-            </div>
-            <p className="text-[11px] text-emerald-600 font-semibold">{totalAdmitted} Admitted</p>
-          </CardHeader>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <PortalStatCard
+          label="Total Events"
+          value={events.length}
+          detail="Across all 3 tiers"
+          icon={Calendar}
+        />
+        <PortalStatCard
+          label="Main Forum"
+          value={mainEventsCount}
+          detail="Central Summits"
+          accent="blue"
+        />
+        <PortalStatCard
+          label="District Tier"
+          value={districtEventsCount}
+          detail="Malappuram Conclaves"
+          accent="yellow"
+        />
+        <PortalStatCard
+          label="Chapter Tier"
+          value={chapterEventsCount}
+          detail="16 Constituencies"
+          accent="emerald"
+        />
+        <PortalStatCard
+          label="Attendees"
+          value={totalRegistrations.toLocaleString()}
+          subValue={`${totalAdmitted} Admitted`}
+          detail="100% Free Passes"
+          icon={Users}
+        />
       </div>
 
       {/* Filter Toolbar */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="relative">
-              <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search event title, venue, or category..."
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#035AFC]"
-              />
-            </div>
-
-            <div>
-              <select
-                value={scopeFilter}
-                onChange={(e) => setScopeFilter(e.target.value)}
-                aria-label="Filter by Organizational Level"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
-              >
-                <option value="ALL">All Organizational Levels</option>
-                <option value="MAIN">Main Forum Events Only</option>
-                <option value="DISTRICT">District Events Only</option>
-                <option value="CHAPTER">Chapter Events Only</option>
-              </select>
-            </div>
-
-            <div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                aria-label="Filter by Event Status"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="DRAFT">Draft</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </div>
+      <div className="border-2 border-ink bg-paper p-4 shadow-[3px_3px_0px_#14161c]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="relative">
+            <Search className="h-4 w-4 absolute left-3 top-2.5 text-muted" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search event title, venue, or category..."
+              className="w-full pl-9 pr-3 py-2 border-2 border-ink bg-white text-xs text-ink placeholder:text-muted focus:ring-2 focus:ring-yellow outline-none font-sans shadow-[2px_2px_0px_#14161c]"
+            />
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Events Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-5 pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-bold">Event Roster & Governance Registry</CardTitle>
-              <CardDescription className="text-xs">
-                Authoritative event schedule across central, district, and chapter jurisdictions
-              </CardDescription>
+          <div>
+            <select
+              value={scopeFilter}
+              onChange={(e) => setScopeFilter(e.target.value)}
+              aria-label="Filter by Organizational Level"
+              className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow font-sans shadow-[2px_2px_0px_#14161c]"
+            >
+              <option value="ALL">All Organizational Levels</option>
+              <option value="MAIN">Main Forum Events Only</option>
+              <option value="DISTRICT">District Events Only</option>
+              <option value="CHAPTER">Chapter Events Only</option>
+            </select>
+          </div>
+
+          <div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              aria-label="Filter by Status"
+              className="w-full border-2 border-ink bg-white px-3 py-2 text-xs text-ink outline-none focus:ring-2 focus:ring-yellow font-sans shadow-[2px_2px_0px_#14161c]"
+            >
+              <option value="ALL">All Event Statuses</option>
+              <option value="PUBLISHED">Published & Active</option>
+              <option value="DRAFT">Draft Mode</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Events Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredEvents.length === 0 ? (
+          <div className="col-span-full border-2 border-ink bg-paper p-12 text-center shadow-[4px_4px_0px_#14161c]">
+            <p className="font-serif text-sm text-muted">No events matching the active filter criteria.</p>
+          </div>
+        ) : (
+          filteredEvents.map((event) => (
+            <div
+              key={event.id}
+              className="border-2 border-ink bg-paper p-5 shadow-[4px_4px_0px_#14161c] flex flex-col justify-between hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="font-mono text-[10px] font-black uppercase tracking-wider bg-yellow text-ink px-2 py-0.5 border border-ink">
+                    {event.scope} SCOPE
+                  </span>
+                  <Badge variant={event.status === 'PUBLISHED' ? 'success' : 'neutral'}>
+                    {event.status}
+                  </Badge>
+                </div>
+
+                <div>
+                  <h3 className="font-display font-extrabold text-lg text-ink uppercase tracking-tight line-clamp-1">
+                    {event.title}
+                  </h3>
+                  <p className="font-serif text-xs text-muted mt-1 line-clamp-2">
+                    {event.description}
+                  </p>
+                </div>
+
+                <div className="border-t-2 border-ink/15 pt-2.5 space-y-1.5 font-sans text-xs">
+                  <div className="flex items-center gap-2 text-ink">
+                    <Calendar className="h-3.5 w-3.5 text-muted shrink-0" />
+                    <span>
+                      {new Date(event.startsAt).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-ink">
+                    <MapPin className="h-3.5 w-3.5 text-muted shrink-0" />
+                    <span className="truncate">{event.venueName}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="text-muted font-serif">Capacity:</span>
+                    <strong className="font-mono text-ink">
+                      {event.registeredCount} / {event.capacity}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t-2 border-ink flex items-center justify-between gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setActiveScannerEvent(event)}
+                  className="h-8 text-[10px]"
+                >
+                  <QrCode className="h-3.5 w-3.5 mr-1" /> QR Check-in
+                </Button>
+
+                <div className="flex items-center gap-1.5">
+                  <a
+                    href={`/api/v1/events/export?eventId=${event.id}`}
+                    download
+                    className="p-1.5 border-2 border-ink bg-paper hover:bg-ink hover:text-paper shadow-[1px_1px_0px_#14161c] transition-colors"
+                    title="Export Attendees CSV"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                  </a>
+                  <Link
+                    href={`/events/${event.slug}`}
+                    className="p-1.5 border-2 border-ink bg-paper hover:bg-ink hover:text-paper shadow-[1px_1px_0px_#14161c] transition-colors"
+                    title="View Event Page"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
-            <span className="text-xs text-slate-400 font-mono">
-              Showing {filteredEvents.length} of {events.length} events
-            </span>
-          </div>
-        </CardHeader>
+          ))
+        )}
+      </div>
 
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Event Details</th>
-                  <th className="py-3 px-4">Level Scope</th>
-                  <th className="py-3 px-4">Schedule & Venue</th>
-                  <th className="py-3 px-4 text-center">Registrations</th>
-                  <th className="py-3 px-4 text-center">Admitted</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filteredEvents.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
-                      No events match the active search criteria.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredEvents.map((e) => (
-                    <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="font-bold text-slate-900 dark:text-white">
-                          {e.title}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {e.category} &bull; {e.mode} &bull; {e.eventType === 'FREE' ? 'Free Pass' : `₹${e.basePriceINR}`}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={
-                            e.scope === 'MAIN' ? 'primary' : e.scope === 'DISTRICT' ? 'secondary' : 'neutral'
-                          }
-                          className="text-[10px]"
-                        >
-                          {e.scope === 'MAIN'
-                            ? 'Main Forum'
-                            : e.scope === 'DISTRICT'
-                            ? 'District'
-                            : e.chapter?.name || 'Chapter'}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-slate-800 dark:text-slate-200">
-                          {new Date(e.startsAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </div>
-                        <div className="text-[10px] text-slate-400 truncate max-w-[150px]">
-                          {e.venueName}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-center font-bold text-[#035AFC]">
-                        {e.registeredCount} / {e.capacity}
-                      </td>
-                      <td className="py-3 px-4 text-center font-bold text-emerald-600">
-                        {e.attendanceCount}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={
-                            e.status === 'PUBLISHED'
-                              ? 'success'
-                              : e.status === 'COMPLETED'
-                              ? 'neutral'
-                              : 'warning'
-                          }
-                          className="text-[10px]"
-                        >
-                          {e.status}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setActiveScannerEvent(e)}
-                            className="h-6 text-[10px] px-2 text-[#035AFC]"
-                            title="Open Reception QR Scanner"
-                          >
-                            <QrCode className="h-3 w-3 mr-1" /> Scan
-                          </Button>
-                          <a
-                            href={`/api/v1/events/export?eventId=${e.id}`}
-                            download
-                            title="Export Attendee CSV"
-                          >
-                            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-1.5 text-slate-500">
-                              <Download className="h-3 w-3" />
-                            </Button>
-                          </a>
-                          <a
-                            href={`/events/${e.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Public Page"
-                          >
-                            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-1.5 text-slate-500">
-                              <ExternalLink className="h-3 w-3" />
-                            </Button>
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* QR Reception Scanner Modal */}
+      {/* QR Code Attendance Scanner Modal */}
       {activeScannerEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-xl bg-white dark:bg-[#0B101B] border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="max-w-md w-full border-2 border-ink bg-paper text-ink shadow-[12px_12px_0px_#14161c] p-6 space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-ink pb-3">
               <div>
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                  Reception Check-In Scanner
+                <h3 className="font-display font-extrabold text-base text-ink uppercase tracking-tight">
+                  QR Pass Gate Verification
                 </h3>
-                <p className="text-xs text-slate-500">{activeScannerEvent.title}</p>
+                <p className="font-serif text-xs text-muted truncate max-w-xs">
+                  {activeScannerEvent.title}
+                </p>
               </div>
               <button
                 onClick={() => setActiveScannerEvent(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-slate-600"
+                className="p-1 border border-ink text-ink hover:bg-ink hover:text-paper cursor-pointer transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="p-4">
-              <EventAttendanceScanner
-                eventId={activeScannerEvent.id}
-                eventTitle={activeScannerEvent.title}
-                initialAttendanceCount={activeScannerEvent.attendanceCount}
-                capacity={activeScannerEvent.capacity}
-                onAttendeeScanned={() => {
-                  setEvents((prev) =>
-                    prev.map((e) =>
-                      e.id === activeScannerEvent.id
-                        ? { ...e, attendanceCount: e.attendanceCount + 1 }
-                        : e
-                    )
-                  );
-                }}
-              />
-            </div>
-            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 text-right">
-              <Button variant="outline" size="sm" onClick={() => setActiveScannerEvent(null)} className="text-xs">
-                Close Scanner
-              </Button>
-            </div>
+
+            <EventAttendanceScanner
+              eventId={activeScannerEvent.id}
+              eventTitle={activeScannerEvent.title}
+              onAttendeeScanned={() => {
+                setEvents((prev) =>
+                  prev.map((e) =>
+                    e.id === activeScannerEvent.id
+                      ? { ...e, attendanceCount: e.attendanceCount + 1 }
+                      : e
+                  )
+                );
+              }}
+            />
           </div>
         </div>
       )}

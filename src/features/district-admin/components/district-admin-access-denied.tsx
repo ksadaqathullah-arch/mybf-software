@@ -10,26 +10,27 @@ interface DistrictAdminAccessDeniedProps {
 
 export function DistrictAdminAccessDenied({ reason }: DistrictAdminAccessDeniedProps) {
   return (
-    <div className="min-h-screen bg-[#FBFDFD] dark:bg-[#030405] flex items-center justify-center p-4">
-      <Card className="max-w-md w-full border-red-500/30 shadow-xl bg-white dark:bg-[#0A0F1D]">
-        <CardHeader className="text-center pb-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-3">
-            <ShieldAlert className="w-6 h-6 text-red-500" />
+    <div className="min-h-screen bg-paper flex items-center justify-center p-4">
+      <Card className="max-w-md w-full border-2 border-ink shadow-[8px_8px_0px_#14161c] bg-paper">
+        <CardHeader className="text-center pb-2 border-b-2 border-ink">
+          <div className="mx-auto w-12 h-12 border-2 border-ink bg-danger/20 flex items-center justify-center mb-3 shadow-[2px_2px_0px_#14161c]">
+            <ShieldAlert className="w-6 h-6 text-danger" />
           </div>
-          <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
+          <span className="text-[10px] font-black uppercase tracking-widest text-danger font-display">District Boundary</span>
+          <CardTitle className="text-xl font-black font-display uppercase tracking-tight text-ink mt-1">
             District Administration Authorization Required
           </CardTitle>
-          <CardDescription className="text-xs text-slate-500 mt-1">
+          <CardDescription className="text-xs text-ink/70 font-serif mt-1">
             Malappuram District (MLP) Governance Boundary
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 text-center">
-          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-xs text-red-700 dark:text-red-400">
+        <CardContent className="space-y-4 text-center p-6">
+          <div className="p-3 border-2 border-danger bg-danger/10 text-xs font-bold text-ink">
             {reason ||
               'Access Restricted: Your current account does not hold the DISTRICT_ADMIN privilege required to manage Malappuram District operations.'}
           </div>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-ink/70 font-serif leading-relaxed">
             District administration access is restricted to appointed district coordinators and secretariat officers. All access attempts are recorded in the immutable audit trail.
           </p>
 

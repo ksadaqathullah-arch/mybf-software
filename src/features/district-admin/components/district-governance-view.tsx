@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalStatCard } from '@/components/ui/portal-elements';
 import {
   ShieldCheck,
   ShieldAlert,
@@ -258,96 +259,64 @@ export function DistrictGovernanceView() {
     <div className="space-y-6">
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-amber-500/20 bg-amber-500/5">
-          <CardHeader className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Identity Corrections
-              </span>
-              <UserCheck className="h-4 w-4 text-amber-500" />
-            </div>
-            <CardTitle className="text-2xl font-black text-amber-600 mt-1">
-              {metrics.pendingCorrections}
-            </CardTitle>
-            <p className="text-[11px] text-slate-400 mt-0.5">Pending Name & DOB verifications</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Identity Corrections"
+          value={metrics.pendingCorrections}
+          subValue="Pending Name & DOB verifications"
+          icon={UserCheck}
+        />
 
-        <Card className="border-blue-500/20 bg-blue-500/5">
-          <CardHeader className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Transfer Decisions
-              </span>
-              <ArrowLeftRight className="h-4 w-4 text-blue-500" />
-            </div>
-            <CardTitle className="text-2xl font-black text-blue-600 mt-1">
-              {metrics.pendingTransfers}
-            </CardTitle>
-            <p className="text-[11px] text-slate-400 mt-0.5">Awaiting District Admin final sign-off</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Transfer Decisions"
+          value={metrics.pendingTransfers}
+          subValue="Awaiting District Admin sign-off"
+          icon={ArrowLeftRight}
+        />
 
-        <Card>
-          <CardHeader className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Approved Transfers
-              </span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            </div>
-            <CardTitle className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              {metrics.completedTransfers}
-            </CardTitle>
-            <p className="text-[11px] text-slate-400 mt-0.5">Atomic reassignment executed</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Approved Transfers"
+          value={metrics.completedTransfers}
+          subValue="Atomic reassignment executed"
+          icon={CheckCircle2}
+        />
 
-        <Card>
-          <CardHeader className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Approved Corrections
-              </span>
-              <ShieldCheck className="h-4 w-4 text-indigo-500" />
-            </div>
-            <CardTitle className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              {metrics.approvedCorrections}
-            </CardTitle>
-            <p className="text-[11px] text-slate-400 mt-0.5">Verified profile records updated</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Approved Corrections"
+          value={metrics.approvedCorrections}
+          subValue="Verified profile records updated"
+          icon={ShieldCheck}
+        />
       </div>
 
       {/* Tabs and Refresh */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-[#0A0F1D] p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-lg">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-paper p-3 border-2 border-ink shadow-[3px_3px_0px_#14161c]">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             onClick={() => setActiveTab('corrections')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            className={`px-3.5 py-1.5 text-xs font-display font-extrabold uppercase tracking-wider border-2 border-ink transition-all ${
               activeTab === 'corrections'
-                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-ink text-paper shadow-[2px_2px_0px_#fcc000]'
+                : 'bg-paper text-ink hover:bg-yellow/20'
             }`}
           >
             Identity Corrections ({metrics.pendingCorrections})
           </button>
           <button
             onClick={() => setActiveTab('transfers')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            className={`px-3.5 py-1.5 text-xs font-display font-extrabold uppercase tracking-wider border-2 border-ink transition-all ${
               activeTab === 'transfers'
-                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-ink text-paper shadow-[2px_2px_0px_#fcc000]'
+                : 'bg-paper text-ink hover:bg-yellow/20'
             }`}
           >
             Chapter Transfers ({metrics.pendingTransfers})
           </button>
           <button
             onClick={() => setActiveTab('metrics')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            className={`px-3.5 py-1.5 text-xs font-display font-extrabold uppercase tracking-wider border-2 border-ink transition-all ${
               activeTab === 'metrics'
-                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-ink text-paper shadow-[2px_2px_0px_#fcc000]'
+                : 'bg-paper text-ink hover:bg-yellow/20'
             }`}
           >
             Governance Overview

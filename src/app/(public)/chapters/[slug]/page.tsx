@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { OpenMembershipModalButton } from '@/features/memberships/components/open-membership-modal-button';
 import {
   Building2,
   MapPin,
@@ -70,11 +71,9 @@ export default async function ChapterDetailPage({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto">
-                Apply for Chapter Membership
-              </Button>
-            </Link>
+            <OpenMembershipModalButton className="btn btn-yellow min-h-12 px-6 text-sm font-display font-extrabold uppercase tracking-wider cursor-pointer justify-center">
+              Apply for Chapter Membership
+            </OpenMembershipModalButton>
             <Link href={`/chapter/${chapter.slug}`}>
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 Chapter Executive Login

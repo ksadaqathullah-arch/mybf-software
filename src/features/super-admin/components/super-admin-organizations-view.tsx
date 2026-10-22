@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   MapPin,
   Users,
@@ -83,136 +84,100 @@ export function SuperAdminOrganizationsView({
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#035AFC]/10 text-[#035AFC]">
-              Global Hierarchy
-            </span>
-            <Badge variant="primary">16 CONSTITUENCY CHAPTERS</Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
-            Organizations, Districts & Chapter Roster
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Canonical governance over MYBF parent organization, district boundaries, and all 16 Assembly Constituency Chapters.
-          </p>
-        </div>
-      </div>
+      <PortalPageHeader
+        badge="GLOBAL HIERARCHY"
+        tag="16 CONSTITUENCY CHAPTERS"
+        title="Organizations, Districts & Chapter Roster"
+        description="Canonical governance over MYBF parent organization, district boundaries, and all 16 Assembly Constituency Chapters."
+      />
 
       {/* Aggregate Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Chapters</span>
-              <Layers className="h-4 w-4 text-[#035AFC]" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{chapters.length}</span>
-              <span className="text-xs text-emerald-600 font-semibold">100% Active</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">Malappuram District Assembly Constituencies</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Districts</span>
-              <MapPin className="h-4 w-4 text-emerald-500" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{districts.length}</span>
-              <span className="text-xs text-slate-500">MLP (Kerala)</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">Founding Administrative District</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Appointed Officers</span>
-              <Users className="h-4 w-4 text-purple-500" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{totalOfficers}</span>
-              <span className="text-xs text-slate-500">Active</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">Presidents, Secretaries & Treasurers</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase text-slate-400">Active Members</span>
-              <ShieldCheck className="h-4 w-4 text-amber-500" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{totalActiveMembers}</span>
-              <span className="text-xs text-slate-500">Enrolled</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">Verified Digital Member IDs</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <PortalStatCard
+          label="Chapters"
+          value={chapters.length}
+          subValue="100% Active"
+          detail="Malappuram Assembly Constituencies"
+          icon={Layers}
+        />
+        <PortalStatCard
+          label="Districts"
+          value={districts.length}
+          subValue="MLP (Kerala)"
+          detail="Founding Administrative District"
+          icon={MapPin}
+          accent="yellow"
+        />
+        <PortalStatCard
+          label="Appointed Officers"
+          value={totalOfficers}
+          subValue="Active"
+          detail="Presidents, Secretaries & Treasurers"
+          icon={Users}
+          accent="blue"
+        />
+        <PortalStatCard
+          label="Active Members"
+          value={totalActiveMembers}
+          subValue="Enrolled"
+          detail="Verified Digital Member IDs"
+          icon={ShieldCheck}
+          accent="emerald"
+        />
       </div>
 
       {/* Parent Organization & District Architecture Card */}
-      <Card className="border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
-        <CardHeader className="p-5 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <MybfLogo size="sm" />
-              <div>
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
-                  {organization?.name || 'Malappuram Youth Business Forum'}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Canonical Code: {organization?.code || 'MYBF'} • Jurisdiction: {districts[0]?.name || 'Malappuram'}, {districts[0]?.state || 'Kerala'}, India
-                </CardDescription>
-              </div>
+      <div className="border-2 border-ink bg-paper p-6 shadow-[4px_4px_0px_#14161c]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <MybfLogo size="sm" />
+            <div>
+              <h3 className="font-display font-extrabold text-lg text-ink uppercase tracking-tight">
+                {organization?.name || 'Malappuram Youth Business Forum'}
+              </h3>
+              <p className="font-serif text-xs text-muted mt-0.5">
+                Canonical Code: <strong className="text-ink">{organization?.code || 'MYBF'}</strong> • Jurisdiction: {districts[0]?.name || 'Malappuram'}, {districts[0]?.state || 'Kerala'}, India
+              </p>
             </div>
-            <Badge variant="success">ROOT REGISTERED</Badge>
           </div>
-        </CardHeader>
-      </Card>
+          <Badge variant="secondary">ROOT REGISTERED NGO</Badge>
+        </div>
+      </div>
 
       {/* Chapters Roster */}
-      <Card className="border-slate-200 dark:border-slate-800">
-        <CardHeader className="p-5 border-b border-slate-100 dark:border-slate-800">
+      <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
+        <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">
+              <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
                 16 Constituency Chapters Roster
               </CardTitle>
-              <CardDescription className="text-xs">
-                Real database records linked to Chapter Executive Hubs and regional application workflows
+              <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+                Real database records linked to Chapter Executive Hubs and regional application workflows.
               </CardDescription>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
                 <input
                   type="text"
                   placeholder="Search chapter or code..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC] w-56"
+                  className="pl-9 pr-3 py-1.5 text-xs border-2 border-ink bg-white text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-yellow font-sans shadow-[2px_2px_0px_#14161c] w-56"
                 />
               </div>
 
-              <div className="flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 text-xs bg-slate-50 dark:bg-slate-900">
+              <div className="flex border-2 border-ink p-0.5 bg-paper-2">
                 {(['ALL', 'ACTIVE', 'INACTIVE'] as const).map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setStatusFilter(filter)}
-                    className={`px-3 py-1 rounded-md font-medium transition-colors ${
+                    className={`px-3 py-1 font-display text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                       statusFilter === filter
-                        ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
-                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-ink text-paper shadow-[2px_2px_0px_#fcc000]'
+                        : 'text-ink hover:bg-ink/10'
                     }`}
                   >
                     {filter}
@@ -226,21 +191,21 @@ export function SuperAdminOrganizationsView({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 text-slate-500 font-semibold uppercase text-[11px]">
-                  <th className="py-3 px-4">Chapter Code & Name</th>
-                  <th className="py-3 px-4">Constituency Jurisdiction</th>
-                  <th className="py-3 px-4">Current Leadership</th>
-                  <th className="py-3 px-4 text-center">Active Members</th>
-                  <th className="py-3 px-4 text-center">Applications</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4 text-paper">Chapter Code & Name</th>
+                  <th className="py-3 px-4 text-paper">Constituency Jurisdiction</th>
+                  <th className="py-3 px-4 text-paper">Current Leadership</th>
+                  <th className="py-3 px-4 text-center text-paper">Active Members</th>
+                  <th className="py-3 px-4 text-center text-paper">Applications</th>
+                  <th className="py-3 px-4 text-center text-paper">Status</th>
+                  <th className="py-3 px-4 text-right text-paper">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+              <tbody className="divide-y divide-ink/15 font-sans">
                 {filteredChapters.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <td colSpan={7} className="py-12 text-center text-muted font-serif">
                       No chapters found matching filter criteria.
                     </td>
                   </tr>
@@ -252,103 +217,78 @@ export function SuperAdminOrganizationsView({
                     return (
                       <tr
                         key={chapter.id}
-                        className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors"
+                        className="hover:bg-yellow/15 transition-colors"
                       >
-                        <td className="py-3.5 px-4 font-semibold text-slate-900 dark:text-white">
-                          <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-[#035AFC] flex items-center justify-center font-bold text-xs">
+                        <td className="py-3.5 px-4 font-semibold text-ink">
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 bg-blue text-paper border-2 border-ink flex items-center justify-center font-display font-black text-xs shadow-[1px_1px_0px_#14161c]">
                               {chapter.code.replace('CHP-', '').split('-')[0] || 'CH'}
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-slate-900 dark:text-white">
+                              <p className="font-display font-extrabold text-sm text-ink uppercase">
                                 {chapter.name}
                               </p>
-                              <span className="font-mono text-[10px] text-slate-400">
+                              <span className="font-mono text-[10px] text-muted font-bold">
                                 {chapter.code}
                               </span>
                             </div>
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-4 text-slate-600 dark:text-slate-400">
-                          <p className="font-medium text-slate-800 dark:text-slate-200">
+                        <td className="py-3.5 px-4">
+                          <p className="font-bold text-ink">
                             {chapter.district.name} District
                           </p>
-                          <span className="text-[10px] text-slate-400">
-                            Slug: /{chapter.slug}
+                          <span className="text-[10px] text-muted font-mono">
+                            /{chapter.slug}
                           </span>
                         </td>
 
                         <td className="py-3.5 px-4">
                           {chapter.leadership.length === 0 ? (
-                            <span className="text-[11px] text-amber-500 font-medium">
-                              Vacant (Pending Appointees)
+                            <span className="font-display text-[10px] font-bold uppercase text-amber-800 bg-amber-100 px-2 py-0.5 border border-amber-700">
+                              Vacant
                             </span>
                           ) : (
-                            <div className="space-y-1">
+                            <div className="space-y-0.5 font-serif text-[11px]">
                               {president && (
-                                <p className="text-[11px] text-slate-800 dark:text-slate-200">
-                                  <span className="font-semibold text-slate-500">Pres:</span>{' '}
+                                <p className="text-ink">
+                                  <strong className="font-sans font-bold text-muted">Pres:</strong>{' '}
                                   {president.fullName}
                                 </p>
                               )}
                               {secretary && (
-                                <p className="text-[11px] text-slate-800 dark:text-slate-200">
-                                  <span className="font-semibold text-slate-500">Sec:</span>{' '}
+                                <p className="text-ink">
+                                  <strong className="font-sans font-bold text-muted">Sec:</strong>{' '}
                                   {secretary.fullName}
-                                </p>
-                              )}
-                              {!president && !secretary && (
-                                <p className="text-[11px] text-slate-500">
-                                  {chapter.leadership[0]?.role}: {chapter.leadership[0]?.fullName}
                                 </p>
                               )}
                             </div>
                           )}
                         </td>
 
-                        <td className="py-3.5 px-4 text-center font-semibold text-slate-900 dark:text-white">
+                        <td className="py-3.5 px-4 text-center font-display font-black text-sm text-ink">
                           {chapter.activeMembersCount}
                         </td>
 
                         <td className="py-3.5 px-4 text-center">
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          <span className="font-mono font-bold text-xs bg-yellow/30 px-2 py-0.5 border border-ink">
                             {chapter.applicationsCount}
                           </span>
                         </td>
 
                         <td className="py-3.5 px-4 text-center">
-                          <Badge
-                            variant={chapter.status === 'ACTIVE' ? 'success' : 'secondary'}
-                            className="text-[10px]"
-                          >
+                          <Badge variant={chapter.status === 'ACTIVE' ? 'success' : 'neutral'}>
                             {chapter.status}
                           </Badge>
                         </td>
 
                         <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link href={`/chapter/${chapter.slug}`} target="_blank">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 px-2.5 text-[11px]"
-                                title="Open Chapter Executive Hub"
-                              >
-                                Hub <ExternalLink className="h-3 w-3 ml-1" />
-                              </Button>
-                            </Link>
-                            <Link href="/super-admin/roles">
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                className="h-7 px-2.5 text-[11px]"
-                                title="Manage Chapter Leadership"
-                              >
-                                Officers
-                              </Button>
-                            </Link>
-                          </div>
+                          <Link href={`/chapter/${chapter.slug}`}>
+                            <Button variant="outline" size="sm" className="h-7 text-[10px] px-2.5">
+                              Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />
+                            </Button>
+                          </Link>
                         </td>
                       </tr>
                     );

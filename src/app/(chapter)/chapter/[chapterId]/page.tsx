@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   Users,
   FileCheck,
@@ -83,93 +84,57 @@ export default async function ChapterExecutivePage({
   const headquarters = chapterMeta?.headquarters || chapter.name;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Chapter Overview Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              {chapter.name} Executive Hub
-            </h1>
-            <Badge variant="primary">{chapter.code}</Badge>
+      <PortalPageHeader
+        tag={chapter.code}
+        badge="Constituency Executive Hub"
+        title={`${chapter.name} Executive Hub`}
+        description={`Taluk: ${talukName} • HQ: ${headquarters} • Maker-Checker Queue Active.`}
+        actions={
+          <div className="flex gap-2 items-center">
+            <Link href={`/chapters/${chapter.slug}`}>
+              <Button variant="outline" size="sm">
+                Public Profile
+              </Button>
+            </Link>
+            <ScheduleMeetingDialog
+              chapterSlug={chapter.slug}
+              chapterName={chapter.name}
+            />
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Taluk: <strong className="text-slate-800 dark:text-slate-200">{talukName}</strong> • HQ: {headquarters} • Maker-Checker Queue Active
-          </p>
-        </div>
-
-        <div className="flex gap-2 items-center">
-          <Link href={`/chapters/${chapter.slug}`}>
-            <Button variant="outline" size="sm">
-              Public Profile
-            </Button>
-          </Link>
-          <ScheduleMeetingDialog
-            chapterSlug={chapter.slug}
-            chapterName={chapter.name}
-          />
-        </div>
-      </div>
+        }
+      />
 
       {/* Real Database KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Roster */}
-        <Card>
-          <CardHeader className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-semibold uppercase">Active Roster</span>
-              <Users className="h-4 w-4 text-[#035AFC]" />
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics.activeMembersCount}
-            </div>
-            <p className="text-[11px] text-emerald-600 font-medium">
-              +{metrics.approvedThisMonthCount} approved this month
-            </p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Active Roster"
+          value={metrics.activeMembersCount}
+          subValue={`+${metrics.approvedThisMonthCount} approved this month`}
+          icon={Users}
+        />
 
-        {/* Pending Reviews */}
-        <Card className="border-amber-500/30">
-          <CardHeader className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-semibold uppercase">Pending Reviews</span>
-              <FileCheck className="h-4 w-4 text-[#FBC206]" />
-            </div>
-            <div className="text-2xl font-extrabold text-[#FBC206] mt-1">
-              {metrics.pendingApplicationsCount} Applications
-            </div>
-            <p className="text-[11px] text-slate-500">
-              Awaiting chapter recommendation
-            </p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Pending Reviews"
+          value={`${metrics.pendingApplicationsCount} Applications`}
+          subValue="Awaiting chapter recommendation"
+          icon={FileCheck}
+        />
 
-        {/* Attendance Check-ins */}
-        <Card>
-          <CardHeader className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-semibold uppercase">QR Attendance</span>
-              <Award className="h-4 w-4 text-[#035AFC]" />
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics.totalAttendanceCount}
-            </div>
-            <p className="text-[11px] text-slate-500">Verified meetup check-ins</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="QR Attendance"
+          value={metrics.totalAttendanceCount}
+          subValue="Verified meetup check-ins"
+          icon={Award}
+        />
 
-        {/* NGO Operational Activity Funds */}
-        <Card>
-          <CardHeader className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-semibold uppercase">NGO Activity Budget</span>
-              <Landmark className="h-4 w-4 text-emerald-500" />
-            </div>
-            <div className="text-2xl font-extrabold text-emerald-600 mt-1">₹0</div>
-            <p className="text-[11px] text-slate-500">100% Free Member NGO • State compliance</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="NGO Activity Budget"
+          value="₹0"
+          subValue="100% Free Member NGO"
+          icon={Landmark}
+        />
       </div>
 
       {/* Maker-Checker Application Review Queue with Real Database Records */}
@@ -181,31 +146,31 @@ export default async function ChapterExecutivePage({
       {/* Activities, Meetings & Chapter Leadership Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Chapter Meetings */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-row items-center justify-between">
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#035AFC]" /> Recent & Scheduled Meetings
+              <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-blue" /> Recent & Scheduled Meetings
               </CardTitle>
             </div>
-            <Link href={`/chapter/${chapter.slug}/meetings`} className="text-xs text-[#035AFC] hover:underline font-semibold">
+            <Link href={`/chapter/${chapter.slug}/meetings`} className="text-xs text-blue hover:underline font-bold font-display uppercase tracking-wider">
               View All ({metrics.upcomingMeetingsCount})
             </Link>
           </CardHeader>
           <CardContent className="p-5 space-y-3">
             {metrics.recentMeetings.length === 0 ? (
-              <div className="text-center py-6 text-slate-400 text-xs">
+              <div className="text-center py-6 text-ink/50 text-xs font-serif italic">
                 No meetings scheduled yet for {chapter.name}.
-                <div className="mt-2">
+                <div className="mt-3">
                   <ScheduleMeetingDialog chapterSlug={chapter.slug} chapterName={chapter.name} />
                 </div>
               </div>
             ) : (
               metrics.recentMeetings.map((m) => (
-                <div key={m.id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3 text-xs">
+                <div key={m.id} className="p-3 bg-paper border-2 border-ink shadow-[2px_2px_0px_#14161c] flex items-start justify-between gap-3 text-xs">
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-200">{m.title}</h4>
-                    <div className="text-slate-400 text-[11px] flex items-center gap-2 mt-1">
+                    <h4 className="font-bold text-ink font-sans">{m.title}</h4>
+                    <div className="text-ink/60 text-[11px] flex items-center gap-2 mt-1 font-mono">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {new Date(m.scheduledAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -226,30 +191,30 @@ export default async function ChapterExecutivePage({
         </Card>
 
         {/* Chapter Leadership Directory */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-5 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[#FBC206]" /> Verified Chapter Leadership
+        <Card>
+          <CardHeader className="p-5 pb-3 border-b-2 border-ink">
+            <CardTitle className="text-base font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-yellow" /> Verified Chapter Leadership
             </CardTitle>
           </CardHeader>
           <CardContent className="p-5 space-y-3">
             {metrics.leadershipRecords.length === 0 ? (
-              <div className="text-center py-6 text-slate-400 text-xs">
+              <div className="text-center py-6 text-ink/50 text-xs font-serif italic">
                 <p>No verified leadership appointments recorded in database.</p>
-                <p className="text-[11px] text-slate-400 mt-1">Officeholder appointments are verified by the District/State Board.</p>
+                <p className="text-[11px] text-ink/40 mt-1">Officeholder appointments are verified by the District/State Board.</p>
               </div>
             ) : (
               metrics.leadershipRecords.map((l) => (
-                <div key={l.id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <div key={l.id} className="p-3 bg-paper border-2 border-ink shadow-[2px_2px_0px_#14161c] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-full bg-[#035AFC]/10 text-[#035AFC] flex items-center justify-center font-bold text-xs">
+                    <div className="h-8 w-8 border-2 border-ink bg-blue/10 text-blue flex items-center justify-center font-black font-display text-xs">
                       {l.user.profile?.fullName?.charAt(0) || 'L'}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 dark:text-white">
+                      <div className="font-bold text-ink font-sans">
                         {l.user.profile?.fullName || l.user.email}
                       </div>
-                      <div className="text-[11px] text-slate-400">{l.title || l.role.replace(/_/g, ' ')}</div>
+                      <div className="text-[11px] text-ink/60 font-serif">{l.title || l.role.replace(/_/g, ' ')}</div>
                     </div>
                   </div>
                   <Badge variant="primary" className="text-[10px]">

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PortalPageHeader, PortalStatCard } from '@/components/ui/portal-elements';
 import {
   Calendar,
   Search,
@@ -104,8 +105,8 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
       `"${e.title.replace(/"/g, '""')}"`,
       e.slug,
       e.category,
-      e.chapter ? 'Chapter-specific' : 'District-wide',
-      e.chapter ? `"${e.chapter.name}"` : 'All Malappuram Chapters',
+      e.chapter ? 'CHAPTER' : 'DISTRICT',
+      e.chapter ? `"${e.chapter.name}"` : 'ALL DISTRICT',
       `"${e.venueName.replace(/"/g, '""')}"`,
       `"${(e.venueAddress || '').replace(/"/g, '""')}"`,
       e.capacity,
@@ -136,94 +137,76 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
   const isFiltered = search.trim() !== '' || scopeFilter !== 'ALL' || statusFilter !== 'ALL';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
-        <div>
+      <PortalPageHeader
+        tag="MALAPPURAM DISTRICT CONCLAVES"
+        badge={`${events.length} CONCLAVES`}
+        title="District Events & Summits Oversight"
+        description="Authoritative tracking of district-wide conclaves and chapter-level youth entrepreneurship workshops."
+        actions={
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-[#035AFC]" /> District Events & Summits Oversight
-            </h1>
-            <Badge variant="primary">{events.length} CONCLAVES</Badge>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Authoritative tracking of district-wide conclaves and chapter-level youth entrepreneurship workshops
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isFiltered && (
-            <Button variant="ghost" size="sm" onClick={handleReset} className="h-8 text-xs text-slate-500">
-              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset
+            {isFiltered && (
+              <Button variant="ghost" size="sm" onClick={handleReset} className="h-8 text-xs text-ink/70">
+                <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
+              <Download className="h-3.5 w-3.5 mr-1.5" /> Export Events (CSV)
             </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 text-xs font-semibold">
-            <Download className="h-3.5 w-3.5 mr-1.5" /> Export Events (CSV)
-          </Button>
-          <EventCreationModal
-            defaultScope="DISTRICT"
-            allowedScopes={['DISTRICT', 'CHAPTER']}
-            triggerButtonText="Create Event"
-          />
-        </div>
-      </div>
+            <EventCreationModal
+              defaultScope="DISTRICT"
+              allowedScopes={['DISTRICT', 'CHAPTER']}
+              triggerButtonText="Create Event"
+            />
+          </div>
+        }
+      />
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Total Conclaves</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              {events.length}
-            </div>
-            <p className="text-[11px] text-slate-500">{districtWideCount} District-wide Summits</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Total Conclaves"
+          value={events.length}
+          subValue={`${districtWideCount} District-wide Summits`}
+          icon={Calendar}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Upcoming Schedule</span>
-            <div className="text-2xl font-black text-emerald-600 mt-1">
-              {upcomingCount}
-            </div>
-            <p className="text-[11px] text-slate-500">Scheduled programs ahead</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Upcoming Schedule"
+          value={upcomingCount}
+          subValue="Scheduled programs ahead"
+          icon={Clock}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Total Registrations</span>
-            <div className="text-2xl font-black text-[#035AFC] mt-1">
-              {totalRegistrations.toLocaleString()}
-            </div>
-            <p className="text-[11px] text-slate-500">Across all community conclaves</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Total Registrations"
+          value={totalRegistrations.toLocaleString()}
+          subValue="Across all community conclaves"
+          icon={Users}
+        />
 
-        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-          <CardHeader className="p-4">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Fee Policy</span>
-            <div className="text-2xl font-black text-amber-500 mt-1">
-              100% Free
-            </div>
-            <p className="text-[11px] text-slate-500">Zero dues or ticketing fees</p>
-          </CardHeader>
-        </Card>
+        <PortalStatCard
+          label="Fee Policy"
+          value="100% Free"
+          subValue="Zero dues or ticketing fees"
+          icon={Ticket}
+        />
       </div>
 
       {/* Filter Toolbar */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+      <Card>
         <CardContent className="p-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Search */}
             <div className="relative">
-              <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
+              <Search className="h-4 w-4 absolute left-3 top-2.5 text-ink/40" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search event title, venue, or category..."
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#035AFC]"
+                className="w-full pl-9 pr-3 py-1.5 border-2 border-ink bg-paper text-xs text-ink font-serif focus:outline-none focus:ring-2 focus:ring-blue"
               />
             </div>
 
@@ -233,7 +216,7 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                 value={scopeFilter}
                 onChange={(e) => setScopeFilter(e.target.value)}
                 aria-label="Filter by Event Scope"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-display font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue"
               >
                 <option value="ALL">All Event Scopes</option>
                 <option value="DISTRICT">District-Wide Only</option>
@@ -247,7 +230,7 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filter by Event Status"
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070A10] px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
+                className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-display font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="PUBLISHED">Published</option>
@@ -261,23 +244,23 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
       </Card>
 
       {/* Events Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="p-5 pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-bold">Conclaves & Programs Schedule</CardTitle>
-              <CardDescription className="text-xs">
-                Showing {filteredEvents.length} of {events.length} tracked events
-              </CardDescription>
-            </div>
-            <span className="text-xs text-slate-400 font-mono">Malappuram District (MLP)</span>
+      <Card>
+        <CardHeader className="p-5 pb-3 border-b-2 border-ink flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <CardTitle className="text-xl font-black font-display uppercase tracking-wider text-ink">Conclaves & Programs Schedule</CardTitle>
+            <CardDescription className="text-xs text-ink/70 font-serif mt-1">
+              Showing {filteredEvents.length} of {events.length} tracked events
+            </CardDescription>
           </div>
+          <span className="text-[10px] font-bold text-ink/60 font-mono uppercase bg-paper-sunken border border-ink/20 px-2 py-1">
+            Malappuram District (MLP)
+          </span>
         </CardHeader>
 
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 font-semibold uppercase text-[10px]">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="border-b-2 border-ink bg-paper-sunken text-ink font-display font-extrabold uppercase text-[10px] tracking-wider">
                 <tr>
                   <th className="py-3 px-4">Event Title</th>
                   <th className="py-3 px-4">Scope</th>
@@ -288,10 +271,10 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+              <tbody className="divide-y divide-ink/10 font-mono text-[11px]">
                 {filteredEvents.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
+                    <td colSpan={7} className="py-8 text-center text-ink/50 font-serif italic text-sm">
                       No events match the specified search criteria.
                     </td>
                   </tr>
@@ -300,12 +283,12 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                     const pct = e.capacity > 0 ? Math.min(100, Math.round((e.registeredCount / e.capacity) * 100)) : 0;
 
                     return (
-                      <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+                      <tr key={e.id} className="hover:bg-yellow/10 transition-colors">
                         <td className="py-3 px-4">
-                          <div className="font-bold text-slate-900 dark:text-white">
+                          <div className="font-bold text-ink font-sans text-xs">
                             {e.title}
                           </div>
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[10px] text-ink/60 font-serif">
                             {e.category} &bull; {e.eventType}
                           </div>
                         </td>
@@ -321,22 +304,22 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                           )}
                         </td>
                         <td className="py-3 px-4">
-                          <div className="text-slate-700 dark:text-slate-300 font-medium">
+                          <div className="text-ink font-sans font-medium">
                             {e.venueName}
                           </div>
-                          <div className="text-[10px] text-slate-400 truncate max-w-[180px]">
+                          <div className="text-[10px] text-ink/60 truncate max-w-[180px] font-serif">
                             {e.venueAddress}
                           </div>
                         </td>
-                        <td className="py-3 px-4 font-mono text-[11px] text-slate-500">
+                        <td className="py-3 px-4 font-mono text-[11px] text-ink/70">
                           {e.startsAt.split('T')[0]}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <div className="font-extrabold text-[#035AFC]">
+                          <div className="font-black text-ink text-sm">
                             {e.registeredCount} / {e.capacity}
                           </div>
-                          <div className="w-16 mx-auto h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1">
-                            <div className="h-full bg-[#035AFC] rounded-full" style={{ width: `${pct}%` }} />
+                          <div className="w-16 mx-auto h-2 bg-paper-sunken border border-ink/20 overflow-hidden mt-1">
+                            <div className="h-full bg-blue" style={{ width: `${pct}%` }} />
                           </div>
                         </td>
                         <td className="py-3 px-4">
@@ -359,7 +342,7 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                               variant="outline"
                               size="sm"
                               onClick={() => setScanningEvent(e)}
-                              className="h-7 text-[10px] px-2 text-emerald-600 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-medium"
+                              className="h-7 text-[10px] px-2 text-emerald-800 font-semibold"
                               title="Reception QR Check-In Scanner"
                             >
                               <QrCode className="h-3 w-3 mr-1" />
@@ -371,8 +354,8 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                               rel="noopener noreferrer"
                               title="Export Attendee Roster (CSV)"
                             >
-                              <Button variant="outline" size="sm" className="h-7 text-[10px] px-2 font-medium">
-                                <FileSpreadsheet className="h-3 w-3 mr-1 text-[#035AFC]" />
+                              <Button variant="outline" size="sm" className="h-7 text-[10px] px-2 font-semibold">
+                                <FileSpreadsheet className="h-3 w-3 mr-1 text-blue" />
                                 Roster
                               </Button>
                             </a>
@@ -380,12 +363,12 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                               variant="outline"
                               size="sm"
                               onClick={() => setSelectedEvent(e)}
-                              className="h-7 text-[10px] px-2 font-medium"
+                              className="h-7 text-[10px] px-2 font-semibold"
                             >
                               Details
                             </Button>
                             <a href={`/events/${e.slug}`} target="_blank" rel="noopener noreferrer">
-                              <Button variant="ghost" size="sm" className="h-7 text-[10px] px-2 text-[#035AFC]">
+                              <Button variant="ghost" size="sm" className="h-7 text-[10px] px-2 text-blue">
                                 <ExternalLink className="h-3 w-3" />
                               </Button>
                             </a>
@@ -404,23 +387,23 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
       {/* Event Details Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-xl bg-white dark:bg-[#0B101B] border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="w-full max-w-xl bg-paper border-2 border-ink shadow-[8px_8px_0px_#14161c] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="p-5 border-b-2 border-ink flex items-center justify-between bg-paper-sunken">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  <h3 className="text-lg font-black font-display uppercase tracking-wider text-ink">
                     {selectedEvent.title}
                   </h3>
                   <Badge variant="primary">{selectedEvent.status}</Badge>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-ink/70 font-serif mt-0.5">
                   Scope: {selectedEvent.chapter ? selectedEvent.chapter.name : 'All 16 Malappuram Chapters'}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="border-2 border-ink p-1 bg-paper text-ink hover:bg-yellow shadow-[1px_1px_0px_#14161c] transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -428,42 +411,42 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
 
             {/* Body */}
             <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
-              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-slate-900/40 rounded-lg border border-slate-100 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-paper border-2 border-ink shadow-[2px_2px_0px_#14161c]">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Venue</span>
-                  <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">{selectedEvent.venueName}</span>
-                  <span className="text-[10px] text-slate-400">{selectedEvent.venueAddress}</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">Venue</span>
+                  <span className="font-bold text-ink mt-0.5 block font-sans">{selectedEvent.venueName}</span>
+                  <span className="text-[10px] text-ink/60 font-serif">{selectedEvent.venueAddress}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Schedule</span>
-                  <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">Schedule</span>
+                  <span className="font-bold text-ink mt-0.5 block font-mono">
                     {new Date(selectedEvent.startsAt).toLocaleString()}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Capacity & Registration</span>
-                  <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">Capacity & Registration</span>
+                  <span className="font-bold text-ink mt-0.5 block font-mono">
                     {selectedEvent.registeredCount} / {selectedEvent.capacity} Attendees
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Pricing</span>
-                  <span className="font-semibold text-emerald-600 mt-0.5 block">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block">Pricing</span>
+                  <span className="font-bold text-emerald-700 mt-0.5 block font-display uppercase tracking-wider">
                     100% Free NGO Conclave
                   </span>
                 </div>
               </div>
 
               <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Description</span>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                <span className="text-[10px] font-black uppercase tracking-wider text-ink/60 font-display block mb-1">Description</span>
+                <p className="text-ink/80 font-serif leading-relaxed">
                   {selectedEvent.description || 'No description provided.'}
                 </p>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 flex items-center justify-between">
+            <div className="p-4 border-t-2 border-ink bg-paper-sunken flex items-center justify-between">
               <a href={`/events/${selectedEvent.slug}`} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm" className="text-xs">
                   <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open Public Event Page
@@ -480,17 +463,17 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
       {/* QR Attendance Scanner Modal */}
       {scanningEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-xl bg-white dark:bg-[#0B101B] border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="w-full max-w-xl bg-paper border-2 border-ink shadow-[8px_8px_0px_#14161c] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b-2 border-ink flex items-center justify-between bg-paper-sunken">
               <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <QrCode className="h-4 w-4 text-[#035AFC]" /> Reception Check-In Scanner
+                <h3 className="text-sm font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+                  <QrCode className="h-4 w-4 text-blue" /> Reception Check-In Scanner
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">{scanningEvent.title}</p>
+                <p className="text-xs text-ink/60 font-serif mt-0.5">{scanningEvent.title}</p>
               </div>
               <button
                 onClick={() => setScanningEvent(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="border-2 border-ink p-1 bg-paper text-ink hover:bg-yellow shadow-[1px_1px_0px_#14161c] transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -503,7 +486,7 @@ export function DistrictEventsView({ events }: DistrictEventsViewProps) {
                 initialAttendanceCount={scanningEvent.registeredCount}
               />
             </div>
-            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 flex justify-end">
+            <div className="p-3 border-t-2 border-ink bg-paper-sunken flex justify-end">
               <Button variant="outline" size="sm" onClick={() => setScanningEvent(null)} className="text-xs">
                 Close Scanner
               </Button>

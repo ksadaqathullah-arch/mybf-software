@@ -5,22 +5,12 @@ import { Arrow } from '@/components/arrow';
 import { PageHero } from '@/components/page-hero';
 import { Swipe } from '@/components/swipe';
 import { audience, benefits } from '@/lib/site';
-import { YouthRegistrationForm } from './youth-registration-form';
+import { useMembershipModal } from '@/features/memberships/context/membership-modal-context';
 
 const shadows = ['#005bff', '#e11d74', '#3aadf2', '#14161c'];
 
 export function MembershipPageView() {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-  // Check URL parameters on mount to auto-open if linked via #apply or ?apply=true
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('apply') === 'true' || window.location.hash === '#apply') {
-        setIsModalOpen(true);
-      }
-    }
-  }, []);
+  const { openModal } = useMembershipModal();
 
   return (
     <>
@@ -36,7 +26,7 @@ export function MembershipPageView() {
       >
         <button
           type="button"
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModal}
           className="btn btn-ink cursor-pointer"
         >
           Apply to join <Arrow />
@@ -131,7 +121,7 @@ export function MembershipPageView() {
               <div className="shrink-0 flex flex-col items-start md:items-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={openModal}
                   className="btn btn-yellow min-h-12 px-8 text-sm cursor-pointer shadow-sm"
                 >
                   Start Application <Arrow />
@@ -144,13 +134,6 @@ export function MembershipPageView() {
           </div>
         </div>
       </section>
-
-      {/* Step-by-Step Application Form Modal */}
-      <YouthRegistrationForm
-        asModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   );
 }

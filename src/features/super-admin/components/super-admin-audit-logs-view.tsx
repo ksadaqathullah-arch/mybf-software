@@ -125,14 +125,13 @@ export function SuperAdminAuditLogsView({
 
   const handleExport = (format: 'csv' | 'json') => {
     const params = new URLSearchParams();
-    params.set('export', format);
-    if (actionFilter.trim()) params.set('action', actionFilter.trim());
-    if (resourceFilter.trim()) params.set('resource', resourceFilter.trim());
-    if (actorEmailFilter.trim()) params.set('actorEmail', actorEmailFilter.trim());
+    if (actionFilter) params.set('action', actionFilter);
+    if (resourceFilter) params.set('resource', resourceFilter);
+    if (actorEmailFilter) params.set('actorEmail', actorEmailFilter);
     if (startDate) params.set('startDate', startDate);
     if (endDate) params.set('endDate', endDate);
-
-    window.open(`/api/v1/super-admin/audit-logs?${params.toString()}`, '_blank');
+    params.set('format', format);
+    window.open(`/api/v1/super-admin/audit-logs/export?${params.toString()}`, '_blank');
   };
 
   const handleCopyJson = () => {
@@ -143,90 +142,87 @@ export function SuperAdminAuditLogsView({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Integrity Disclaimer */}
-      <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 text-xs text-blue-900 dark:text-blue-300 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-[#035AFC] flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="font-bold">Audit Trail Verification & Technical Properties</p>
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
-            Audit entries are recorded in the PostgreSQL <code className="font-mono text-[10px] bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">audit_events</code> table via server-side transactions. Database integrity constraints prevent unauthorized modification through standard application interfaces. Cryptographic write-once-read-many (WORM) hardware storage requires external cold storage replication.
-          </p>
-        </div>
-      </div>
-
-      {/* Filter Bar */}
-      <Card className="border-slate-200 dark:border-slate-800">
-        <CardContent className="p-4">
+    <div className="space-y-6">
+      {/* Filter and Export Toolbar Card */}
+      <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
+        <CardHeader className="p-5 pb-3 border-b-2 border-ink bg-paper-2/40">
+          <CardTitle className="font-display font-extrabold text-base text-ink uppercase tracking-tight flex items-center gap-2">
+            <Filter className="h-4 w-4 text-blue" /> Query & Audit Filtering
+          </CardTitle>
+          <CardDescription className="font-serif text-xs text-muted">
+            Search across recorded events by action type, resource scope, actor, or date window.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-5">
           <form onSubmit={handleApplyFilters} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 font-sans">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
                   Action
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. APPROVED, ROLE..."
+                  placeholder="e.g. APPROVE_APPLICATION"
                   value={actionFilter}
                   onChange={(e) => setActionFilter(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC]"
+                  className="w-full text-xs border-2 border-ink bg-white p-2 text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
                   Resource
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. MembershipApplication"
+                  placeholder="e.g. MEMBERSHIP_APPLICATION"
                   value={resourceFilter}
                   onChange={(e) => setResourceFilter(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC]"
+                  className="w-full text-xs border-2 border-ink bg-white p-2 text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
                   Actor Email
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. admin@mybf.in"
+                  placeholder="admin@mybf.in"
                   value={actorEmailFilter}
                   onChange={(e) => setActorEmailFilter(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC]"
+                  className="w-full text-xs border-2 border-ink bg-white p-2 text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
                   From Date
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC]"
+                  className="w-full text-xs border-2 border-ink bg-white p-2 text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
                   To Date
                 </label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#035AFC]"
+                  className="w-full text-xs border-2 border-ink bg-white p-2 text-ink outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c]"
                 />
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t-2 border-ink">
               <div className="flex items-center gap-2">
-                <Button type="submit" variant="primary" size="sm" className="h-8 text-xs font-semibold">
+                <Button type="submit" variant="primary" size="sm">
                   <Filter className="h-3.5 w-3.5 mr-1.5" /> Filter Logs
                 </Button>
                 <Button
@@ -234,11 +230,10 @@ export function SuperAdminAuditLogsView({
                   variant="outline"
                   size="sm"
                   onClick={handleResetFilters}
-                  className="h-8 text-xs"
                 >
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Reset
                 </Button>
-                <span className="text-xs text-slate-400 ml-2">
+                <span className="text-xs font-serif text-muted ml-2">
                   Showing {logs.length} of {total} records
                 </span>
               </div>
@@ -249,7 +244,6 @@ export function SuperAdminAuditLogsView({
                   variant="secondary"
                   size="sm"
                   onClick={() => handleExport('csv')}
-                  className="h-8 text-xs"
                 >
                   <Download className="h-3.5 w-3.5 mr-1.5" /> Export CSV
                 </Button>
@@ -258,7 +252,6 @@ export function SuperAdminAuditLogsView({
                   variant="secondary"
                   size="sm"
                   onClick={() => handleExport('json')}
-                  className="h-8 text-xs"
                 >
                   <Download className="h-3.5 w-3.5 mr-1.5" /> Export JSON
                 </Button>
@@ -269,30 +262,30 @@ export function SuperAdminAuditLogsView({
       </Card>
 
       {/* Audit Log Table */}
-      <Card className="border-slate-200 dark:border-slate-800">
+      <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 text-slate-500 font-semibold uppercase text-[11px]">
-                  <th className="py-3 px-4">Timestamp (IST)</th>
-                  <th className="py-3 px-4">Action</th>
-                  <th className="py-3 px-4">Resource</th>
-                  <th className="py-3 px-4">Actor</th>
-                  <th className="py-3 px-4">IP Address</th>
-                  <th className="py-3 px-4 text-right">Payload</th>
+              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4 text-paper">Timestamp (IST)</th>
+                  <th className="py-3 px-4 text-paper">Action</th>
+                  <th className="py-3 px-4 text-paper">Resource</th>
+                  <th className="py-3 px-4 text-paper">Actor</th>
+                  <th className="py-3 px-4 text-paper">IP Address</th>
+                  <th className="py-3 px-4 text-paper text-right">Payload</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-[11px]">
+              <tbody className="divide-y divide-ink/15 font-mono text-[11px]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 font-sans">
+                    <td colSpan={6} className="py-12 text-center text-muted font-serif">
                       Loading audit records from PostgreSQL...
                     </td>
                   </tr>
                 ) : logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 font-sans">
+                    <td colSpan={6} className="py-12 text-center text-muted font-serif">
                       No audit events match the specified query filters.
                     </td>
                   </tr>
@@ -300,9 +293,9 @@ export function SuperAdminAuditLogsView({
                   logs.map((log) => (
                     <tr
                       key={log.id}
-                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors"
+                      className="hover:bg-yellow/15 transition-colors"
                     >
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3 px-4 text-muted whitespace-nowrap font-mono">
                         {new Date(log.createdAt).toLocaleString('en-IN', {
                           timeZone: 'Asia/Kolkata',
                           year: 'numeric',
@@ -314,39 +307,39 @@ export function SuperAdminAuditLogsView({
                         })}
                       </td>
 
-                      <td className="py-3 px-4 font-bold text-[#035AFC] dark:text-blue-400">
+                      <td className="py-3 px-4 font-bold text-blue">
                         {log.action}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-700 dark:text-slate-300">
-                        <span className="font-sans font-semibold text-xs">{log.resource}</span>
+                      <td className="py-3 px-4 text-ink">
+                        <span className="font-sans font-bold text-xs">{log.resource}</span>
                         {log.resourceId && (
-                          <span className="block text-[10px] text-slate-400 truncate max-w-[120px]">
+                          <span className="block text-[10px] text-muted truncate max-w-[120px]">
                             {log.resourceId}
                           </span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
+                      <td className="py-3 px-4 text-ink font-sans">
                         {log.actorEmail || 'System / Automated'}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-400">
+                      <td className="py-3 px-4 text-muted">
                         {log.ipAddress || 'Internal'}
                       </td>
 
                       <td className="py-3 px-4 text-right">
                         {log.diffJson ? (
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             onClick={() => setSelectedLog(log)}
-                            className="h-7 px-2 text-[11px] font-sans text-slate-600 dark:text-slate-300 hover:text-[#035AFC]"
+                            className="h-7 px-2 text-[10px]"
                           >
                             <Eye className="h-3 w-3 mr-1" /> View Diff
                           </Button>
                         ) : (
-                          <span className="text-slate-300 dark:text-slate-700 text-[10px] italic">
+                          <span className="text-muted text-[10px] italic font-serif">
                             Empty
                           </span>
                         )}
@@ -360,9 +353,9 @@ export function SuperAdminAuditLogsView({
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
-              <span className="text-slate-500">
-                Page {page} of {totalPages} ({total} total logs)
+            <div className="flex items-center justify-between p-4 border-t-2 border-ink bg-paper-2/40">
+              <span className="text-xs font-serif text-muted">
+                Page <strong className="text-ink">{page}</strong> of <strong className="text-ink">{totalPages}</strong>
               </span>
 
               <div className="flex items-center gap-2">
@@ -375,7 +368,6 @@ export function SuperAdminAuditLogsView({
                     setPage(next);
                     fetchLogs(next);
                   }}
-                  className="h-8 text-xs"
                 >
                   <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Previous
                 </Button>
@@ -388,7 +380,6 @@ export function SuperAdminAuditLogsView({
                     setPage(next);
                     fetchLogs(next);
                   }}
-                  className="h-8 text-xs"
                 >
                   Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
                 </Button>
@@ -400,28 +391,28 @@ export function SuperAdminAuditLogsView({
 
       {/* JSON Diff Drawer / Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
-          <Card className="max-w-2xl w-full border-slate-200 dark:border-slate-800 shadow-2xl bg-white dark:bg-[#070A10]">
-            <CardHeader className="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-row items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-ink/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="max-w-2xl w-full border-2 border-ink bg-paper text-ink shadow-[12px_12px_0px_#14161c] p-6 space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-ink pb-3">
               <div>
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[#035AFC]" />
+                <h3 className="font-display font-extrabold text-base text-ink uppercase tracking-tight flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-blue" />
                   Audit Event Diff & Payload
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Action: {selectedLog.action} • Resource: {selectedLog.resource}
-                </CardDescription>
+                </h3>
+                <p className="font-serif text-xs text-muted">
+                  Action: <strong className="text-ink">{selectedLog.action}</strong> • Resource: <strong className="text-ink">{selectedLog.resource}</strong>
+                </p>
               </div>
               <button
                 onClick={() => setSelectedLog(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+                className="p-1 border border-ink text-ink hover:bg-ink hover:text-paper cursor-pointer transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
-            </CardHeader>
+            </div>
 
-            <CardContent className="p-5 space-y-4">
-              <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="space-y-3 font-sans">
+              <div className="flex items-center justify-between text-xs text-muted">
                 <span>Recorded: {new Date(selectedLog.createdAt).toLocaleString()}</span>
                 <Button
                   variant="outline"
@@ -431,7 +422,7 @@ export function SuperAdminAuditLogsView({
                 >
                   {copied ? (
                     <>
-                      <Check className="h-3 w-3 mr-1 text-emerald-500" /> Copied
+                      <Check className="h-3 w-3 mr-1 text-emerald-700" /> Copied
                     </>
                   ) : (
                     <>
@@ -441,22 +432,21 @@ export function SuperAdminAuditLogsView({
                 </Button>
               </div>
 
-              <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto max-h-96">
+              <div className="border-2 border-ink bg-ink p-4 text-paper font-mono text-xs overflow-x-auto max-h-96 shadow-[2px_2px_0px_#14161c]">
                 <pre>{JSON.stringify(selectedLog.diffJson, null, 2)}</pre>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-2">
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={() => setSelectedLog(null)}
-                  className="text-xs"
                 >
                   Close
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
     </div>
