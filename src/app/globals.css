@@ -353,3 +353,20 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
+/* Auth and light input autofill reset to preserve light background and dark text */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--color-ink, #14161c) !important;
+  caret-color: var(--color-ink, #14161c) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.auth-input:autofill {
+  background-color: #ffffff !important;
+  color: var(--color-ink, #14161c) !important;
+}
+
