@@ -6,6 +6,7 @@ import { Swipe } from "@/components/swipe";
 import { forumPhotos } from "@/lib/photos";
 import { initiatives, slugify } from "@/lib/site";
 import { OpenMembershipModalButton } from "@/features/memberships/components/open-membership-modal-button";
+import { ParentInitiativeSection } from "@/components/parent-initiative-section";
 
 const chapters = [
   {
@@ -138,7 +139,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-ink/10 bg-paper-2">
+      {/* Dedicated Section: OUR PARENT INITIATIVE — Mission Malappuram 2050 */}
+      <ParentInitiativeSection className="border-t-2 border-b-2 border-ink" />
+
+      <section className="bg-paper-2">
         <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="max-w-[14ch] text-4xl sm:text-6xl">On the programme</h2>
