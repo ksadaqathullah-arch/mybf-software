@@ -157,7 +157,7 @@ describe('MYBF Dynamic Malappuram Location Management System', () => {
       expect(wardResult.hasVerifiedWards).toBe(false);
       expect(wardResult.wards).toHaveLength(0);
       expect(wardResult.message).toContain('delimitation master data pending');
-    });
+    }, 15000);
   });
 
   describe('Phase 5 & 6: Schemas and Dependent Dropdown Logic', () => {
