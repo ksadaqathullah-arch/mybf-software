@@ -15,6 +15,13 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [isAdminPort, setIsAdminPort] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsAdminPort(window.location.port === '4000' || window.location.hostname.startsWith('admin'));
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,8 +44,10 @@ export function LoginForm() {
         throw new Error(data.error || 'Authentication failed. Please check your credentials.');
       }
 
-      // Check role redirection: SUPER_ADMIN can also access /super-admin, normal member to /member
-      if (data.user?.roles?.includes('SUPER_ADMIN')) {
+      // Respect strict port-isolated redirection target from API
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      } else if (isAdminPort || data.user?.roles?.includes('SUPER_ADMIN')) {
         window.location.href = '/super-admin';
       } else {
         window.location.href = '/member';
@@ -52,10 +61,16 @@ export function LoginForm() {
   return (
     <Card className="border-2 border-ink bg-paper text-ink shadow-[4px_4px_0px_#14161c]">
       <CardHeader className="text-center p-6 sm:p-8 pb-4">
-        <Badge variant="primary" className="mx-auto mb-2">Member & Officer Sign In</Badge>
-        <CardTitle className="text-2xl font-bold">Access MYBF Workspace</CardTitle>
+        <Badge variant={isAdminPort ? 'secondary' : 'primary'} className="mx-auto mb-2">
+          {isAdminPort ? 'Central Administration · Port 4000' : 'Member & Officer Sign In'}
+        </Badge>
+        <CardTitle className="text-2xl font-bold">
+          {isAdminPort ? 'Central System Workspace' : 'Access MYBF Workspace'}
+        </CardTitle>
         <CardDescription className="text-xs">
-          Enter your unique username, registered email, or verified mobile number
+          {isAdminPort
+            ? 'Administrative sign-in for Super Administrators and Organization Leadership'
+            : 'Enter your unique username, registered email, or verified mobile number'}
         </CardDescription>
       </CardHeader>
 
@@ -152,22 +167,39 @@ export function LoginForm() {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 justify-center border-t border-ink/15 p-4 text-xs text-muted text-center bg-paper-2/40">
-        <div>
-          Received an approval link?{' '}
-          <Link href="/activate" className="ml-1 text-blue font-bold hover:text-blue-deep hover:underline">
-            Activate Account
-          </Link>
-        </div>
-        <div>
-          Don&apos;t have an account?{' '}
-          <button
-            type="button"
-            onClick={openModal}
-            className="ml-1 text-blue font-bold hover:text-blue-deep hover:underline cursor-pointer"
-          >
-            Apply for Youth Membership
-          </button>
-        </div>
+        {isAdminPort ? (
+          <div className="space-y-1">
+            <div className="font-semibold text-ink">Administrative Gateway · Port 4000</div>
+            <div>
+              Looking for the public membership platform?{' '}
+              <a
+                href="http://localhost:3000"
+                className="ml-1 text-blue font-bold hover:text-blue-deep hover:underline"
+              >
+                Go to Public Portal (Port 3000)
+              </a>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div>
+              Received an approval link?{' '}
+              <Link href="/activate" className="ml-1 text-blue font-bold hover:text-blue-deep hover:underline">
+                Activate Account
+              </Link>
+            </div>
+            <div>
+              Don&apos;t have an account?{' '}
+              <button
+                type="button"
+                onClick={openModal}
+                className="ml-1 text-blue font-bold hover:text-blue-deep hover:underline cursor-pointer"
+              >
+                Apply for Youth Membership
+              </button>
+            </div>
+          </>
+        )}
       </CardFooter>
     </Card>
   );

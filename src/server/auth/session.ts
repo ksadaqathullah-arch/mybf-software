@@ -1,11 +1,19 @@
 import 'server-only';
 import crypto from 'crypto';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { db } from '@/server/db';
 import type { AuthActor, SystemRoleCode } from './types';
+import {
+  getPortalScope,
+  getSessionCookieNameForScope,
+  SESSION_COOKIE_PUBLIC,
+  SESSION_COOKIE_ADMIN,
+} from './portal-isolation';
 
-export const SESSION_COOKIE_NAME = 'mybf_session';
+export const SESSION_COOKIE_NAME = SESSION_COOKIE_PUBLIC;
+export const SESSION_COOKIE_ADMIN_NAME = SESSION_COOKIE_ADMIN;
 export const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
+
 
 /**
  * Creates a persistent database session for the given user.
@@ -129,11 +137,27 @@ export async function getSessionActor(sessionToken: string): Promise<AuthActor |
 
 /**
  * Helper to get the current actor from Next.js cookies.
+ * Dispatches to the port-isolated cookie (mybf_admin_session on Port 4000, mybf_session on Port 3000).
  */
 export async function getCurrentActor(): Promise<AuthActor | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    let token: string | undefined;
+
+    try {
+      const reqHeaders = await headers();
+      const scope = getPortalScope(reqHeaders);
+      const cookieName = getSessionCookieNameForScope(scope);
+      token = cookieStore.get(cookieName)?.value;
+
+      // In admin scope (Port 4000), never fall back to public session
+      if (!token && scope === 'ADMIN') {
+        return null;
+      }
+    } catch {
+      token = cookieStore.get(SESSION_COOKIE_ADMIN_NAME)?.value || cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    }
+
     if (!token) return null;
     return await getSessionActor(token);
   } catch {

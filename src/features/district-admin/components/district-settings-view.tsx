@@ -46,13 +46,6 @@ export function DistrictSettingsView({
         badge="District Administration"
         title="District Governance & Administrative Settings"
         description="Official district registry details, constituency coordination parameters, and RBAC boundary oversight."
-        actions={
-          <Link href="/super-admin">
-            <Button variant="secondary" size="sm" className="h-8 text-xs font-semibold">
-              <ShieldCheck className="h-3.5 w-3.5 mr-1.5" /> Super Admin Portal
-            </Button>
-          </Link>
-        }
       />
 
       {/* RBAC Boundary Lock Notice */}

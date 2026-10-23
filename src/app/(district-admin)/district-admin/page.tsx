@@ -50,11 +50,6 @@ export default async function DistrictAdminDashboardPage() {
                 <Download className="h-4 w-4 mr-1.5" /> Export District Report (CSV)
               </Button>
             </a>
-            <Link href="/super-admin">
-              <Button variant="secondary" size="sm">
-                <ShieldCheck className="h-4 w-4 mr-1.5" /> Super Admin View
-              </Button>
-            </Link>
           </div>
         }
       />

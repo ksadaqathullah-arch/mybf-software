@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MembershipService } from '@/features/memberships/server/membership.service';
-import { createSession, SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from '@/server/auth/session';
+import { createSession, SESSION_COOKIE_NAME, SESSION_COOKIE_ADMIN_NAME, SESSION_MAX_AGE_SECONDS } from '@/server/auth/session';
+import { getPortalScope, hasCentralSystemRole } from '@/server/auth/portal-isolation';
 import { Prisma } from '@prisma/client';
+
 
 function isDatabaseError(error: any): boolean {
   if (!error) return false;
@@ -45,14 +47,51 @@ export async function POST(request: NextRequest) {
     }
 
     const authResult = await MembershipService.authenticateMember(identifier, password);
+    const portalScope = getPortalScope(request.headers);
+    const isCentralAdmin = hasCentralSystemRole(authResult.user.roles);
+
+    // =========================================================================
+    // ENFORCE ZERO-TRUST PORT ISOLATION
+    // =========================================================================
+    if (portalScope === 'ADMIN') {
+      // Port 4000: Strictly restricted to Central System Users (SUPER_ADMIN, ORGANIZATION_ADMIN)
+      if (!isCentralAdmin) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Access Restricted: The Central System Workspace on Port 4000 is reserved exclusively for Super Administrators and Organization Administrators.',
+            code: 'CENTRAL_ADMIN_ONLY',
+          },
+          { status: 403 }
+        );
+      }
+    } else {
+      // Port 3000: Central Admins without an explicit member role must use Port 4000
+      if (isCentralAdmin && !authResult.user.roles.includes('MEMBER') && !authResult.profile?.chapterId) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Access Restricted: Central System Administrators must authenticate through the dedicated Administrative Portal on Port 4000.',
+            code: 'ADMIN_PORT_REQUIRED',
+          },
+          { status: 403 }
+        );
+      }
+    }
 
     // Create session in database
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     const userAgent = request.headers.get('user-agent');
     const sessionToken = await createSession(authResult.user.id, ipAddress, userAgent);
 
+    // Determine redirect target and cookie name based on scope
+    const targetCookie = portalScope === 'ADMIN' ? SESSION_COOKIE_ADMIN_NAME : SESSION_COOKIE_NAME;
+    const redirectUrl = portalScope === 'ADMIN' ? '/super-admin' : '/member';
+
     const response = NextResponse.json({
       success: true,
+      portalScope,
+      redirectUrl,
       user: {
         id: authResult.user.id,
         email: authResult.user.email,
@@ -65,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Set secure HTTP-only cookie
     response.cookies.set({
-      name: SESSION_COOKIE_NAME,
+      name: targetCookie,
       value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

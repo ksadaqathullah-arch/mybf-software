@@ -83,12 +83,6 @@ export function Header() {
                 >
                   District Administration
                 </Link>
-                <Link
-                  href="/super-admin"
-                  className="block rounded-lg px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 font-medium"
-                >
-                  Super Admin Governance
-                </Link>
               </div>
             )}
           </div>
@@ -200,9 +194,6 @@ export function Header() {
               </Link>
               <Link href="/district-admin" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg">
                 District Administration
-              </Link>
-              <Link href="/super-admin" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg">
-                Super Admin Governance
               </Link>
             </div>
           </nav>

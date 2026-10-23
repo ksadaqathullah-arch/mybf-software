@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-blue: #005bff;
+  --color-blue-deep: #0046cc;
+  --color-sky: #c9dcff;
+  --color-ink: #14161c;
+  --color-paper: #f4f0e6;
+  --color-paper-2: #e6e0d2;
+  --color-yellow: #fcc000;
+  --color-magenta: #e11d74;
+  --color-cyan: #3aadf2;
+  --color-muted: #5e584e;
+}
+
+:root {
+  --background: #f4f0e6;
+  --foreground: #14161c;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Light input autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--color-ink, #14161c) !important;
+  caret-color: var(--color-ink, #14161c) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
