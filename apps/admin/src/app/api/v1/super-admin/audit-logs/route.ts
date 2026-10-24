@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
+import { SuperAdminService } from '@/server/super-admin.service';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       const header = 'ID,Created At,Action,Resource,Resource ID,Actor Email,IP Address\n';
       const rows = data.logs
         .map(
-          (l) =>
+          (l: any) =>
             `"${l.id}","${l.createdAt}","${l.action}","${l.resource}","${l.resourceId || ''}","${l.actorEmail || ''}","${l.ipAddress || ''}"`
         )
         .join('\n');

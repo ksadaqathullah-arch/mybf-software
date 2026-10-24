@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
+import { SuperAdminService } from '@/server/super-admin.service';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

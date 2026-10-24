@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentActor } from '@/server/auth/session';
-import { MembershipService } from '@/features/memberships/server/membership.service';
-import { superAdminApplicationReviewSchema } from '@/features/memberships/schemas/membership.schema';
-import type { AuthActor } from '@/server/auth/types';
+import { getCurrentActor } from '@/server/auth';
+import { MembershipService } from '@/server/membership.service';
+import { superAdminApplicationReviewSchema } from '@/server/admin-schemas';
+import type { AuthActor } from '@/server/types';
 
 export async function GET(request: NextRequest) {
   try {

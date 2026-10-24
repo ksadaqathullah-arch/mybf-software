@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
+import { SuperAdminService } from '@/server/super-admin.service';
 
 export async function GET(request: NextRequest) {
   try {

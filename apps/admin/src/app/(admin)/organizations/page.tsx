@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
+import { SuperAdminService } from '@/server/super-admin.service';
 import { SuperAdminOrganizationsView } from '@/components/views/super-admin-organizations-view';
 
 export const dynamic = 'force-dynamic';

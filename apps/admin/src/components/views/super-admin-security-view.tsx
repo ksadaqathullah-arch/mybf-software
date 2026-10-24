@@ -15,7 +15,7 @@ import {
   FileText,
   ArrowRight,
 } from 'lucide-react';
-import type { SecurityPostureMetrics } from '@/features/super-admin/server/super-admin.service';
+import type { SecurityPostureMetrics } from '@/server/super-admin.service';
 
 interface SuperAdminSecurityViewProps {
   initialData: SecurityPostureMetrics;
@@ -224,7 +224,7 @@ export function SuperAdminSecurityView({ initialData }: SuperAdminSecurityViewPr
                     </td>
                   </tr>
                 ) : (
-                  data.recentSecurityEvents.map((evt) => (
+                  data.recentSecurityEvents.map((evt: any) => (
                     <tr
                       key={evt.id}
                       className="hover:bg-yellow/10 transition-colors"
