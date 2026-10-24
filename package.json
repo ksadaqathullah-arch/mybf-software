@@ -2,6 +2,9 @@
   "name": "mybf-platform",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/admin"
+  ],
   "scripts": {
     "dev": "next dev -p 3000",
     "dev:admin": "npm --prefix apps/admin run dev",

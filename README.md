@@ -76,6 +76,24 @@ npm run build
 npm run dev
 ```
 
+## Vercel deployment
+
+Create two Vercel projects from this repository. The root `package-lock.json` is the
+single npm lockfile for the public app and the `apps/admin` workspace. Install from
+the repository root for both projects; an install confined to `apps/admin` cannot
+provide dependencies for code imported from the root `src/` directory.
+
+| Project | Root Directory | Install Command | Build Command |
+| --- | --- | --- | --- |
+| Public website | `.` (repository root) | `npm ci` | `npm run build` |
+| Admin portal | `apps/admin` | `cd ../.. && npm ci` | `npm run build` |
+
+For the Admin project, enable **Include source files outside of the Root Directory
+in the Build Step** in Vercel's Root Directory settings. Keep the framework preset
+as Next.js and the output directory at its framework default for each project.
+The Admin install and build commands are also recorded in `apps/admin/vercel.json`.
+Both build scripts run `prisma generate` for their own schema before Next.js builds.
+
 ---
 
 ## 📂 Architecture Structure
