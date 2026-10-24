@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { db } from '@/server/db';
-import { ADMIN_SESSION_COOKIE, authenticateAdminUser } from '@/server/auth';
+import { MembershipService } from '@shared/features/memberships/server/membership.service';
+import { ADMIN_SESSION_COOKIE } from '@/server/auth';
 
 const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
@@ -17,12 +18,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const authUser = await authenticateAdminUser(identifier, password);
+    const authResult = await MembershipService.authenticateMember(identifier, password);
 
     // Strictly enforce Central System roles: SUPER_ADMIN or ORGANIZATION_ADMIN
     const isCentralAdmin =
-      authUser.roles.includes('SUPER_ADMIN') ||
-      authUser.roles.includes('ORGANIZATION_ADMIN');
+      authResult.user.roles.includes('SUPER_ADMIN') ||
+      authResult.user.roles.includes('ORGANIZATION_ADMIN');
 
     if (!isCentralAdmin) {
       return NextResponse.json(
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     await db.session.create({
       data: {
-        userId: authUser.id,
+        userId: authResult.user.id,
         sessionToken,
         expiresAt,
         ipAddress: ipAddress ?? null,
@@ -54,9 +55,9 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       user: {
-        id: authUser.id,
-        email: authUser.email,
-        roles: authUser.roles,
+        id: authResult.user.id,
+        email: authResult.user.email,
+        roles: authResult.user.roles,
       },
     });
 

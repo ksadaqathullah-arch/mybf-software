@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentActor } from '@/server/auth';
-import { GovernanceService } from '@/server/governance.service';
-import { superAdminTransferOverrideSchema } from '@/server/admin-schemas';
+import { getCurrentActor } from '@/server/auth/session';
+import { MemberIdentityService } from '@/features/memberships/server/member-identity.service';
+import { superAdminTransferOverrideSchema } from '@/features/memberships/schemas/member-governance.schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const view = searchParams.get('view') || 'overview';
 
     if (view === 'overview') {
-      const metrics = await GovernanceService.getGovernanceMetrics(actor);
+      const metrics = await MemberIdentityService.getGovernanceMetrics(actor);
       return NextResponse.json({ success: true, data: metrics });
     }
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       const status = (searchParams.get('status') as any) || undefined;
       const chapterId = searchParams.get('chapterId') || undefined;
       const page = parseInt(searchParams.get('page') || '1', 10);
-      const transfers = await GovernanceService.getChapterTransfers(actor, {
+      const transfers = await MemberIdentityService.getChapterTransfers(actor, {
         status,
         chapterId,
         page,
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     if (view === 'corrections') {
       const status = (searchParams.get('status') as any) || undefined;
       const page = parseInt(searchParams.get('page') || '1', 10);
-      const corrections = await GovernanceService.getCorrectionRequests(actor, {
+      const corrections = await MemberIdentityService.getCorrectionRequests(actor, {
         status,
         page,
         pageSize: 100,
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = superAdminTransferOverrideSchema.parse(body);
 
-    const result = await GovernanceService.superAdminOverrideTransfer(actor, parsed);
+    const result = await MemberIdentityService.superAdminOverrideTransfer(actor, parsed);
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
     const status = error.name === 'ZodError' ? 400 : 403;

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@/server/super-admin.service';
+import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
 import { db } from '@/server/db';
-import type { SystemRoleCode } from '@/server/types';
+import type { SystemRoleCode } from '@shared/server/auth/types';
 
 export async function GET(request: NextRequest) {
   try {

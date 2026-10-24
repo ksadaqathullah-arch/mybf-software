@@ -17,7 +17,7 @@ import {
   HardDrive,
   Cpu,
 } from 'lucide-react';
-import type { DatabaseHealthMetrics } from '@/server/super-admin.service';
+import type { DatabaseHealthMetrics } from '@/features/super-admin/server/super-admin.service';
 
 interface SuperAdminDatabaseHealthViewProps {
   initialData: DatabaseHealthMetrics;
@@ -43,7 +43,7 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
   };
 
   const tableEntries = Object.entries(data.tableCounts);
-  const totalRows = tableEntries.reduce((acc, [, count]) => acc + Number(count), 0);
+  const totalRows = tableEntries.reduce((acc, [, count]) => acc + count, 0);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -157,7 +157,7 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
                         {domain}
                       </td>
                       <td className="py-3 px-4 text-right font-mono font-black text-sm text-ink">
-                        {Number(count).toLocaleString()}
+                        {count.toLocaleString()}
                       </td>
                     </tr>
                   );

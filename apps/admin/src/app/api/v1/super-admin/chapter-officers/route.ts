@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentActor } from '@/server/auth';
-import { ChapterService } from '@/server/chapter.service';
+import { getCurrentActor } from '@/server/auth/session';
+import { ChapterService } from '@/features/chapters/server/chapter.service';
 import { db } from '@/server/db';
 import { LeadershipRole } from '@prisma/client';
 

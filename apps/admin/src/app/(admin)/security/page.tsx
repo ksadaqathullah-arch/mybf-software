@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getCurrentAdmin } from '@/server/auth';
-import { SuperAdminService } from '@/server/super-admin.service';
+import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
 import { SuperAdminSecurityView } from '@/components/views/super-admin-security-view';
 
 export const dynamic = 'force-dynamic';

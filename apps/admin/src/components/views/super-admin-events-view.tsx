@@ -17,8 +17,8 @@ import {
   MapPin,
   Users,
 } from 'lucide-react';
-import { EventCreationModal } from '@/components/events/event-creation-modal';
-import { EventAttendanceScanner } from '@/components/events/event-attendance-scanner';
+import { EventCreationModal } from '@shared/features/events/components/event-creation-modal';
+import { EventAttendanceScanner } from '@shared/features/events/components/event-attendance-scanner';
 
 export interface AdminEventItem {
   id: string;
@@ -93,7 +93,7 @@ export function SuperAdminEventsView({ events: initialEvents }: SuperAdminEvents
           <EventCreationModal
             allowedScopes={['MAIN', 'DISTRICT', 'CHAPTER']}
             triggerButtonText="Create Global Event"
-            onEventCreated={(newEvent: any) => {
+            onEventCreated={(newEvent) => {
               setEvents((prev) => [
                 {
                   ...newEvent,
