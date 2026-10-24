@@ -1,0 +1,1173 @@
+// MYBF Digital Management Platform - Core Prisma Schema
+// Target: PostgreSQL Enterprise Multi-Tenant & Scalable to 5M+ members
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==========================================
+// 1. ORGANIZATIONAL HIERARCHY
+// ==========================================
+
+model Organization {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g. "MYBF"
+  name        String   // "Malappuram Youth Business Forum"
+  slug        String   @unique
+  logoUrl     String?
+  settings    Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  districts               District[]
+  chapters                Chapter[]
+  users                   UserRoleAssignment[]
+  memberProfiles          MemberProfile[]
+  membershipCategories    MembershipCategory[]
+  events                  Event[]
+  paymentIntents          PaymentIntent[]
+  invoices                Invoice[]
+  auditEvents             AuditEvent[]
+  membershipApplications  MembershipApplication[]
+  memberships             Membership[]
+
+  @@map("organizations")
+}
+
+model District {
+  id             String       @id @default(uuid())
+  organizationId String
+  code           String       @unique // "MLP"
+  name           String       // "Malappuram"
+  state          String       @default("Kerala")
+  country        String       @default("India")
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapters       Chapter[]
+  taluks         Taluk[]
+  localBodies    LocalBody[]
+  roleAssignments UserRoleAssignment[]
+
+  @@index([organizationId])
+  @@map("districts")
+}
+
+enum ChapterStatus {
+  ACTIVE
+  INACTIVE
+  PROBATIONARY
+}
+
+model Chapter {
+  id             String        @id @default(uuid())
+  organizationId String
+  districtId     String
+  code           String        @unique // e.g. "CHP-01-MANJERI"
+  name           String        // e.g. "Manjeri"
+  slug           String        @unique // e.g. "manjeri"
+  description    String?
+  establishedDate DateTime?
+  status         ChapterStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization            Organization            @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  district                District                @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  leadership              ChapterLeadership[]
+  memberProfiles          MemberProfile[]
+  membershipApplications  MembershipApplication[]
+  memberships             Membership[]
+  transfersFrom           ChapterTransfer[]       @relation("TransferFrom")
+  transfersTo             ChapterTransfer[]       @relation("TransferTo")
+  events                  Event[]
+  meetings                Meeting[]
+  roleAssignments         UserRoleAssignment[]
+  paymentIntents          PaymentIntent[]
+  invoices                Invoice[]
+  historicalAssignments   MemberChapterAssignmentHistory[]
+
+  @@index([organizationId, districtId])
+  @@index([status])
+  @@map("chapters")
+}
+
+enum LeadershipRole {
+  PRESIDENT
+  SECRETARY
+  TREASURER
+  VICE_PRESIDENT
+  JOINT_SECRETARY
+  COORDINATOR
+  DIRECTOR
+}
+
+model ChapterLeadership {
+  id              String         @id @default(uuid())
+  chapterId       String
+  userId          String
+  role            LeadershipRole
+  title           String?
+  startDate       DateTime
+  endDate         DateTime?
+  isActive        Boolean        @default(true)
+  appointedById   String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  chapter         Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  user            User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([chapterId, isActive])
+  @@index([userId])
+  @@map("chapter_leadership")
+}
+
+// ==========================================
+// 2. IDENTITY, AUTHENTICATION & ACCESS
+// ==========================================
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  DEACTIVATED
+}
+
+model User {
+  id            String      @id @default(uuid())
+  username      String?     @unique
+  email         String?     @unique
+  phone         String?     @unique
+  passwordHash  String?
+  status        UserStatus  @default(PENDING_VERIFICATION)
+  mfaEnabled    Boolean     @default(false)
+  emailVerified DateTime?
+  phoneVerified DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  profile                 MemberProfile?
+  sessions                Session[]
+  roleAssignments         UserRoleAssignment[]
+  auditEvents             AuditEvent[]
+  notifications           Notification[]
+  leadershipPositions     ChapterLeadership[]
+  eventRegistrations      EventRegistration[]
+  attendanceRecords       AttendanceRecord[]
+  paymentIntents          PaymentIntent[]
+  invoices                Invoice[]
+  membershipApplications  MembershipApplication[]
+  contactChallenges       ContactVerificationChallenge[]
+
+  @@index([username])
+  @@index([email])
+  @@index([phone])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  code        String   @unique // "SUPER_ADMIN", "CHAPTER_PRESIDENT", "MEMBER"
+  name        String
+  description String?
+  isSystem    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+  userAssignments UserRoleAssignment[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g. "member.read_chapter", "finance.refund"
+  module      String   // "MEMBERSHIP", "CHAPTER", "FINANCE"
+  description String?
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRoleAssignment {
+  id             String    @id @default(uuid())
+  userId         String
+  roleId         String
+  organizationId String?
+  districtId     String?
+  chapterId      String?
+  assignedAt     DateTime  @default(now())
+  expiresAt      DateTime?
+  appointedById  String?
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  district       District?     @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  chapter        Chapter?      @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, organizationId, chapterId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([chapterId])
+  @@map("user_role_assignments")
+}
+
+// ==========================================
+// 3. MEMBERSHIP & PROFILES
+// ==========================================
+
+model MembershipCategory {
+  id                 String   @id @default(uuid())
+  organizationId     String
+  code               String   @unique // "YOUTH_ENTREPRENEUR", "ESTABLISHED_BIZ", "STUDENT"
+  name               String
+  description        String?
+  annualFeeINR       Int      @default(0)
+  minAge             Int?
+  maxAge             Int?
+  eligibilityDetails String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  organization       Organization            @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  applications       MembershipApplication[]
+  memberships        Membership[]
+
+  @@index([organizationId])
+  @@map("membership_categories")
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  ADDITIONAL_INFO_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  RENEWAL_DUE
+  EXPIRED
+  SUSPENDED
+  DEACTIVATED
+}
+
+enum MemberCategory {
+  STUDENT
+  ASPIRING_ENTREPRENEUR
+  ENTREPRENEUR_BUSINESS_OWNER
+  OTHER
+}
+
+enum CurrentPosition {
+  STUDENT
+  EMPLOYEE
+  WORKER
+  BUSINESS_OWNER
+  ENTREPRENEUR
+  SELF_EMPLOYED
+  OTHER
+}
+
+model MemberProfile {
+  id             String        @id @default(uuid())
+  userId         String        @unique
+  organizationId String
+  chapterId      String
+  fullName       String
+  photoUrl       String?
+  dateOfBirth    DateTime?
+  gender         String?
+  primaryPhone   String
+  alternatePhone String?
+  email          String
+  bloodGroup     String?
+
+  // Independent Member Classifications
+  memberCategory  MemberCategory?
+  currentPosition CurrentPosition?
+  
+  // Professional & Business Details
+  occupation     String?
+  companyName    String?
+  businessSector String?
+  yearsInBusiness Int?
+  isStudent      Boolean       @default(false)
+  institutionName String?
+  courseName     String?
+
+  // Geographic Residence Details
+  addressLine    String?
+  ward           String?
+  taluk          String?
+  district       String        @default("Malappuram")
+  pinCode        String?
+
+  // Youth Discovery & Goals
+  futureGoal     String?
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter        Chapter       @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  memberships    Membership[]
+  transfers      ChapterTransfer[]
+  businessProfile BusinessProfile?
+  mentorProfile  MentorshipProfile?
+  sentReferrals  ReferralLead[] @relation("SentReferrals")
+  receivedReferrals ReferralLead[] @relation("ReceivedReferrals")
+  expectations   MemberExpectation[]
+  talents        MemberTalent[]
+  participationPreferences MemberParticipationPreference[]
+  correctionRequests       ProfileCorrectionRequest[]
+  chapterHistory           MemberChapterAssignmentHistory[]
+
+  @@index([chapterId])
+  @@index([organizationId])
+  @@index([primaryPhone])
+  @@index([email])
+  @@index([memberCategory])
+  @@index([currentPosition])
+  @@map("member_profiles")
+}
+
+model MemberExpectation {
+  id              String         @id @default(uuid())
+  memberProfileId String
+  expectationKey  String
+  customText      String?
+  createdAt       DateTime       @default(now())
+
+  memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([expectationKey])
+  @@map("member_expectations")
+}
+
+model MemberTalent {
+  id                String         @id @default(uuid())
+  memberProfileId   String
+  talentKey         String
+  category          String
+  customDescription String?
+  createdAt         DateTime       @default(now())
+
+  memberProfile     MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([talentKey])
+  @@index([category])
+  @@map("member_talents")
+}
+
+model MemberParticipationPreference {
+  id              String         @id @default(uuid())
+  memberProfileId String
+  preferenceKey   String
+  createdAt       DateTime       @default(now())
+
+  memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId])
+  @@index([preferenceKey])
+  @@map("member_participation_preferences")
+}
+
+model MembershipApplication {
+  id              String            @id @default(uuid())
+  userId          String
+  organizationId  String
+  chapterId       String
+  categoryId      String?
+  
+  // Independent Member Classifications
+  memberCategory  MemberCategory?
+  currentPosition CurrentPosition?
+
+  status          ApplicationStatus @default(SUBMITTED)
+  submittedAt     DateTime          @default(now())
+  reviewedById    String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+  reviewNotes     String?
+  payloadJson     Json              @default("{}")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user            User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter         Chapter             @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  category        MembershipCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  approvalActions MembershipApprovalAction[]
+
+  @@index([chapterId, status])
+  @@index([userId])
+  @@index([memberCategory])
+  @@index([currentPosition])
+  @@map("membership_applications")
+}
+
+model MembershipApprovalAction {
+  id             String            @id @default(uuid())
+  applicationId  String
+  actorId        String
+  previousStatus ApplicationStatus
+  newStatus      ApplicationStatus
+  reason         String?
+  createdAt      DateTime          @default(now())
+
+  application    MembershipApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("membership_approval_actions")
+}
+
+model Membership {
+  id               String           @id @default(uuid())
+  memberProfileId  String
+  organizationId   String
+  chapterId        String
+  categoryId       String?
+  // Immutable sequential code formatted as MYBF-0000000001 (10 digits, unencoded chapter)
+  membershipNumber String           @unique
+  sequenceNumber   BigInt           @unique
+  status           MembershipStatus @default(ACTIVE)
+  startDate        DateTime         @default(now())
+  validUntil       DateTime
+  renewalCount     Int              @default(0)
+  lastRenewedAt    DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  memberProfile    MemberProfile       @relation(fields: [memberProfileId], references: [id], onDelete: Restrict)
+  organization     Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter          Chapter             @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  category         MembershipCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  idCards          MembershipIdCard[]
+
+  @@index([organizationId, status])
+  @@index([chapterId, status])
+  @@index([membershipNumber])
+  @@map("memberships")
+}
+
+enum CardStatus {
+  ACTIVE
+  SUSPENDED
+  REVOKED
+  EXPIRED
+}
+
+model MembershipIdCard {
+  id                String     @id @default(uuid())
+  membershipId      String
+  cardVersion       Int        @default(1)
+  verificationToken String     @unique // High-entropy secure cryptographic token
+  qrCodeUrl         String?
+  issuedAt          DateTime   @default(now())
+  expiresAt         DateTime
+  status            CardStatus @default(ACTIVE)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  membership        Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@index([membershipId])
+  @@index([verificationToken])
+  @@map("membership_id_cards")
+}
+
+enum TransferStatus {
+  REQUESTED
+  CURRENT_APPROVED
+  DESTINATION_APPROVED
+  COMPLETED
+  REJECTED
+}
+
+model ChapterTransfer {
+  id                     String         @id @default(uuid())
+  memberProfileId        String
+  fromChapterId          String
+  toChapterId            String
+  status                 TransferStatus @default(REQUESTED)
+  reason                 String
+  currentReviewNotes     String?
+  destinationReviewNotes String?
+  districtReviewNotes    String?
+  requestedAt            DateTime       @default(now())
+  currentReviewedAt      DateTime?
+  destinationReviewedAt  DateTime?
+  districtReviewedAt     DateTime?
+  completedAt            DateTime?
+  transferEffectiveDate  DateTime?
+  rejectionReason        String?
+
+  memberProfile   MemberProfile  @relation(fields: [memberProfileId], references: [id], onDelete: Restrict)
+  fromChapter     Chapter        @relation("TransferFrom", fields: [fromChapterId], references: [id], onDelete: Restrict)
+  toChapter       Chapter        @relation("TransferTo", fields: [toChapterId], references: [id], onDelete: Restrict)
+
+  @@index([fromChapterId])
+  @@index([toChapterId])
+  @@index([memberProfileId])
+  @@map("chapter_transfers")
+}
+
+model ContactVerificationChallenge {
+  id            String    @id @default(uuid())
+  userId        String
+  contactType   String    // "PHONE" | "EMAIL"
+  currentValue  String?
+  targetValue   String
+  tokenHash     String    // Secure one-way hash of OTP / verification token
+  expiresAt     DateTime
+  attemptsCount Int       @default(0)
+  resendAfter   DateTime
+  isVerified    Boolean   @default(false)
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, contactType, isVerified])
+  @@map("contact_verification_challenges")
+}
+
+enum CorrectionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CLARIFICATION_REQUESTED
+}
+
+model ProfileCorrectionRequest {
+  id              String                  @id @default(uuid())
+  memberProfileId String
+  field           String                  // "fullName" | "dateOfBirth" | "gender" | etc.
+  oldValue        String?
+  requestedValue  String
+  reason          String
+  documentUrl     String?
+  status          CorrectionRequestStatus @default(PENDING)
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  memberProfile   MemberProfile           @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@index([memberProfileId, status])
+  @@index([status])
+  @@map("profile_correction_requests")
+}
+
+model MemberChapterAssignmentHistory {
+  id              String    @id @default(uuid())
+  memberProfileId String
+  chapterId       String
+  assignedAt      DateTime  @default(now())
+  endedAt         DateTime?
+  transferId      String?
+  reason          String?
+
+  memberProfile   MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+  chapter         Chapter       @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+
+  @@index([memberProfileId])
+  @@index([chapterId])
+  @@map("member_chapter_assignment_history")
+}
+
+// ==========================================
+// 4. GEOGRAPHIC REFERENCE MASTER
+// ==========================================
+
+model Country {
+  code      String   @id // "IN"
+  name      String   // "India"
+  states    State[]
+
+  @@map("countries")
+}
+
+model State {
+  code        String    @id // "KL"
+  name        String    // "Kerala"
+  countryCode String
+  country     Country   @relation(fields: [countryCode], references: [code])
+
+  @@map("states")
+}
+
+model Taluk {
+  id          String      @id @default(uuid())
+  districtId  String
+  code        String      @unique // e.g. "ERNAD"
+  name        String      // "Ernad"
+  createdAt   DateTime    @default(now())
+
+  district    District    @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  localBodies LocalBody[]
+  pinCodes    PinCode[]
+  postOffices PostOffice[]
+
+  @@index([districtId])
+  @@map("taluks")
+}
+
+enum LocalBodyType {
+  MUNICIPALITY
+  GRAMA_PANCHAYAT
+}
+
+model LocalBody {
+  id          String         @id @default(uuid())
+  districtId  String
+  talukId     String
+  code        String         @unique
+  name        String         // e.g. "Manjeri Municipality"
+  type        LocalBodyType
+  createdAt   DateTime       @default(now())
+
+  district    District       @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  taluk       Taluk          @relation(fields: [talukId], references: [id], onDelete: Restrict)
+  wards       Ward[]
+  pinLinks    PinLocalityLink[]
+  postOffices PostOffice[]
+
+  @@index([districtId, talukId])
+  @@map("local_bodies")
+}
+
+model Ward {
+  id          String    @id @default(uuid())
+  localBodyId String
+  wardNumber  Int
+  name        String?
+
+  localBody   LocalBody @relation(fields: [localBodyId], references: [id], onDelete: Cascade)
+
+  @@unique([localBodyId, wardNumber])
+  @@map("wards")
+}
+
+model PinCode {
+  code              String            @id // "676517"
+  talukId           String?
+  postalOfficeName  String
+  taluk             Taluk?            @relation(fields: [talukId], references: [id])
+  localityLinks     PinLocalityLink[]
+  postOffices       PostOffice[]
+
+  @@map("pin_codes")
+}
+
+model PinLocalityLink {
+  pinCode     String
+  localBodyId String
+  isVerified  Boolean   @default(false)
+
+  pin         PinCode   @relation(fields: [pinCode], references: [code], onDelete: Cascade)
+  localBody   LocalBody @relation(fields: [localBodyId], references: [id], onDelete: Cascade)
+
+  @@id([pinCode, localBodyId])
+  @@map("pin_locality_links")
+}
+
+model PostOffice {
+  id              String      @id @default(uuid())
+  code            String      @unique // e.g. "PO-676121-MANJERI-HO"
+  name            String      // e.g. "Manjeri H.O"
+  pinCode         String      // e.g. "676121"
+  officeType      String      @default("SO") // "HO" | "SO" | "BO"
+  deliveryStatus  String      @default("Delivery") // "Delivery" | "Non-Delivery"
+  postalDistrict  String      @default("Malappuram")
+  postalDivision  String?     // e.g. "Manjeri Postal Division" | "Tirur Postal Division"
+  state           String      @default("Kerala")
+  talukId         String?
+  localBodyId     String?
+  isVerified      Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  pin             PinCode     @relation(fields: [pinCode], references: [code], onDelete: Cascade)
+  taluk           Taluk?      @relation(fields: [talukId], references: [id])
+  localBody       LocalBody?  @relation(fields: [localBodyId], references: [id])
+
+  @@unique([name, pinCode])
+  @@index([pinCode])
+  @@index([talukId])
+  @@index([localBodyId])
+  @@index([name])
+  @@map("post_offices")
+}
+
+// ==========================================
+// 5. EVENTS & ATTENDANCE
+// ==========================================
+
+enum EventType {
+  FREE
+  PAID
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Event {
+  id             String       @id @default(uuid())
+  organizationId String
+  chapterId      String?      // Nullable for district/central events
+  title          String
+  slug           String       @unique
+  category       String       // "SUMMIT", "WORKSHOP", "NETWORKING"
+  description    String
+  venueName      String
+  venueAddress   String?
+  eventType      EventType    @default(FREE)
+  basePriceINR   Int          @default(0)
+  capacity       Int
+  registeredCount Int         @default(0)
+  startsAt       DateTime
+  endsAt         DateTime
+  status         EventStatus  @default(DRAFT)
+  bannerUrl      String?
+  scope          String       @default("CHAPTER") // "MAIN" | "DISTRICT" | "CHAPTER"
+  mode           String       @default("OFFLINE") // "OFFLINE" | "ONLINE" | "HYBRID"
+  timezone       String       @default("Asia/Kolkata")
+  organizerName  String?
+  organizerEmail String?
+  organizerPhone String?
+  ticketTiersJson Json?       @default("[]")
+  speakersJson   Json?        @default("[]")
+  sponsorsJson   Json?        @default("[]")
+  regOpensAt     DateTime?
+  regClosesAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter        Chapter?            @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  sessions       EventSession[]
+  registrations  EventRegistration[]
+  attendance     AttendanceRecord[]
+
+  @@index([organizationId, status])
+  @@index([chapterId])
+  @@index([startsAt])
+  @@map("events")
+}
+
+model EventSession {
+  id          String   @id @default(uuid())
+  eventId     String
+  title       String
+  speakerName String?
+  startsAt    DateTime
+  endsAt      DateTime
+
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_sessions")
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+}
+
+model EventRegistration {
+  id              String             @id @default(uuid())
+  eventId         String
+  userId          String
+  ticketTierName  String?            @default("Free Admission")
+  ticketPriceINR  Int                @default(0)
+  paymentIntentId String?
+  qrToken         String             @unique // Cryptographically secure token
+  status          RegistrationStatus @default(CONFIRMED)
+  registeredAt    DateTime           @default(now())
+
+  event         Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  attendance    AttendanceRecord?
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([qrToken])
+  @@map("event_registrations")
+}
+
+enum CheckInMethod {
+  QR_SCAN
+  MANUAL_ADMIN
+}
+
+model AttendanceRecord {
+  id             String            @id @default(uuid())
+  eventId        String
+  registrationId String            @unique // Enforces idempotent single attendance record
+  userId         String
+  scannedAt      DateTime          @default(now())
+  scannedById    String?
+  method         CheckInMethod     @default(QR_SCAN)
+
+  event          Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registration   EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([eventId])
+  @@index([userId])
+  @@map("attendance_records")
+}
+
+// ==========================================
+// 6. MEETINGS & MINUTES
+// ==========================================
+
+enum MeetingType {
+  CHAPTER_EXECUTIVE
+  GENERAL_BODY
+  CORE_COMMITTEE
+}
+
+model Meeting {
+  id          String      @id @default(uuid())
+  chapterId   String
+  title       String
+  type        MeetingType
+  scheduledAt DateTime
+  venue       String
+  agenda      String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  chapter     Chapter     @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  minutes     MeetingMinute?
+  actionItems ActionItem[]
+
+  @@index([chapterId, scheduledAt])
+  @@map("meetings")
+}
+
+model MeetingMinute {
+  id          String   @id @default(uuid())
+  meetingId   String   @unique
+  recordedById String
+  summary     String
+  decisions   String
+  createdAt   DateTime @default(now())
+
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@map("meeting_minutes")
+}
+
+enum ActionItemStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model ActionItem {
+  id          String           @id @default(uuid())
+  meetingId   String
+  title       String
+  assigneeName String
+  dueDate     DateTime
+  status      ActionItemStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  meeting     Meeting          @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+  @@map("action_items")
+}
+
+// ==========================================
+// 7. COMMERCIAL & BUSINESS DIRECTORY
+// ==========================================
+
+model BusinessProfile {
+  id              String           @id @default(uuid())
+  memberProfileId String           @unique
+  businessName    String
+  sector          String           // "Information Technology", "Retail", "Manufacturing", etc.
+  description     String?
+  logoUrl         String?
+  websiteUrl      String?
+  isPublic        Boolean          @default(true)
+  isVerified      Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  memberProfile   MemberProfile    @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+  services        ServiceListing[]
+
+  @@index([sector])
+  @@index([isPublic, isVerified])
+  @@map("business_profiles")
+}
+
+model ServiceListing {
+  id                String          @id @default(uuid())
+  businessProfileId String
+  title             String
+  description       String
+  category          String
+  createdAt         DateTime        @default(now())
+
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+
+  @@index([businessProfileId])
+  @@map("service_listings")
+}
+
+enum ReferralStage {
+  INITIATED
+  ACCEPTED
+  IN_DISCUSSION
+  CLOSED
+  DECLINED
+}
+
+model ReferralLead {
+  id              String        @id @default(uuid())
+  senderMemberId  String
+  recipientMemberId String
+  clientName      String
+  clientPhone     String?
+  notes           String?
+  stage           ReferralStage @default(INITIATED)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  senderMember    MemberProfile @relation("SentReferrals", fields: [senderMemberId], references: [id], onDelete: Restrict)
+  recipientMember MemberProfile @relation("ReceivedReferrals", fields: [recipientMemberId], references: [id], onDelete: Restrict)
+
+  @@index([senderMemberId])
+  @@index([recipientMemberId])
+  @@map("referral_leads")
+}
+
+model MentorshipProfile {
+  id              String        @id @default(uuid())
+  memberProfileId String        @unique
+  expertise       String[]
+  bio             String
+  isAvailable     Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+
+  memberProfile   MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@map("mentorship_profiles")
+}
+
+// ==========================================
+// 8. FINANCE & PAYMENTS (AUDITABLE LEDGER)
+// ==========================================
+
+enum PaymentPurpose {
+  MEMBERSHIP_FEE
+  EVENT_TICKET
+  SPONSORSHIP
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model PaymentIntent {
+  id             String         @id @default(uuid())
+  organizationId String
+  chapterId      String?
+  userId         String
+  amountINR      Int
+  purpose        PaymentPurpose
+  idempotencyKey String         @unique
+  gatewayOrderId String?        @unique
+  status         PaymentStatus  @default(CREATED)
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter        Chapter?       @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  transaction    PaymentTransaction?
+  invoice        Invoice?
+
+  @@index([organizationId, status])
+  @@index([userId])
+  @@index([gatewayOrderId])
+  @@map("payment_intents")
+}
+
+model PaymentTransaction {
+  id                String        @id @default(uuid())
+  paymentIntentId   String        @unique
+  gatewayPaymentId  String        @unique
+  gatewaySignature  String?
+  gatewayProvider   String        @default("RAZORPAY")
+  amountINR         Int
+  status            PaymentStatus @default(PAID)
+  rawWebhookPayload Json          @default("{}")
+  verifiedAt        DateTime      @default(now())
+
+  paymentIntent     PaymentIntent @relation(fields: [paymentIntentId], references: [id], onDelete: Restrict)
+
+  @@map("payment_transactions")
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  organizationId  String
+  chapterId       String?
+  userId          String
+  paymentIntentId String?       @unique
+  invoiceNumber   String        @unique // e.g. "INV-2026-000001"
+  totalAmountINR  Int
+  taxAmountINR    Int           @default(0)
+  status          String        @default("PAID")
+  issuedAt        DateTime      @default(now())
+
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  chapter         Chapter?      @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  paymentIntent   PaymentIntent? @relation(fields: [paymentIntentId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("invoices")
+}
+
+// ==========================================
+// 9. AUDITING, GOVERNANCE & PLATFORM
+// ==========================================
+
+model AuditEvent {
+  id             String        @id @default(uuid())
+  organizationId String?
+  chapterId      String?
+  actorId        String?
+  actorEmail     String?
+  action         String        // "MEMBERSHIP_APPROVED", "ROLE_ASSIGNED", "EXPORT_PERFORMED"
+  resource       String        // "Membership", "User", "Chapter"
+  resourceId     String?
+  diffJson       Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime      @default(now())
+
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actor          User?         @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+  @@map("audit_events")
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+model Notification {
+  id        String              @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  channel   NotificationChannel @default(IN_APP)
+  isRead    Boolean             @default(false)
+  readAt    DateTime?
+  metadata  Json                @default("{}")
+  createdAt DateTime            @default(now())
+
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model SystemConfig {
+  key         String   @id
+  value       String
+  description String?
+  isEncrypted Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_configs")
+}
+
+model FeatureFlag {
+  key               String   @id
+  isEnabled         Boolean  @default(false)
+  rolloutPercentage Int      @default(100)
+  description       String?
+  updatedAt         DateTime @updatedAt
+
+  @@map("feature_flags")
+}
