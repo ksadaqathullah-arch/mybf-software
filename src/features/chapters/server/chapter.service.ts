@@ -149,7 +149,7 @@ export class ChapterService {
         where: { chapterId, status: 'ACTIVE', createdAt: { gte: startOfMonth } },
       }),
       db.membershipApplication.count({
-        where: { chapterId, status: { in: ['SUBMITTED', 'UNDER_REVIEW'] } },
+        where: { chapterId, status: 'SUBMITTED' },
       }),
       db.meeting.count({
         where: { chapterId, scheduledAt: { gte: now } },
@@ -220,7 +220,6 @@ export class ChapterService {
     const applications = await db.membershipApplication.findMany({
       where: {
         chapterId,
-        status: { in: ['SUBMITTED', 'UNDER_REVIEW', 'ADDITIONAL_INFO_REQUESTED'] },
       },
       include: {
         user: {
@@ -257,6 +256,7 @@ export class ChapterService {
         status: app.status,
         reviewNotes: app.reviewNotes,
         rejectionReason: app.rejectionReason,
+        chapterRecommendation: p.chapterRecommendation || null,
         expectations: p.expectations || [],
         talents: p.talents || [],
         participationPreferences: p.participationPreferences || [],
@@ -311,8 +311,20 @@ export class ChapterService {
       orderBy: { createdAt: 'desc' },
     });
 
+    const profileIds = memberships.map((m) => m.memberProfileId);
+    const pendingDeactivations = await db.profileCorrectionRequest.findMany({
+      where: {
+        memberProfileId: { in: profileIds },
+        field: 'MEMBERSHIP_DEACTIVATION',
+        status: { in: ['PENDING', 'CLARIFICATION_REQUESTED'] },
+      },
+      select: { id: true, memberProfileId: true, reason: true },
+    });
+    const pendingDeactivationMap = new Map(pendingDeactivations.map((d) => [d.memberProfileId, d]));
+
     const members = memberships.map((m) => {
       const p = m.memberProfile;
+      const pendingDeact = pendingDeactivationMap.get(p.id);
       return {
         id: m.id,
         profileId: p.id,
@@ -327,6 +339,9 @@ export class ChapterService {
         businessSector: p.businessSector || 'General Enterprise',
         joinedDate: m.createdAt.toISOString(),
         status: m.status,
+        hasPendingDeactivation: Boolean(pendingDeact),
+        pendingDeactivationId: pendingDeact?.id || null,
+        pendingDeactivationReason: pendingDeact?.reason || null,
         chapterId: m.chapterId,
         chapterName: m.chapter.name,
         chapterCode: m.chapter.code,

@@ -1679,4 +1679,408 @@ export class MemberIdentityService {
       })),
     };
   }
+
+  /**
+   * 18. REQUEST MEMBERSHIP REMOVAL / DEACTIVATION
+   * Initiated by Chapter Executive, District Admin, or Super Admin with mandatory justification.
+   */
+  static async requestMembershipDeactivation(
+    actor: AuthActor,
+    input: {
+      memberProfileId: string;
+      reason: string;
+      category?: string;
+    }
+  ) {
+    if (!actor || actor.status !== 'ACTIVE') {
+      throw new Error('Unauthorized: Active authentication required.');
+    }
+
+    const profile = await db.memberProfile.findUnique({
+      where: { id: input.memberProfileId },
+      include: {
+        user: true,
+        chapter: true,
+        memberships: {
+          where: { status: 'ACTIVE' },
+          take: 1,
+        },
+      },
+    });
+
+    if (!profile) {
+      throw new Error('Member profile not found.');
+    }
+
+    // Role check: Super Admin, District Admin, or appointed chapter officer for this chapter
+    const isSuperAdmin = actor.roles.includes('SUPER_ADMIN');
+    const isDistrictAdmin = actor.roles.includes('DISTRICT_ADMIN');
+    const isChapterOfficer = actor.roles.some((r) =>
+      [
+        'CHAPTER_PRESIDENT',
+        'CHAPTER_SECRETARY',
+        'CHAPTER_TREASURER',
+        'CHAPTER_COORDINATOR',
+        'MEMBERSHIP_OFFICER',
+      ].includes(r)
+    );
+
+    const isAuthorized =
+      isSuperAdmin ||
+      isDistrictAdmin ||
+      (isChapterOfficer && actor.chapterId === profile.chapterId);
+
+    if (!isAuthorized) {
+      throw new Error('Forbidden: You are not authorized to request membership removal for this chapter.');
+    }
+
+    if (!input.reason || input.reason.trim().length < 10) {
+      throw new Error('Validation Error: A detailed justification (minimum 10 characters) is required for membership removal.');
+    }
+
+    // Guard against duplicate active removal requests
+    const existingPending = await db.profileCorrectionRequest.findFirst({
+      where: {
+        memberProfileId: profile.id,
+        field: 'MEMBERSHIP_DEACTIVATION',
+        status: { in: ['PENDING', 'CLARIFICATION_REQUESTED'] },
+      },
+    });
+
+    if (existingPending) {
+      throw new Error('A membership removal request is already pending for this member.');
+    }
+
+    const membership = profile.memberships[0];
+    const membershipNumber = membership?.membershipNumber || 'PENDING';
+
+    const metadata = {
+      initiatorId: actor.userId,
+      initiatorEmail: actor.email,
+      initiatorRole:
+        actor.roles.find((r) => r.startsWith('CHAPTER_') || r === 'DISTRICT_ADMIN' || r === 'SUPER_ADMIN') ||
+        actor.roles[0],
+      membershipNumber,
+      category: input.category || 'ADMINISTRATIVE_DISQUALIFICATION',
+      chapterName: profile.chapter.name,
+      chapterCode: profile.chapter.code,
+      chapterId: profile.chapter.id,
+      submittedAt: new Date().toISOString(),
+    };
+
+    return await db.$transaction(
+      async (tx) => {
+        const request = await tx.profileCorrectionRequest.create({
+          data: {
+            memberProfileId: profile.id,
+            field: 'MEMBERSHIP_DEACTIVATION',
+            oldValue: 'ACTIVE',
+            requestedValue: 'DEACTIVATED',
+            reason: input.reason.trim(),
+            status: 'PENDING',
+            reviewNotes: JSON.stringify(metadata),
+          },
+        });
+
+        await tx.auditEvent.create({
+          data: {
+            organizationId: profile.organizationId,
+            chapterId: profile.chapterId,
+            actorId: actor.userId,
+            actorEmail: actor.email,
+            action: 'MEMBERSHIP_DEACTIVATION_REQUESTED',
+            resource: 'MemberProfile',
+            resourceId: profile.id,
+            diffJson: {
+              requestId: request.id,
+              membershipNumber,
+              reason: input.reason.trim(),
+              metadata,
+            },
+          },
+        });
+
+        return {
+          success: true,
+          requestId: request.id,
+          message: `Membership removal request for ${profile.fullName} (${membershipNumber}) submitted successfully and forwarded for administrative review.`,
+        };
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
+  }
+
+  /**
+   * 19. RECOMMEND MEMBERSHIP DEACTIVATION (District Admin Maker-Checker Stage)
+   */
+  static async recommendMembershipDeactivation(
+    actor: AuthActor,
+    input: {
+      requestId: string;
+      decision: 'RECOMMEND_DEACTIVATION' | 'REJECT' | 'REQUEST_CLARIFICATION';
+      reviewNotes: string;
+    }
+  ) {
+    if (!actor || actor.status !== 'ACTIVE') {
+      throw new Error('Unauthorized: Active session required.');
+    }
+
+    const isDistrictAdmin = actor.roles.includes('DISTRICT_ADMIN');
+    const isSuperAdmin = actor.roles.includes('SUPER_ADMIN');
+
+    if (!isDistrictAdmin && !isSuperAdmin) {
+      throw new Error('Forbidden: District Administrator credentials required to review deactivation requests.');
+    }
+
+    const request = await db.profileCorrectionRequest.findUnique({
+      where: { id: input.requestId },
+      include: {
+        memberProfile: {
+          include: { chapter: true, user: true },
+        },
+      },
+    });
+
+    if (!request || request.field !== 'MEMBERSHIP_DEACTIVATION') {
+      throw new Error('Deactivation request not found.');
+    }
+
+    if (request.status !== 'PENDING' && request.status !== 'CLARIFICATION_REQUESTED') {
+      throw new Error(`This deactivation request has already been ${request.status.toLowerCase()}.`);
+    }
+
+    const profile = request.memberProfile;
+
+    return await db.$transaction(
+      async (tx) => {
+        let newStatus: CorrectionRequestStatus = 'PENDING';
+        if (input.decision === 'REJECT') {
+          newStatus = 'REJECTED';
+        } else if (input.decision === 'REQUEST_CLARIFICATION') {
+          newStatus = 'CLARIFICATION_REQUESTED';
+        }
+
+        let meta: Record<string, any> = {};
+        try {
+          meta = JSON.parse(request.reviewNotes || '{}');
+        } catch {
+          meta = { raw: request.reviewNotes };
+        }
+
+        meta.districtReview = {
+          reviewedBy: actor.userId,
+          reviewedAt: new Date().toISOString(),
+          decision: input.decision,
+          remarks: input.reviewNotes,
+        };
+
+        const updated = await tx.profileCorrectionRequest.update({
+          where: { id: request.id },
+          data: {
+            status: newStatus,
+            reviewedById: actor.userId,
+            reviewedAt: new Date(),
+            reviewNotes: JSON.stringify(meta),
+          },
+        });
+
+        await tx.auditEvent.create({
+          data: {
+            organizationId: profile.organizationId,
+            chapterId: profile.chapterId,
+            actorId: actor.userId,
+            actorEmail: actor.email,
+            action: `MEMBERSHIP_DEACTIVATION_DISTRICT_${input.decision}`,
+            resource: 'ProfileCorrectionRequest',
+            resourceId: request.id,
+            diffJson: {
+              decision: input.decision,
+              remarks: input.reviewNotes,
+            },
+          },
+        });
+
+        return {
+          success: true,
+          status: newStatus,
+          message:
+            input.decision === 'RECOMMEND_DEACTIVATION'
+              ? 'Deactivation recommended and forwarded to Super Admin for final approval.'
+              : input.decision === 'REJECT'
+              ? 'Deactivation request rejected by District Administration.'
+              : 'Clarification requested from chapter executive.',
+        };
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
+  }
+
+  /**
+   * 20. FINALIZE MEMBERSHIP DEACTIVATION (Super Admin Final Decision)
+   * Atomically deactivates membership, cards, and user account, and revokes active sessions.
+   * NEVER deletes historical records, audit logs, or attendance.
+   */
+  static async finalizeMembershipDeactivation(
+    actor: AuthActor,
+    input: {
+      requestId: string;
+      action: 'APPROVE_DEACTIVATION' | 'REJECT';
+      justification: string;
+    }
+  ) {
+    if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
+      throw new Error('Forbidden: Only Super Administrator can finalize membership deactivations.');
+    }
+
+    const request = await db.profileCorrectionRequest.findUnique({
+      where: { id: input.requestId },
+      include: {
+        memberProfile: {
+          include: { chapter: true, user: true, memberships: true },
+        },
+      },
+    });
+
+    if (!request || request.field !== 'MEMBERSHIP_DEACTIVATION') {
+      throw new Error('Deactivation request not found.');
+    }
+
+    if (request.status !== 'PENDING' && request.status !== 'CLARIFICATION_REQUESTED') {
+      throw new Error(`This request has already been ${request.status.toLowerCase()}.`);
+    }
+
+    const profile = request.memberProfile;
+
+    return await db.$transaction(
+      async (tx) => {
+        let meta: Record<string, any> = {};
+        try {
+          meta = JSON.parse(request.reviewNotes || '{}');
+        } catch {
+          meta = { raw: request.reviewNotes };
+        }
+
+        meta.superAdminDecision = {
+          decidedBy: actor.userId,
+          decidedAt: new Date().toISOString(),
+          action: input.action,
+          justification: input.justification,
+        };
+
+        if (input.action === 'REJECT') {
+          await tx.profileCorrectionRequest.update({
+            where: { id: request.id },
+            data: {
+              status: 'REJECTED',
+              reviewedById: actor.userId,
+              reviewedAt: new Date(),
+              reviewNotes: JSON.stringify(meta),
+            },
+          });
+
+          await tx.auditEvent.create({
+            data: {
+              organizationId: profile.organizationId,
+              chapterId: profile.chapterId,
+              actorId: actor.userId,
+              actorEmail: actor.email,
+              action: 'MEMBERSHIP_DEACTIVATION_SUPER_ADMIN_REJECTED',
+              resource: 'ProfileCorrectionRequest',
+              resourceId: request.id,
+              diffJson: { justification: input.justification },
+            },
+          });
+
+          return {
+            success: true,
+            status: 'REJECTED',
+            message: `Deactivation request for ${profile.fullName} was rejected. Member remains active.`,
+          };
+        }
+
+        // APPROVE DEACTIVATION
+        // 1. Update request status to APPROVED
+        await tx.profileCorrectionRequest.update({
+          where: { id: request.id },
+          data: {
+            status: 'APPROVED',
+            reviewedById: actor.userId,
+            reviewedAt: new Date(),
+            reviewNotes: JSON.stringify(meta),
+          },
+        });
+
+        // 2. Transactionally update all active memberships for this member to DEACTIVATED
+        await tx.membership.updateMany({
+          where: {
+            memberProfileId: profile.id,
+            status: { in: ['ACTIVE', 'RENEWAL_DUE'] },
+          },
+          data: {
+            status: 'DEACTIVATED',
+          },
+        });
+
+        // 3. Revoke all digital ID cards
+        await tx.membershipIdCard.updateMany({
+          where: {
+            membership: { memberProfileId: profile.id },
+            status: 'ACTIVE',
+          },
+          data: {
+            status: 'REVOKED',
+          },
+        });
+
+        // 4. Update User account status to DEACTIVATED
+        await tx.user.update({
+          where: { id: profile.userId },
+          data: {
+            status: 'DEACTIVATED',
+          },
+        });
+
+        // 5. Invalidate and delete all active sessions for this user (immediate access cutoff)
+        await tx.session.deleteMany({
+          where: { userId: profile.userId },
+        });
+
+        // 6. Record immutable AuditEvent
+        await tx.auditEvent.create({
+          data: {
+            organizationId: profile.organizationId,
+            chapterId: profile.chapterId,
+            actorId: actor.userId,
+            actorEmail: actor.email,
+            action: 'MEMBERSHIP_DEACTIVATED',
+            resource: 'Membership',
+            resourceId: profile.id,
+            diffJson: {
+              targetUserId: profile.userId,
+              memberProfileId: profile.id,
+              justification: input.justification,
+              meta,
+            },
+          },
+        });
+
+        // 7. Notification for history
+        await tx.notification.create({
+          data: {
+            userId: profile.userId,
+            title: 'MYBF Membership Deactivated',
+            message: `Your MYBF membership has been deactivated by administrative governance. Reason: ${input.justification}`,
+            channel: 'IN_APP',
+          },
+        });
+
+        return {
+          success: true,
+          status: 'DEACTIVATED',
+          message: `Membership for ${profile.fullName} successfully deactivated. All sessions revoked and card invalidated. Historical data preserved.`,
+        };
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
+  }
 }

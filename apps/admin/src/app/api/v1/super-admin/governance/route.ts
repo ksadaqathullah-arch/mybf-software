@@ -67,6 +67,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+
+    if (body.action === 'finalize_deactivation') {
+      const { requestId, decision, justification } = body.data || body;
+      if (!requestId || !decision || !justification) {
+        return NextResponse.json(
+          { success: false, error: 'requestId, decision (APPROVE_DEACTIVATION | REJECT), and justification are required.' },
+          { status: 422 }
+        );
+      }
+      const result = await MemberIdentityService.finalizeMembershipDeactivation(actor, {
+        requestId,
+        action: decision,
+        justification,
+      });
+      return NextResponse.json({ success: true, data: result });
+    }
+
     const parsed = superAdminTransferOverrideSchema.parse(body);
 
     const result = await MemberIdentityService.superAdminOverrideTransfer(actor, parsed);

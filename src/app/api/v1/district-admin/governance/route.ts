@@ -84,8 +84,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: result });
     }
 
+    if (action === 'recommend_deactivation') {
+      const { requestId, decision, reviewNotes } = body.data || {};
+      if (!requestId || !decision || !reviewNotes) {
+        return NextResponse.json(
+          { success: false, error: 'requestId, decision, and reviewNotes are required.' },
+          { status: 422 }
+        );
+      }
+      const result = await MemberIdentityService.recommendMembershipDeactivation(actor, {
+        requestId,
+        decision,
+        reviewNotes,
+      });
+      return NextResponse.json({ success: true, data: result });
+    }
+
     return NextResponse.json(
-      { success: false, error: 'Invalid action. Expected finalize_transfer | review_correction' },
+      { success: false, error: 'Invalid action. Expected finalize_transfer | review_correction | recommend_deactivation' },
       { status: 400 }
     );
   } catch (error: any) {

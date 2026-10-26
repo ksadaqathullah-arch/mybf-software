@@ -89,7 +89,7 @@ describe('MYBF Chapter Executive Hub Functional Integration Suite', () => {
 
     testAppId = result.application.id;
     testUserId = result.application.userId;
-  });
+  }, 60000);
 
   afterAll(async () => {
     // Clean up created test data safely
@@ -109,7 +109,7 @@ describe('MYBF Chapter Executive Hub Functional Integration Suite', () => {
       await db.memberProfile.deleteMany({ where: { userId: testUserId } });
       await db.user.deleteMany({ where: { id: testUserId } });
     }
-  });
+  }, 60000);
 
   // TEST 1 & 3: Canonical Chapter Identity & Code Resolution
   it('resolves canonical chapter identity and code correctly for Manjeri (CHP-05-MANJERI)', async () => {

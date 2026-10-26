@@ -82,11 +82,11 @@ export default async function ChapterExecutiveLayout({
     );
   }
 
-  // 4. Query real-time pending applications count for this chapter
+  // 4. Query real-time pending applications count for this chapter (awaiting chapter executive review)
   const pendingCount = await db.membershipApplication.count({
     where: {
       chapterId: chapter.id,
-      status: { in: ['SUBMITTED', 'UNDER_REVIEW'] },
+      status: 'SUBMITTED',
     },
   });
 

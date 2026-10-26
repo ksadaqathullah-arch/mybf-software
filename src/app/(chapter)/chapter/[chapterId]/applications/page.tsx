@@ -53,23 +53,33 @@ export default async function ChapterApplicationsPage({
   }
 
   const applications = await ChapterService.getChapterApplications(actor, chapter.id);
+  const pendingCount = applications.filter((a) => a.status === 'SUBMITTED').length;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-ink pb-5">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <Link href={`/chapter/${chapter.slug}`}>
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-500">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c] hover:bg-yellow/20 text-xs font-display font-black uppercase tracking-wider text-ink"
+              >
                 <ArrowLeft className="h-4 w-4 mr-1" /> Hub
               </Button>
             </Link>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-black font-display uppercase tracking-tight text-ink">
               {chapter.name} Applications Queue
             </h1>
-            <Badge variant="warning">{applications.length} PENDING</Badge>
+            <Badge
+              variant={pendingCount > 0 ? 'warning' : 'success'}
+              className="border-ink shadow-[1px_1px_0px_#14161c]"
+            >
+              {pendingCount} {pendingCount === 1 ? 'AWAITING REVIEW' : 'AWAITING REVIEWS'}
+            </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 pl-1">
+          <p className="text-xs text-ink/70 font-serif mt-1.5 pl-1">
             Review applicant qualifications and forward verified recommendations to the Super Admin.
           </p>
         </div>

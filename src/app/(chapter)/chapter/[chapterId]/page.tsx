@@ -107,33 +107,53 @@ export default async function ChapterExecutivePage({
       />
 
       {/* Real Database KPI Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <PortalStatCard
           label="Active Roster"
           value={metrics.activeMembersCount}
-          subValue={`+${metrics.approvedThisMonthCount} approved this month`}
+          unit={metrics.activeMembersCount === 1 ? 'Member' : 'Members'}
+          badge={metrics.approvedThisMonthCount > 0 ? `+${metrics.approvedThisMonthCount} this mo.` : undefined}
+          badgeVariant="success"
+          detail="Active verified members in chapter roster"
           icon={Users}
+          href={`/chapter/${chapter.slug}/members`}
         />
 
         <PortalStatCard
           label="Pending Reviews"
-          value={`${metrics.pendingApplicationsCount} Applications`}
-          subValue="Awaiting chapter recommendation"
+          value={metrics.pendingApplicationsCount}
+          unit={metrics.pendingApplicationsCount === 1 ? 'Application' : 'Applications'}
+          badge={metrics.pendingApplicationsCount > 0 ? 'Action Required' : 'All Clear'}
+          badgeVariant={metrics.pendingApplicationsCount > 0 ? 'warning' : 'success'}
+          detail={
+            metrics.pendingApplicationsCount === 1
+              ? '1 application awaiting recommendation'
+              : `${metrics.pendingApplicationsCount} applications awaiting recommendation`
+          }
           icon={FileCheck}
+          href={`/chapter/${chapter.slug}/applications`}
         />
 
         <PortalStatCard
           label="QR Attendance"
           value={metrics.totalAttendanceCount}
-          subValue="Verified meetup check-ins"
+          unit={metrics.totalAttendanceCount === 1 ? 'Check-in' : 'Check-ins'}
+          badge="Verified"
+          badgeVariant="neutral"
+          detail="Total verified meetup and session attendances"
           icon={Award}
+          href={`/chapter/${chapter.slug}/meetings`}
         />
 
         <PortalStatCard
           label="NGO Activity Budget"
           value="₹0"
-          subValue="100% Free Member NGO"
+          unit="Zero-Fee"
+          badge="100% Free"
+          badgeVariant="primary"
+          detail="100% Free Member NGO • Mission Malappuram 2050"
           icon={Landmark}
+          href={`/chapter/${chapter.slug}/finance`}
         />
       </div>
 
