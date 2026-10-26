@@ -146,7 +146,7 @@ export default function MissionPage() {
                   />
                 </div>
                 <span className="h-3 w-px bg-paper/30" aria-hidden="true" />
-                <span className="font-display text-[0.68rem] font-bold tracking-[0.16em] uppercase text-paper">
+                <span className="font-sans text-xs font-semibold tracking-wider uppercase text-paper">
                   Parent Initiative
                 </span>
               </div>
@@ -154,26 +154,26 @@ export default function MissionPage() {
               {/* MYBF Institutional Tag */}
               <div className="inline-flex items-center gap-2 rounded-full border border-yellow/50 bg-yellow/15 px-3 py-1 text-yellow">
                 <span className="size-2 rounded-full bg-yellow animate-pulse" />
-                <span className="font-display text-[0.68rem] font-bold tracking-[0.16em] uppercase">
+                <span className="font-sans text-xs font-semibold tracking-wider uppercase">
                   MYBF Official DPR Mandate
                 </span>
               </div>
             </div>
 
             {/* Eyebrow */}
-            <p className="mt-6 flex items-center gap-3 font-display text-[0.72rem] font-bold tracking-[0.24em] uppercase text-paper/80 max-sm:tracking-[0.16em]">
+            <p className="mt-6 flex items-center gap-3 font-sans text-xs font-bold tracking-widest uppercase text-paper/80">
               <span>06</span>
               <span aria-hidden="true" className="h-px w-10 bg-paper/50" />
               <span>An Initiative Under Mission Malappuram 2050</span>
             </p>
 
             {/* Main Title */}
-            <h1 className="mt-5 max-w-[14ch] text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-[5.5rem] max-sm:text-[2.6rem] leading-[0.92] text-balance">
+            <h1 className="mt-5 max-w-[14ch] text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-[5.5rem] max-sm:text-[2.6rem] leading-[1.08] text-balance font-sans">
               Building Malappuram’s Future, Together.
             </h1>
 
             {/* Lead Narrative */}
-            <p className="mt-6 max-w-xl text-xl leading-snug text-paper/90 sm:text-2xl max-sm:text-lg">
+            <p className="mt-6 max-w-xl text-xl leading-relaxed text-paper/90 sm:text-2xl max-sm:text-lg font-sans">
               MYBF is not a private podium or an individual brand. It is Malappuram’s collective
               youth entrepreneurship movement — operational across 16 assembly constituencies to
               turn raw district ambition into globally competitive, AI-ready enterprises.
@@ -213,7 +213,7 @@ export default function MissionPage() {
             {marqueeLoop.map((word, i) => (
               <li
                 key={`${word}-${i}`}
-                className="flex items-center gap-6 px-6 font-display text-sm font-bold tracking-[0.18em] whitespace-nowrap uppercase"
+                className="flex items-center gap-6 px-6 font-sans text-sm font-semibold tracking-wider whitespace-nowrap uppercase"
               >
                 <span>{word}</span>
                 <span className="size-1.5 rotate-45 bg-yellow" />
@@ -229,10 +229,10 @@ export default function MissionPage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
             {/* Vision Header & DPR Attribution */}
             <div className="lg:col-span-4 space-y-5">
-              <p className="font-display text-[0.72rem] font-bold tracking-[0.24em] text-blue uppercase">
+              <p className="font-sans text-xs font-bold tracking-widest text-blue uppercase">
                 Approved DPR Mandate
               </p>
-              <h2 className="text-4xl sm:text-6xl text-ink">Our Official Vision</h2>
+              <h2 className="text-4xl sm:text-6xl text-ink font-bold tracking-tight">Our Official Vision</h2>
               <p className="text-lg leading-relaxed text-muted">
                 Documented in the approved Detailed Project Report (DPR) for Malappuram Youth Business
                 Forum, under the parent framework of Mission Malappuram 2050.
@@ -249,7 +249,7 @@ export default function MissionPage() {
                     />
                   </div>
                   <span className="h-4 w-px bg-ink/30" />
-                  <span className="font-display text-[0.7rem] font-bold tracking-[0.12em] uppercase text-ink">
+                  <span className="font-sans text-xs font-bold tracking-wider uppercase text-ink">
                     Mission Malappuram 2050
                   </span>
                 </div>
@@ -267,7 +267,7 @@ export default function MissionPage() {
 
                 {/* Eyebrow Label */}
                 <div className="flex items-center justify-between pb-6 border-b border-ink/10">
-                  <span className="font-display text-xs font-bold tracking-[0.2em] uppercase text-blue">
+                  <span className="font-sans text-xs font-bold tracking-widest uppercase text-blue">
                     Official DPR Statement
                   </span>
                   <span className="font-mono text-xs font-semibold text-muted">
@@ -276,40 +276,40 @@ export default function MissionPage() {
                 </div>
 
                 {/* EXACT Vision Statement from DPR */}
-                <blockquote className="mt-8 font-serif text-2xl sm:text-3xl lg:text-[2.2rem] leading-relaxed text-ink font-medium">
+                <blockquote className="mt-8 font-sans text-2xl sm:text-3xl lg:text-[2.2rem] leading-relaxed text-ink font-medium">
                   &ldquo;{MYBF_OFFICIAL_VISION.statement}&rdquo;
                 </blockquote>
 
                 {/* Strategic Pillars Anchors */}
                 <div className="mt-10 pt-8 border-t-2 border-ink/10 grid gap-6 sm:grid-cols-3">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-blue font-display text-xs font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-blue font-sans text-xs font-bold uppercase tracking-wider">
                       <Building2 className="size-4 shrink-0" />
                       <span>Benchmark</span>
                     </div>
-                    <h3 className="font-display text-lg font-bold text-ink">Singapore &amp; Dubai</h3>
+                    <h3 className="font-sans text-lg font-bold text-ink">Singapore &amp; Dubai</h3>
                     <p className="text-xs leading-relaxed text-muted">
                       Emulating the ambition, infrastructure mindset, and economic dynamism of global trading hubs.
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-magenta font-display text-xs font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-magenta font-sans text-xs font-bold uppercase tracking-wider">
                       <Sparkles className="size-4 shrink-0" />
                       <span>Inclusivity</span>
                     </div>
-                    <h3 className="font-display text-lg font-bold text-ink">AI-Ready &amp; Women</h3>
+                    <h3 className="font-sans text-lg font-bold text-ink">AI-Ready &amp; Women</h3>
                     <p className="text-xs leading-relaxed text-muted">
                       Preparing the upcoming generation of women and youth to lead technological innovation.
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-emerald-600 font-display text-xs font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-emerald-600 font-sans text-xs font-bold uppercase tracking-wider">
                       <CheckCircle2 className="size-4 shrink-0" />
                       <span>Outcome</span>
                     </div>
-                    <h3 className="font-display text-lg font-bold text-ink">District Prosperity</h3>
+                    <h3 className="font-sans text-lg font-bold text-ink">District Prosperity</h3>
                     <p className="text-xs leading-relaxed text-muted">
                       Creating scalable enterprises, sustainable high-value employment, and generational wealth.
                     </p>
@@ -326,13 +326,13 @@ export default function MissionPage() {
         <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:py-20">
           {/* Section Header */}
           <div className="max-w-3xl space-y-4">
-            <p className="font-display text-[0.72rem] font-bold tracking-[0.24em] text-magenta uppercase">
+            <p className="font-sans text-xs font-bold tracking-widest text-magenta uppercase">
               Strategic Execution
             </p>
-            <h2 className="text-4xl sm:text-6xl text-ink">
+            <h2 className="text-4xl sm:text-6xl text-ink font-bold tracking-tight">
               {MYBF_MISSION_FRAMEWORK.sectionTitle}
             </h2>
-            <p className="text-xl sm:text-2xl font-serif italic text-muted">
+            <p className="text-xl sm:text-2xl font-sans italic text-muted">
               {MYBF_MISSION_FRAMEWORK.sectionSubtitle}
             </p>
             <p className="text-lg leading-relaxed text-muted">
@@ -368,7 +368,7 @@ export default function MissionPage() {
 
                         {/* Top Meta Row */}
                         <div className="mt-6 flex items-center justify-between">
-                          <span className="font-display text-5xl font-extrabold tracking-tighter text-ink">
+                          <span className="font-sans text-5xl font-extrabold tracking-tight text-ink">
                             {meta.number}
                           </span>
                           <div className={`inline-flex size-12 items-center justify-center border-2 border-ink ${meta.iconBg}`}>
@@ -377,16 +377,16 @@ export default function MissionPage() {
                         </div>
 
                         {/* Pillar Title */}
-                        <p className="mt-4 font-display text-[0.72rem] font-bold tracking-[0.22em] text-muted uppercase">
+                        <p className="mt-4 font-sans text-xs font-bold tracking-widest text-muted uppercase">
                           Pillar {meta.number}
                         </p>
-                        <h3 className="mt-2 text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink">
+                        <h3 className="mt-2 text-2xl sm:text-3xl font-sans font-bold tracking-tight text-ink">
                           {pillar.title}
                         </h3>
 
                         {/* Tagline / Highlight Quote */}
                         <div className="mt-4 rounded-none border-l-4 border-ink bg-white/70 p-3">
-                          <p className="font-serif text-base italic font-semibold text-ink">
+                          <p className="font-sans text-base italic font-medium text-ink">
                             {meta.tagline}
                           </p>
                         </div>
@@ -421,10 +421,10 @@ export default function MissionPage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-14 items-start">
             {/* Left Narrative */}
             <div className="lg:col-span-5 space-y-6">
-              <p className="font-display text-[0.72rem] font-bold tracking-[0.24em] text-blue uppercase">
+              <p className="font-sans text-xs font-bold tracking-widest text-blue uppercase">
                 Pillar 5 in Action
               </p>
-              <h2 className="text-4xl sm:text-6xl text-ink">
+              <h2 className="text-4xl sm:text-6xl text-ink font-bold tracking-tight">
                 Decentralised Across 16 Constituencies
               </h2>
               <p className="text-xl leading-relaxed text-muted">
@@ -438,7 +438,7 @@ export default function MissionPage() {
                     ✓
                   </div>
                   <div>
-                    <h3 className="font-display text-base font-bold text-ink">
+                    <h3 className="font-sans text-base font-bold text-ink">
                       Constituency Infrastructure
                     </h3>
                     <p className="text-sm text-muted">
@@ -452,7 +452,7 @@ export default function MissionPage() {
                     ✓
                   </div>
                   <div>
-                    <h3 className="font-display text-base font-bold text-ink">
+                    <h3 className="font-sans text-base font-bold text-ink">
                       Democratic Chapter Governance
                     </h3>
                     <p className="text-sm text-muted">
@@ -466,7 +466,7 @@ export default function MissionPage() {
                     ✓
                   </div>
                   <div>
-                    <h3 className="font-display text-base font-bold text-ink">
+                    <h3 className="font-sans text-base font-bold text-ink">
                       District-Wide Cross Referral
                     </h3>
                     <p className="text-sm text-muted">
@@ -487,7 +487,7 @@ export default function MissionPage() {
             <div className="lg:col-span-7">
               <div className="border-2 border-ink bg-paper-2 p-6 sm:p-8">
                 <div className="flex items-center justify-between pb-4 border-b border-ink/20">
-                  <span className="font-display text-xs font-bold tracking-[0.2em] uppercase text-ink">
+                  <span className="font-sans text-xs font-bold tracking-wider uppercase text-ink">
                     16 Founding Assembly Chapters
                   </span>
                   <span className="font-mono text-xs font-bold text-blue">
@@ -502,13 +502,13 @@ export default function MissionPage() {
                       href={`/chapters/${ch.slug}`}
                       className="group border border-ink bg-paper p-3 transition-colors hover:bg-yellow hover:border-ink"
                     >
-                      <span className="font-mono text-[10px] font-bold text-muted block group-hover:text-ink">
+                      <span className="font-sans text-xs font-semibold text-muted block group-hover:text-ink">
                         {ch.constituency}
                       </span>
-                      <h4 className="mt-1 font-display text-sm font-extrabold text-ink leading-tight">
+                      <h4 className="mt-1 font-sans text-sm font-bold text-ink leading-snug">
                         {ch.name.replace(" Chapter", "")}
                       </h4>
-                      <span className="mt-2 text-[10px] text-muted flex items-center gap-1 group-hover:text-ink">
+                      <span className="mt-2 text-xs text-muted flex items-center gap-1 group-hover:text-ink">
                         <MapPin className="size-3 text-blue group-hover:text-ink" />
                         <span>{ch.taluk}</span>
                       </span>
@@ -520,7 +520,7 @@ export default function MissionPage() {
                   <span>Zero membership fees for verified youth.</span>
                   <Link
                     href="/chapters"
-                    className="inline-flex items-center gap-1 font-display text-xs font-bold tracking-wider text-blue uppercase hover:underline"
+                    className="inline-flex items-center gap-1 font-sans text-xs font-semibold tracking-normal text-blue hover:underline"
                   >
                     <span>View Chapter Executives &amp; Events</span>
                     <ArrowUpRight className="size-3.5" />
@@ -536,10 +536,10 @@ export default function MissionPage() {
       <section className="bg-ink text-paper">
         <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:py-20">
           <div className="max-w-3xl">
-            <p className="font-display text-[0.72rem] font-bold tracking-[0.24em] text-yellow uppercase">
+            <p className="font-sans text-xs font-bold tracking-widest text-yellow uppercase">
               Get Involved
             </p>
-            <h2 className="mt-3 text-4xl sm:text-6xl text-paper">
+            <h2 className="mt-3 text-4xl sm:text-6xl text-paper font-bold tracking-tight">
               Build Malappuram’s Economic Future With Us.
             </h2>
             <p className="mt-4 text-xl leading-relaxed text-paper/80">
@@ -560,7 +560,7 @@ export default function MissionPage() {
                 <div className="inline-flex size-12 items-center justify-center border-2 border-yellow bg-yellow text-ink">
                   <Users className="size-6" />
                 </div>
-                <h3 className="mt-6 text-2xl font-display font-extrabold text-paper">
+                <h3 className="mt-6 text-2xl font-sans font-bold text-paper">
                   Apply for Membership
                 </h3>
                 <p className="mt-3 text-base text-paper/70 leading-relaxed">
@@ -584,7 +584,7 @@ export default function MissionPage() {
                 <div className="inline-flex size-12 items-center justify-center border-2 border-blue bg-blue text-paper">
                   <Network className="size-6" />
                 </div>
-                <h3 className="mt-6 text-2xl font-display font-extrabold text-paper">
+                <h3 className="mt-6 text-2xl font-sans font-bold text-paper">
                   Explore 16 Chapters
                 </h3>
                 <p className="mt-3 text-base text-paper/70 leading-relaxed">
@@ -608,7 +608,7 @@ export default function MissionPage() {
                 <div className="inline-flex size-12 items-center justify-center border-2 border-magenta bg-magenta text-paper">
                   <Award className="size-6" />
                 </div>
-                <h3 className="mt-6 text-2xl font-display font-extrabold text-paper">
+                <h3 className="mt-6 text-2xl font-sans font-bold text-paper">
                   Discover Programs &amp; Events
                 </h3>
                 <p className="mt-3 text-base text-paper/70 leading-relaxed">

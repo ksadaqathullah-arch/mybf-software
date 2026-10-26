@@ -14,40 +14,40 @@ export default function ContactPage() {
     <div className="bg-paper">
       <div className="mx-auto grid max-w-[1440px] lg:grid-cols-12">
         <header className="bg-magenta px-5 py-16 text-paper sm:px-8 lg:col-span-5 lg:px-12 lg:py-24 max-sm:py-12">
-          <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] uppercase text-paper/70">
+          <p className="font-sans text-xs font-bold tracking-widest uppercase text-paper/70">
             Contact
           </p>
-          <h1 className="mt-4 text-5xl text-paper sm:text-6xl max-sm:text-4xl">Talk to someone at the forum.</h1>
-          <p className="mt-6 max-w-sm text-xl leading-snug text-paper/85">
+          <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-paper leading-[1.1]">Talk to someone at the forum.</h1>
+          <p className="mt-6 max-w-sm text-xl leading-relaxed text-paper/85">
             Membership, a gathering, a speaker, a partnership. Write the way you actually write.
           </p>
 
           <dl className="mt-12 space-y-6">
             <div>
-              <dt className="font-display text-[0.68rem] font-bold tracking-[0.18em] uppercase text-paper/60">
+              <dt className="font-sans text-xs font-semibold tracking-wider uppercase text-paper/70">
                 Email
               </dt>
               <dd>
-                <a href={`mailto:${site.email}`} className="inline-flex min-h-11 items-center text-lg underline decoration-yellow decoration-2 underline-offset-4">
+                <a href={`mailto:${site.email}`} className="inline-flex min-h-11 items-center text-lg font-medium underline decoration-yellow decoration-2 underline-offset-4">
                   {site.email}
                 </a>
               </dd>
             </div>
             <div>
-              <dt className="font-display text-[0.68rem] font-bold tracking-[0.18em] uppercase text-paper/60">
+              <dt className="font-sans text-xs font-semibold tracking-wider uppercase text-paper/70">
                 Phone
               </dt>
               <dd>
-                <a href={`tel:${site.phoneHref}`} className="inline-flex min-h-11 items-center text-lg underline decoration-yellow decoration-2 underline-offset-4">
+                <a href={`tel:${site.phoneHref}`} className="inline-flex min-h-11 items-center text-lg font-medium underline decoration-yellow decoration-2 underline-offset-4">
                   {site.phoneDisplay}
                 </a>
               </dd>
             </div>
             <div>
-              <dt className="font-display text-[0.68rem] font-bold tracking-[0.18em] uppercase text-paper/60">
+              <dt className="font-sans text-xs font-semibold tracking-wider uppercase text-paper/70">
                 Where
               </dt>
-              <dd className="text-lg">{site.location}</dd>
+              <dd className="text-lg font-medium">{site.location}</dd>
             </div>
           </dl>
 
@@ -83,8 +83,8 @@ export default function ContactPage() {
         </header>
 
         <section className="px-5 py-14 sm:px-8 lg:col-span-7 lg:px-14 lg:py-24 max-sm:py-12">
-          <h2 className="text-3xl sm:text-4xl">Ask to join</h2>
-          <p className="mt-3 mb-10 max-w-md text-lg text-muted">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink">Ask to join</h2>
+          <p className="mt-3 mb-10 max-w-md text-base sm:text-lg leading-relaxed text-muted">
             A few lines is enough. The team replies about membership and whatever is coming up.
           </p>
           <JoinForm />

@@ -20,7 +20,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn('font-display text-lg sm:text-xl font-extrabold tracking-tight text-ink', className)}
+      className={cn('font-sans text-lg sm:text-xl font-bold tracking-tight text-ink', className)}
       {...props}
     />
   );
@@ -29,7 +29,7 @@ export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHead
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn('font-serif text-xs sm:text-sm text-muted mt-1 leading-relaxed', className)}
+      className={cn('font-sans text-xs sm:text-sm text-muted mt-1 leading-relaxed', className)}
       {...props}
     />
   );

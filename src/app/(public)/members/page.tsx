@@ -39,11 +39,11 @@ export default function MembersPage() {
         <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:py-16">
           {empty ? (
             <div className="mx-auto max-w-xl border-2 border-dashed border-ink/30 px-6 py-16 text-center sm:px-10 max-sm:px-5 max-sm:py-12">
-              <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-blue uppercase">
+              <p className="font-sans text-xs font-bold tracking-widest text-blue uppercase">
                 Gallery
               </p>
-              <h2 className="mt-4 text-3xl sm:text-4xl">Portraits coming.</h2>
-              <p className="mt-4 text-lg leading-relaxed text-muted">
+              <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight text-ink">Portraits coming.</h2>
+              <p className="mt-4 text-base sm:text-lg leading-relaxed text-muted">
                 Member photos will sit in a quiet grid here — name, a short line of work, one
                 picture. Nothing from the event dump. When the portraits are ready, they go in.
               </p>
@@ -65,7 +65,7 @@ export default function MembersPage() {
                     />
                   </div>
                   <div className="border-t-2 border-ink p-4">
-                    <h2 className="font-display text-xl font-extrabold tracking-tight">{member.name}</h2>
+                    <h2 className="font-sans text-lg sm:text-xl font-bold tracking-tight text-ink">{member.name}</h2>
                     {member.role ? (
                       <p className="mt-1 text-sm leading-snug text-muted">{member.role}</p>
                     ) : null}

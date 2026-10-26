@@ -33,8 +33,8 @@ export default async function EventsPage({ searchParams }: PageProps) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-8">
         <div className="space-y-3 max-w-3xl">
           <div className="flex items-center gap-2">
-            <Badge variant="primary">CONCLAVES & SUMMITS</Badge>
-            <Badge variant="success">100% FREE NGO ADMISSION PASSES</Badge>
+            <Badge variant="primary">Conclaves & Summits</Badge>
+            <Badge variant="success">Free Admission Passes</Badge>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
             MYBF Knowledge, Networking & Youth Conclaves
@@ -102,10 +102,10 @@ export default async function EventsPage({ searchParams }: PageProps) {
               >
                 <CardHeader className="p-6">
                   <div className="flex items-center justify-between gap-2">
-                    <Badge variant={event.scope === 'MAIN' ? 'primary' : event.scope === 'DISTRICT' ? 'secondary' : 'neutral'} className="text-[10px]">
+                    <Badge variant={event.scope === 'MAIN' ? 'primary' : event.scope === 'DISTRICT' ? 'secondary' : 'neutral'}>
                       {levelBadge}
                     </Badge>
-                    <Badge variant="success" className="text-[10px]">
+                    <Badge variant="success">
                       {event.eventType === 'FREE' ? 'Free Pass' : `₹${event.basePriceINR}`}
                     </Badge>
                   </div>

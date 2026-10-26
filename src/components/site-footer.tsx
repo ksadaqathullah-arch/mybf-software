@@ -19,7 +19,7 @@ export function SiteFooter() {
         </div>
 
         <nav aria-label="Footer" className="lg:col-span-3">
-          <p className="font-display text-[0.7rem] font-bold tracking-[0.2em] uppercase text-paper/50">
+          <p className="font-sans text-xs font-bold tracking-wider uppercase text-paper/60">
             Pages
           </p>
           <ul className="mt-4 max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-4">
@@ -27,7 +27,7 @@ export function SiteFooter() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-wide text-paper/90 hover:text-yellow"
+                  className="inline-flex min-h-10 items-center font-sans text-sm font-medium tracking-normal text-paper/90 hover:text-yellow"
                 >
                   {link.label}
                 </Link>
@@ -36,7 +36,7 @@ export function SiteFooter() {
             <li>
               <Link
                 href="/chapters"
-                className="inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-wide text-paper/90 hover:text-yellow"
+                className="inline-flex min-h-10 items-center font-sans text-sm font-medium tracking-normal text-paper/90 hover:text-yellow"
               >
                 Chapters
               </Link>
@@ -44,7 +44,7 @@ export function SiteFooter() {
             <li>
               <Link
                 href="/events"
-                className="inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-wide text-paper/90 hover:text-yellow"
+                className="inline-flex min-h-10 items-center font-sans text-sm font-medium tracking-normal text-paper/90 hover:text-yellow"
               >
                 Events
               </Link>
@@ -52,7 +52,7 @@ export function SiteFooter() {
             <li>
               <Link
                 href="/login"
-                className="inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-wide text-yellow hover:underline"
+                className="inline-flex min-h-10 items-center font-sans text-sm font-semibold tracking-normal text-yellow hover:underline"
               >
                 Portal Login →
               </Link>
@@ -60,7 +60,7 @@ export function SiteFooter() {
             <li>
               <Link
                 href="/verify"
-                className="inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-wide text-paper/70 hover:text-yellow"
+                className="inline-flex min-h-10 items-center font-sans text-sm font-medium tracking-normal text-paper/70 hover:text-yellow"
               >
                 Verify Member ID
               </Link>
@@ -69,7 +69,7 @@ export function SiteFooter() {
         </nav>
 
         <div className="lg:col-span-4">
-          <p className="font-display text-[0.7rem] font-bold tracking-[0.2em] uppercase text-paper/50">
+          <p className="font-sans text-xs font-bold tracking-wider uppercase text-paper/60">
             The desk
           </p>
           <ul className="mt-4">

@@ -33,12 +33,12 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <PortalPageHeader
-        badge="CENTRAL CLOUD ADMINISTRATION"
-        tag="ROOT GOVERNANCE"
+        badge="Central Cloud Administration"
+        tag="Root Governance"
         title="System Overview & Operational Posture"
         description="Real-time aggregates, maker-checker membership queues, active chapter leadership, and live audit telemetry across all 16 chapters."
         actions={
-          <Badge variant="success" className="px-3 py-1.5 text-xs">
+          <Badge variant="success" className="px-3 py-1.5 text-xs font-semibold">
             <ShieldCheck className="h-4 w-4 mr-1.5 text-emerald-800" />
             <span>PostgreSQL Operational</span>
           </Badge>
@@ -86,8 +86,8 @@ export default async function AdminDashboardPage() {
                 <Badge variant="primary">Primary Gate</Badge>
                 <ArrowRight className="h-4 w-4 text-ink group-hover:translate-x-1 transition-transform" />
               </div>
-              <CardTitle className="text-base font-extrabold mt-3">Membership Applications</CardTitle>
-              <CardDescription className="text-xs">
+              <CardTitle className="text-base font-bold mt-3">Membership Applications</CardTitle>
+              <CardDescription className="text-xs font-sans leading-relaxed">
                 Review and approve or reject applicant identities, chapter assignments, and qualifications.
               </CardDescription>
             </CardHeader>
@@ -101,8 +101,8 @@ export default async function AdminDashboardPage() {
                 <Badge variant="secondary">Policy Gate</Badge>
                 <ArrowRight className="h-4 w-4 text-ink group-hover:translate-x-1 transition-transform" />
               </div>
-              <CardTitle className="text-base font-extrabold mt-3">Age Exception Reviews</CardTitle>
-              <CardDescription className="text-xs">
+              <CardTitle className="text-base font-bold mt-3">Age Exception Reviews</CardTitle>
+              <CardDescription className="text-xs font-sans leading-relaxed">
                 Evaluate justification filings for applicants above 35 years seeking formal exception.
               </CardDescription>
             </CardHeader>
@@ -116,8 +116,8 @@ export default async function AdminDashboardPage() {
                 <Badge variant="neutral">Enterprise Hierarchy</Badge>
                 <ArrowRight className="h-4 w-4 text-ink group-hover:translate-x-1 transition-transform" />
               </div>
-              <CardTitle className="text-base font-extrabold mt-3">Organizations & Districts</CardTitle>
-              <CardDescription className="text-xs">
+              <CardTitle className="text-base font-bold mt-3">Organizations &amp; Districts</CardTitle>
+              <CardDescription className="text-xs font-sans leading-relaxed">
                 Inspect organizational tenants, district boundaries, and active constituent chapter registries.
               </CardDescription>
             </CardHeader>
@@ -129,10 +129,10 @@ export default async function AdminDashboardPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b-2 border-ink pb-3">
           <div>
-            <h3 className="text-xl font-extrabold text-ink font-display">
+            <h3 className="text-xl font-bold text-ink font-sans tracking-tight">
               Membership Approval Worklist
             </h3>
-            <p className="text-xs font-serif text-muted">
+            <p className="text-xs font-sans text-muted leading-relaxed">
               Live submission pipeline requiring Super Administrator authorization.
             </p>
           </div>
@@ -150,10 +150,10 @@ export default async function AdminDashboardPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b-2 border-ink pb-3">
             <div>
-              <h3 className="text-xl font-extrabold text-ink font-display">
+              <h3 className="text-xl font-bold text-ink font-sans tracking-tight">
                 Age Exception Worklist
               </h3>
-              <p className="text-xs font-serif text-muted">
+              <p className="text-xs font-sans text-muted leading-relaxed">
                 Official policy requires applicants aged above 35 to obtain Super Admin waiver.
               </p>
             </div>
@@ -174,20 +174,20 @@ export default async function AdminDashboardPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Database className="h-4 w-4 text-blue" />
-              <CardTitle className="text-sm font-extrabold">Data Storage Tier</CardTitle>
+              <CardTitle className="text-sm font-bold">Data Storage Tier</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 text-xs">
+          <CardContent className="space-y-2 text-xs font-sans">
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Engine:</span>
+              <span className="text-muted">Engine:</span>
               <strong className="text-ink">PostgreSQL (Neon Managed)</strong>
             </div>
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Active Users:</span>
+              <span className="text-muted">Active Users:</span>
               <span className="font-mono text-ink font-bold">{metrics.totalRegisteredUsers}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-serif text-muted">Target Capacity:</span>
+              <span className="text-muted">Target Capacity:</span>
               <span className="font-mono text-blue font-bold">5,000,000+ Records</span>
             </div>
           </CardContent>
@@ -197,20 +197,20 @@ export default async function AdminDashboardPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4 text-blue" />
-              <CardTitle className="text-sm font-extrabold">Authorization Enforcement</CardTitle>
+              <CardTitle className="text-sm font-bold">Authorization Enforcement</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 text-xs">
+          <CardContent className="space-y-2 text-xs font-sans">
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Security Policy:</span>
+              <span className="text-muted">Security Policy:</span>
               <strong className="text-ink">Server-Side Deny-By-Default</strong>
             </div>
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Chapter Officers:</span>
+              <span className="text-muted">Chapter Officers:</span>
               <span className="font-mono text-ink font-bold">{metrics.activeChapterOfficersCount}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-serif text-muted">Maker-Checker:</span>
+              <span className="text-muted">Maker-Checker:</span>
               <span className="font-bold text-emerald-800">Enforced by Super Admin</span>
             </div>
           </CardContent>
@@ -220,21 +220,21 @@ export default async function AdminDashboardPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-700" />
-              <CardTitle className="text-sm font-extrabold">Audit Telemetry</CardTitle>
+              <CardTitle className="text-sm font-bold">Audit Telemetry</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 text-xs">
+          <CardContent className="space-y-2 text-xs font-sans">
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Recorded Events:</span>
+              <span className="text-muted">Recorded Events:</span>
               <span className="font-mono text-ink font-bold">{metrics.totalAuditEventsCount} Entries</span>
             </div>
             <div className="flex justify-between border-b border-ink/10 pb-1.5">
-              <span className="font-serif text-muted">Integrity Model:</span>
+              <span className="text-muted">Integrity Model:</span>
               <strong className="text-ink">Append-Only Immutability</strong>
             </div>
             <div className="pt-1">
               <Link href="/audit-logs">
-                <Button variant="outline" size="sm" className="w-full text-[11px] h-8">
+                <Button variant="outline" size="sm" className="w-full text-xs h-8">
                   <FileText className="h-3.5 w-3.5 mr-1.5" />
                   Audit Trail
                 </Button>

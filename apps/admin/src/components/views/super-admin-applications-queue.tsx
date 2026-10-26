@@ -137,12 +137,12 @@ export function SuperAdminApplicationsQueue() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <Users className="h-5 w-5 text-blue" />
-              <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
+              <CardTitle className="font-sans font-bold text-lg sm:text-xl text-ink tracking-tight">
                 Membership Applications
               </CardTitle>
-              <Badge variant="secondary">{applications.length} PENDING APPROVAL</Badge>
+              <Badge variant="secondary">{applications.length} Pending Approval</Badge>
             </div>
-            <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+            <CardDescription className="font-sans text-xs sm:text-sm text-muted leading-relaxed">
               Review and approve applicant credentials, chapter assignments, and issue permanent digital membership IDs.
             </CardDescription>
           </div>
@@ -169,28 +169,28 @@ export function SuperAdminApplicationsQueue() {
 
       <CardContent className="p-0">
         {loading ? (
-          <div className="py-12 text-center text-xs font-display font-bold uppercase tracking-wider text-muted">
+          <div className="py-12 text-center text-xs font-sans font-semibold tracking-wider uppercase text-muted">
             Loading pending applications...
           </div>
         ) : error ? (
-          <div className="py-8 text-center text-xs font-display font-bold uppercase text-rose-700 bg-rose-50 border-b border-rose-200">
+          <div className="py-8 text-center text-xs font-sans font-semibold text-rose-700 bg-rose-50 border-b border-rose-200">
             {error}
           </div>
         ) : applications.length === 0 ? (
           <div className="py-12 text-center space-y-1.5 p-6">
-            <div className="font-display text-base font-extrabold text-ink uppercase tracking-tight">
+            <div className="font-sans text-base font-bold text-ink tracking-tight">
               No Pending Membership Applications
             </div>
-            <p className="font-serif text-xs text-muted max-w-md mx-auto">
+            <p className="font-sans text-xs sm:text-sm text-muted max-w-md mx-auto leading-relaxed">
               All submitted registrations have been verified and processed by the Super Administrator.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4 text-paper">Applicant & Username</th>
+                  <th className="py-3 px-4 text-paper">Applicant &amp; Username</th>
                   <th className="py-3 px-4 text-paper">Chapter</th>
                   <th className="py-3 px-4 text-paper">Classification</th>
                   <th className="py-3 px-4 text-paper">Standing</th>
@@ -202,28 +202,28 @@ export function SuperAdminApplicationsQueue() {
                 {applications.map((item) => (
                   <tr key={item.id} className="hover:bg-yellow/15 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-display font-extrabold text-sm text-ink">
+                      <div className="font-sans font-bold text-sm text-ink">
                         {item.fullName}
                       </div>
                       <div className="font-mono text-xs text-blue font-bold flex items-center gap-1 mt-0.5">
                         <KeyRound className="h-3 w-3" />
                         @{item.username}
                       </div>
-                      <div className="font-serif text-[11px] text-muted mt-0.5">
+                      <div className="font-sans text-xs text-muted mt-0.5">
                         {item.email} • {item.phone}
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="font-display font-bold text-xs text-ink uppercase">
+                      <div className="font-sans font-semibold text-xs text-ink">
                         {item.chapterName}
                       </div>
-                      <div className="text-[10px] text-muted font-serif">Constituency Chapter</div>
+                      <div className="text-xs text-muted font-sans">Constituency Chapter</div>
                     </td>
                     <td className="py-3.5 px-4">
                       <Badge variant="primary" className="mb-1">
                         {getMemberCategoryLabel(item.memberCategory)}
                       </Badge>
-                      <div className="text-[11px] text-muted font-serif">
+                      <div className="text-xs text-muted font-sans">
                         {getCurrentPositionLabel(item.currentPosition)}
                       </div>
                     </td>
@@ -239,7 +239,7 @@ export function SuperAdminApplicationsQueue() {
                         </span>
                       </div>
                       <span
-                        className={`inline-block font-display text-[10px] font-extrabold uppercase mt-1 px-1.5 py-0.2 border ${
+                        className={`inline-block font-sans text-xs font-semibold mt-1 px-1.5 py-0.5 border ${
                           item.isAgeException
                             ? 'text-amber-950 bg-amber-100 border-amber-800'
                             : 'text-emerald-950 bg-emerald-100 border-emerald-800'
@@ -261,7 +261,7 @@ export function SuperAdminApplicationsQueue() {
                           variant="secondary"
                           size="sm"
                           onClick={() => handleOpenReview(item, 'APPROVE')}
-                          className="h-8 text-[11px] px-3 bg-emerald-100 text-emerald-950 border-emerald-900 hover:bg-emerald-200"
+                          className="h-8 text-xs font-medium px-3 bg-emerald-100 text-emerald-950 border-emerald-900 hover:bg-emerald-200"
                         >
                           <UserCheck className="h-3.5 w-3.5 mr-1" /> Approve
                         </Button>
@@ -269,7 +269,7 @@ export function SuperAdminApplicationsQueue() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleOpenReview(item, 'REJECT')}
-                          className="h-8 text-[11px] px-3 text-rose-700 border-rose-700 hover:bg-rose-100"
+                          className="h-8 text-xs font-medium px-3 text-rose-700 border-rose-700 hover:bg-rose-100"
                         >
                           <UserX className="h-3.5 w-3.5 mr-1" /> Reject
                         </Button>
@@ -293,10 +293,10 @@ export function SuperAdminApplicationsQueue() {
                   ) : (
                     <UserX className="h-5 w-5 text-rose-600" />
                   )}
-                  <h3 className="font-display font-extrabold text-base text-ink uppercase tracking-tight">
+                  <h3 className="font-sans font-bold text-base text-ink tracking-tight">
                     {reviewAction === 'APPROVE'
-                      ? 'Approve Membership Application'
-                      : 'Reject Membership Application'}
+                       ? 'Approve Membership Application'
+                       : 'Reject Membership Application'}
                   </h3>
                 </div>
                 <button
@@ -311,7 +311,7 @@ export function SuperAdminApplicationsQueue() {
               <div className="text-xs space-y-2 border-2 border-ink bg-paper-2/60 p-4 font-sans shadow-[2px_2px_0px_#14161c]">
                 <div className="flex items-center justify-between">
                   <span>
-                    Applicant: <strong className="font-display uppercase">{selectedApp.fullName}</strong>
+                    Applicant: <strong className="font-sans font-bold">{selectedApp.fullName}</strong>
                   </span>
                   <span className="font-mono text-blue font-bold">
                     @{selectedApp.username}
@@ -324,7 +324,7 @@ export function SuperAdminApplicationsQueue() {
                 <div>
                   Standing:{' '}
                   <span
-                    className={`font-display font-bold uppercase ${
+                    className={`font-sans font-semibold ${
                       selectedApp.isAgeException ? 'text-amber-800' : 'text-emerald-800'
                     }`}
                   >
@@ -332,7 +332,7 @@ export function SuperAdminApplicationsQueue() {
                   </span>
                 </div>
                 {selectedApp.justification && (
-                  <div className="pt-1 text-muted italic font-serif">
+                  <div className="pt-1 text-muted italic font-sans">
                     Applicant Reason: &quot;{selectedApp.justification}&quot;
                   </div>
                 )}
@@ -340,11 +340,11 @@ export function SuperAdminApplicationsQueue() {
 
               <form onSubmit={handleSubmitDecision} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-display font-bold uppercase tracking-wider text-ink flex items-center justify-between">
+                  <label className="text-xs font-sans font-semibold text-ink flex items-center justify-between">
                     <span>
                       Mandatory {reviewAction === 'APPROVE' ? 'Approval' : 'Rejection'} Reason *
                     </span>
-                    <span className="text-[10px] text-muted font-sans font-normal">Min 5 chars (Audited)</span>
+                    <span className="text-xs text-muted font-sans font-normal">Min 5 chars (Audited)</span>
                   </label>
                   <textarea
                     required

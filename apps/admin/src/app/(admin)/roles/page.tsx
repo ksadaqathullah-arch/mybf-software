@@ -121,8 +121,8 @@ export default async function AdminRolesPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <PortalPageHeader
-        badge="ACCESS GOVERNANCE"
-        tag="STRICT DENY-BY-DEFAULT RBAC"
+        badge="Access Governance"
+        tag="Strict Deny-by-Default RBAC"
         title="Roles, Permissions & Chapter Leadership"
         description="Centrally manage global tenant roles (Super Admin, District Admin) and constituency chapter appointments (President, Secretary, Treasurer)."
       />

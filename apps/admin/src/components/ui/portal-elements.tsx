@@ -33,23 +33,23 @@ export function PortalPageHeader({
     >
       <div className="space-y-1.5 max-w-3xl">
         {eyebrow && (
-          <span className="font-mono text-[10px] font-black uppercase tracking-widest text-ink/60 block">
+          <span className="font-mono text-xs font-semibold uppercase tracking-widest text-ink/60 block">
             {eyebrow}
           </span>
         )}
         <div className="flex items-center gap-2 flex-wrap">
           {displayBadge && (
-            <span className="px-2.5 py-0.5 bg-yellow text-ink border border-ink font-display text-[10px] font-black uppercase tracking-wider shadow-[1px_1px_0px_#14161c]">
+            <span className="px-2.5 py-0.5 bg-yellow text-ink border border-ink font-sans text-xs font-bold tracking-wide shadow-[1px_1px_0px_#14161c]">
               {displayBadge}
             </span>
           )}
           {tag && <Badge variant="primary">{tag}</Badge>}
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-ink uppercase">
+        <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-ink">
           {title}
         </h1>
         {description && (
-          <p className="font-serif text-sm sm:text-base text-muted leading-relaxed">
+          <p className="font-sans text-sm sm:text-base text-muted leading-relaxed">
             {description}
           </p>
         )}
@@ -99,23 +99,23 @@ export function PortalStatCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="font-display text-[11px] font-extrabold uppercase tracking-wider text-muted">
+        <span className="font-sans text-xs font-semibold uppercase tracking-wider text-muted">
           {label}
         </span>
         {Icon && <Icon className="h-4 w-4 text-ink shrink-0" />}
       </div>
       <div className="mt-2.5 flex items-baseline gap-2">
-        <span className="font-display text-3xl sm:text-4xl font-black text-ink tracking-tight">
+        <span className="font-sans text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">
           {value}
         </span>
         {subValue && (
-          <span className="font-display text-xs font-bold uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 border border-emerald-700">
+          <span className="font-sans text-xs font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 border border-emerald-700">
             {subValue}
           </span>
         )}
       </div>
       {activeDetail && (
-        <p className="font-serif text-xs text-muted mt-2 border-t border-ink/10 pt-1.5">
+        <p className="font-sans text-xs text-muted mt-2 border-t border-ink/10 pt-1.5 leading-relaxed">
           {activeDetail}
         </p>
       )}

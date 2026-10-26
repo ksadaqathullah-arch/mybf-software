@@ -34,7 +34,7 @@ export function ParentInitiativeBadge({
         </div>
       )}
       {showLogo && <span className="h-3 w-px bg-amber-500/30" aria-hidden="true" />}
-      <span className="tracking-widest uppercase font-bold text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-300">
+      <span className="tracking-wide uppercase font-semibold text-xs text-amber-600 dark:text-amber-300">
         An Initiative Under Mission Malappuram 2050
       </span>
     </div>

@@ -22,13 +22,13 @@ export function Footer() {
             {/* Parent Initiative Attribution */}
             <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                   Parent Initiative
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium">Vision 2050</span>
+                <span className="text-xs text-slate-400 font-medium">Vision 2050</span>
               </div>
               <MissionMalappuramLogo size="sm" />
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-snug">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug">
                 MYBF is an initiative under Mission Malappuram 2050.
               </p>
             </div>

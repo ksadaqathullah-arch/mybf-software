@@ -18,8 +18,8 @@ export default async function AdminAuditLogsPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <PortalPageHeader
-        badge="AUDIT TRAIL TELEMETRY"
-        tag="DATABASE PERSISTENT AUDIT"
+        badge="Audit Trail Telemetry"
+        tag="Database Persistent Audit"
         title="System & Administrative Audit Logs"
         description="Historical trace of membership approvals, age exception decisions, leadership role changes, and security events."
       />

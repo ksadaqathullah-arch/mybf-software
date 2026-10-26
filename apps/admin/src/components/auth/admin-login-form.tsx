@@ -66,7 +66,7 @@ export function AdminLoginForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="admin-identifier"
-              className="block text-xs font-bold uppercase tracking-wider text-ink font-display"
+              className="block text-xs font-semibold text-ink"
             >
               Username, Email or Mobile Number <span className="text-rose-600 font-bold ml-0.5" aria-hidden="true">*</span>
             </label>
@@ -89,7 +89,7 @@ export function AdminLoginForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="admin-password"
-              className="block text-xs font-bold uppercase tracking-wider text-ink font-display"
+              className="block text-xs font-semibold text-ink"
             >
               Password <span className="text-rose-600 font-bold ml-0.5" aria-hidden="true">*</span>
             </label>

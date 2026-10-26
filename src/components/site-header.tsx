@@ -48,8 +48,8 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className={`px-2.5 py-2 font-display text-[0.72rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
-                  active ? "text-yellow font-bold" : "text-paper/85 hover:text-yellow"
+                className={`px-3 py-2 font-sans text-sm tracking-normal transition-colors ${
+                  active ? "text-yellow font-bold" : "text-paper/90 font-medium hover:text-yellow"
                 }`}
               >
                 {link.label}
@@ -61,14 +61,14 @@ export function SiteHeader() {
         <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/login"
-            className="hidden sm:inline-flex px-3 py-2 font-display text-[0.72rem] font-bold tracking-[0.08em] uppercase text-paper/85 hover:text-yellow transition-colors"
+            className="hidden sm:inline-flex px-3.5 py-2 font-sans text-sm font-semibold tracking-normal text-paper/90 hover:text-yellow transition-colors"
           >
             Login
           </Link>
           <button
             type="button"
             onClick={openModal}
-            className="btn btn-yellow min-h-11 px-4 max-sm:min-h-10 max-sm:px-3 max-sm:text-[0.72rem] cursor-pointer"
+            className="btn btn-yellow min-h-10 px-4 text-xs sm:text-sm font-semibold cursor-pointer"
           >
             Join
           </button>
@@ -77,7 +77,7 @@ export function SiteHeader() {
             onClick={() => setOpenPath(open ? null : pathname)}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="inline-flex size-11 items-center justify-center font-display text-[0.7rem] font-bold tracking-[0.14em] uppercase text-paper hover:text-yellow transition-colors lg:hidden"
+            className="inline-flex size-11 items-center justify-center font-sans text-xs font-bold uppercase tracking-wider text-paper hover:text-yellow transition-colors lg:hidden"
           >
             {open ? "Close" : "Menu"}
           </button>
@@ -95,7 +95,7 @@ export function SiteHeader() {
               <Link
                 href="/"
                 aria-current={pathname === "/" ? "page" : undefined}
-                className={`flex min-h-12 items-center font-display text-[1.85rem] font-extrabold tracking-tight sm:min-h-14 sm:text-4xl transition-colors ${
+                className={`flex min-h-12 items-center font-sans text-2xl font-bold tracking-tight sm:min-h-14 sm:text-3xl transition-colors ${
                   pathname === "/" ? "text-yellow" : "text-paper hover:text-yellow"
                 }`}
               >
@@ -107,7 +107,7 @@ export function SiteHeader() {
                 <Link
                   href={link.href}
                   aria-current={pathname === link.href ? "page" : undefined}
-                  className={`flex min-h-12 items-center font-display text-[1.85rem] font-extrabold tracking-tight sm:min-h-14 sm:text-4xl transition-colors ${
+                  className={`flex min-h-12 items-center font-sans text-2xl font-bold tracking-tight sm:min-h-14 sm:text-3xl transition-colors ${
                     pathname === link.href ? "text-yellow" : "text-paper hover:text-yellow"
                   }`}
                 >

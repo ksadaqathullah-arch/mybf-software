@@ -119,12 +119,12 @@ export function SuperAdminAgeExceptionQueue() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <Clock className="h-5 w-5 text-yellow" />
-              <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
+              <CardTitle className="font-sans font-bold text-lg sm:text-xl text-ink tracking-tight">
                 Age Exception Review Queue
               </CardTitle>
-              <Badge variant="warning">{exceptions.length} PENDING DECISION</Badge>
+              <Badge variant="warning">{exceptions.length} Pending Decision</Badge>
             </div>
-            <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+            <CardDescription className="font-sans text-xs sm:text-sm text-muted leading-relaxed">
               Strict Super Admin review gate for applicants aged 36 and above. Normal chapter admins cannot bypass this restriction.
             </CardDescription>
           </div>
@@ -146,29 +146,29 @@ export function SuperAdminAgeExceptionQueue() {
 
       <CardContent className="p-0">
         {loading ? (
-          <div className="py-12 text-center text-xs font-display font-bold uppercase tracking-wider text-muted">
+          <div className="py-12 text-center text-xs font-sans font-semibold tracking-wider uppercase text-muted">
             Loading pending age exceptions...
           </div>
         ) : error ? (
-          <div className="py-8 text-center text-xs font-display font-bold uppercase text-rose-700 bg-rose-50 border-b border-rose-200">
+          <div className="py-8 text-center text-xs font-sans font-semibold text-rose-700 bg-rose-50 border-b border-rose-200">
             {error}
           </div>
         ) : exceptions.length === 0 ? (
           <div className="py-12 text-center space-y-1.5 p-6">
-            <div className="font-display text-base font-extrabold text-ink uppercase tracking-tight">
+            <div className="font-sans text-base font-bold text-ink tracking-tight">
               No Pending Age Exception Requests
             </div>
-            <p className="font-serif text-xs text-muted max-w-md mx-auto">
+            <p className="font-sans text-xs sm:text-sm text-muted max-w-md mx-auto leading-relaxed">
               All submitted applications currently meet standard youth eligibility (aged 35 years or below) or have already been decided.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-4 text-paper">Applicant</th>
-                  <th className="py-3 px-4 text-paper">DOB & Age</th>
+                  <th className="py-3 px-4 text-paper">DOB &amp; Age</th>
                   <th className="py-3 px-4 text-paper">Requested Chapter</th>
                   <th className="py-3 px-4 text-paper">Classification</th>
                   <th className="py-3 px-4 text-paper">Applicant Justification</th>
@@ -179,32 +179,32 @@ export function SuperAdminAgeExceptionQueue() {
                 {exceptions.map((item) => (
                   <tr key={item.id} className="hover:bg-yellow/15 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-display font-extrabold text-sm text-ink">{item.fullName}</div>
-                      <div className="font-serif text-[11px] text-muted">
+                      <div className="font-sans font-bold text-sm text-ink">{item.fullName}</div>
+                      <div className="font-sans text-xs text-muted">
                         {item.email} • {item.phone}
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 font-display font-bold text-xs text-ink bg-yellow px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
+                      <span className="inline-flex items-center gap-1 font-sans font-semibold text-xs text-ink bg-yellow px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
                         <Calendar className="h-3 w-3" />
                         {item.age} Years Old
                       </span>
-                      <div className="text-[10px] text-muted font-mono mt-1">DOB: {item.dateOfBirth}</div>
+                      <div className="text-xs text-muted font-mono mt-1">DOB: {item.dateOfBirth}</div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="font-display font-bold text-xs text-ink uppercase">{item.chapterName}</div>
-                      <div className="text-[10px] text-muted font-serif">Constituency Chapter</div>
+                      <div className="font-sans font-semibold text-xs text-ink">{item.chapterName}</div>
+                      <div className="text-xs text-muted font-sans">Constituency Chapter</div>
                     </td>
                     <td className="py-3.5 px-4">
                       <Badge variant="primary" className="mb-1">
                         {getMemberCategoryLabel(item.memberCategory)}
                       </Badge>
-                      <div className="text-[11px] text-muted font-serif">
+                      <div className="text-xs text-muted font-sans">
                         {getCurrentPositionLabel(item.currentPosition)}
                       </div>
                     </td>
                     <td className="py-3.5 px-4 max-w-xs">
-                      <div className="text-xs text-ink font-serif italic bg-paper-2 p-2.5 border border-ink/30 shadow-[1px_1px_0px_#14161c]">
+                      <div className="text-xs text-ink font-sans italic bg-paper-2 p-2.5 border border-ink/30 shadow-[1px_1px_0px_#14161c]">
                         &quot;{item.justification}&quot;
                       </div>
                     </td>
@@ -214,7 +214,7 @@ export function SuperAdminAgeExceptionQueue() {
                           variant="secondary"
                           size="sm"
                           onClick={() => handleOpenReview(item, 'APPROVE')}
-                          className="h-8 text-[11px] px-3 bg-emerald-100 text-emerald-950 border-emerald-900 hover:bg-emerald-200"
+                          className="h-8 text-xs font-medium px-3 bg-emerald-100 text-emerald-950 border-emerald-900 hover:bg-emerald-200"
                         >
                           <UserCheck className="h-3.5 w-3.5 mr-1" /> Approve
                         </Button>
@@ -222,7 +222,7 @@ export function SuperAdminAgeExceptionQueue() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleOpenReview(item, 'REJECT')}
-                          className="h-8 text-[11px] px-3 text-rose-700 border-rose-700 hover:bg-rose-100"
+                          className="h-8 text-xs font-medium px-3 text-rose-700 border-rose-700 hover:bg-rose-100"
                         >
                           <UserX className="h-3.5 w-3.5 mr-1" /> Reject
                         </Button>
@@ -246,7 +246,7 @@ export function SuperAdminAgeExceptionQueue() {
                   ) : (
                     <UserX className="h-5 w-5 text-rose-600" />
                   )}
-                  <h3 className="font-display font-extrabold text-base text-ink uppercase tracking-tight">
+                  <h3 className="font-sans font-bold text-base text-ink tracking-tight">
                     {reviewAction === 'APPROVE' ? 'Approve Age Exception' : 'Reject Age Exception'}
                   </h3>
                 </div>
@@ -261,21 +261,21 @@ export function SuperAdminAgeExceptionQueue() {
 
               <div className="text-xs space-y-2 border-2 border-ink bg-paper-2/60 p-4 font-sans shadow-[2px_2px_0px_#14161c]">
                 <div>
-                  Applicant: <strong className="font-display uppercase">{selectedApp.fullName}</strong> ({selectedApp.age} years old)
+                  Applicant: <strong className="font-sans font-bold">{selectedApp.fullName}</strong> ({selectedApp.age} years old)
                 </div>
                 <div>
                   Chapter: <strong>{selectedApp.chapterName}</strong> • Category: <strong>{getMemberCategoryLabel(selectedApp.memberCategory)}</strong>
                 </div>
-                <div className="pt-1 text-muted italic font-serif">
+                <div className="pt-1 text-muted italic font-sans">
                   Applicant Reason: &quot;{selectedApp.justification}&quot;
                 </div>
               </div>
 
               <form onSubmit={handleSubmitDecision} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-display font-bold uppercase tracking-wider text-ink flex items-center justify-between">
+                  <label className="text-xs font-sans font-semibold text-ink flex items-center justify-between">
                     <span>Mandatory {reviewAction === 'APPROVE' ? 'Approval' : 'Rejection'} Reason *</span>
-                    <span className="text-[10px] text-muted font-sans font-normal">Min 10 chars (Audited)</span>
+                    <span className="text-xs text-muted font-sans font-normal">Min 10 chars (Audited)</span>
                   </label>
                   <textarea
                     required

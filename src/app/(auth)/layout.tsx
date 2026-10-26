@@ -17,7 +17,7 @@ export default function AuthLayout({
             aria-label="MYBF - Malappuram Youth Business Forum"
           >
             <MybfLogo size="lg" priority className="group-hover:opacity-90 transition-opacity" />
-            <span className="text-[10px] font-bold tracking-widest text-amber-600 dark:text-amber-400 uppercase">
+            <span className="text-xs font-semibold tracking-wide text-amber-600 dark:text-amber-400 uppercase">
               An Initiative Under Mission Malappuram 2050
             </span>
           </Link>

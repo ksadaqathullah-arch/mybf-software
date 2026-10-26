@@ -46,15 +46,15 @@ export default function HomePage() {
       <section className="overflow-hidden bg-blue text-paper">
         <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 pt-10 pb-14 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pt-14 lg:pb-16 max-sm:gap-8 max-sm:pt-8 max-sm:pb-12">
           <div className="lg:col-span-6">
-            <p className="flex items-center gap-3 font-display text-[0.72rem] font-bold tracking-[0.24em] uppercase text-paper/75 max-sm:tracking-[0.16em]">
+            <p className="flex items-center gap-3 font-sans text-xs font-bold tracking-widest uppercase text-paper/85 max-sm:tracking-wider">
               <span className="max-sm:hidden">MYBF</span>
               <span aria-hidden="true" className="h-px w-10 bg-paper/50 max-sm:hidden" />
               <span>Malappuram Youth Business Forum</span>
             </p>
-            <h1 className="mt-6 max-w-[10ch] text-[3.6rem] text-paper sm:text-7xl lg:text-[6.4rem]">
+            <h1 className="mt-6 max-w-[10ch] text-4xl sm:text-6xl lg:text-7xl font-extrabold text-paper leading-[1.08] tracking-tight text-balance">
               Why not Malappuram.
             </h1>
-            <p className="mt-7 max-w-md text-xl leading-snug text-paper/90 sm:text-2xl">
+            <p className="mt-7 max-w-md text-lg sm:text-xl font-normal leading-relaxed text-paper/90">
               A forum for founders, owners and students building in this district. Mentors in the
               room. Introductions with a name on them.
             </p>
@@ -89,7 +89,7 @@ export default function HomePage() {
                   />
                   <span className="flex items-start justify-between">
                     <span
-                      className={`font-display text-5xl font-extrabold tracking-tighter transition-colors max-sm:text-4xl ${chapter.accent} ${chapter.hoverText}`}
+                      className={`font-sans text-4xl sm:text-5xl font-extrabold tracking-tighter transition-colors ${chapter.accent} ${chapter.hoverText}`}
                     >
                       {chapter.index}
                     </span>
@@ -100,10 +100,10 @@ export default function HomePage() {
                     </span>
                   </span>
                   <span className={`transition-colors ${chapter.hoverText}`}>
-                    <span className="block font-display text-4xl font-extrabold tracking-tight max-sm:text-3xl">
+                    <span className="block font-sans text-2xl sm:text-3xl font-extrabold tracking-tight">
                       {chapter.title}
                     </span>
-                    <span className="mt-3 block max-w-xs text-lg leading-snug transition-transform duration-300 group-hover:-translate-y-1">
+                    <span className="mt-3 block max-w-xs text-base sm:text-lg leading-relaxed transition-transform duration-300 group-hover:-translate-y-1">
                       {chapter.text}
                     </span>
                   </span>
@@ -116,17 +116,17 @@ export default function HomePage() {
 
       <section className="border-t border-ink/10 bg-paper">
         <div className="mx-auto grid max-w-[1440px] gap-6 px-5 py-12 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:py-14">
-          <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-blue uppercase lg:col-span-3 lg:pt-2">
+          <p className="font-sans text-xs font-bold tracking-wider text-blue uppercase lg:col-span-3 lg:pt-2">
             A note from the forum
           </p>
           <div className="lg:col-span-9">
-            <p className="max-w-4xl text-2xl leading-snug sm:text-3xl sm:leading-snug">
+            <p className="max-w-4xl text-xl sm:text-2xl font-medium leading-relaxed">
               Malappuram already has the people. Founders, shop owners, students with a stubborn
               idea, and operators who have been through a bad year and stayed. What it has not
               always had is a room where those people owe each other something.
             </p>
             <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
-              <p className="max-w-2xl text-xl leading-relaxed text-muted">
+              <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-muted">
                 MYBF is that room. Supported by Mission Malappuram 2050, the forum runs conclaves, a
                 club, tours and the quieter work of referrals. Between events, members pass work to
                 each other by name across 16 chapters.
@@ -145,7 +145,7 @@ export default function HomePage() {
       <section className="bg-paper-2">
         <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="max-w-[14ch] text-4xl sm:text-6xl">On the programme</h2>
+            <h2 className="max-w-[14ch] text-3xl sm:text-5xl font-extrabold tracking-tight">On the programme</h2>
             <Link href="/initiatives" className="btn btn-ink">
               All ten <Arrow />
             </Link>
@@ -165,14 +165,14 @@ export default function HomePage() {
                       aria-hidden="true"
                       className={`absolute inset-0 -z-10 origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-x-100 ${rowBands[index]}`}
                     />
-                    <span className="font-display text-sm font-bold tracking-[0.16em] text-blue transition-[transform,color] duration-300 group-hover:translate-x-2 group-hover:text-ink sm:col-span-2">
+                    <span className="font-mono text-xs font-bold text-blue transition-[transform,color] duration-300 group-hover:translate-x-2 group-hover:text-ink sm:col-span-2">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-display text-2xl font-extrabold tracking-tight transition-transform duration-300 group-hover:translate-x-2 sm:col-span-4 sm:text-3xl">
+                    <span className="font-sans text-xl sm:text-2xl font-bold tracking-tight transition-transform duration-300 group-hover:translate-x-2 sm:col-span-4">
                       {item.title}
                     </span>
                     <span
-                      className={`text-lg text-muted transition-colors group-hover:text-ink sm:col-span-5 ${
+                      className={`text-sm sm:text-base leading-relaxed text-muted transition-colors group-hover:text-ink sm:col-span-5 ${
                         rowBands[index] === "bg-magenta" ? "group-hover:text-paper" : ""
                       }`}
                     >
@@ -194,13 +194,13 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:py-20 max-sm:gap-8 max-sm:py-12">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
-              <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-yellow uppercase">
+              <p className="font-sans text-xs font-bold tracking-wider text-yellow uppercase">
                 Membership
               </p>
-              <h2 className="mt-4 max-w-[16ch] text-4xl text-paper sm:text-6xl">
+              <h2 className="mt-4 max-w-[16ch] text-3xl sm:text-5xl font-extrabold tracking-tight text-paper leading-tight text-balance">
                 If you are building here, you already have a reason to be in the room.
               </h2>
-              <p className="mt-6 max-w-md text-xl leading-snug text-paper/75">
+              <p className="mt-6 max-w-md text-base sm:text-lg leading-relaxed text-paper/80 font-normal">
                 Founders, owners, students, and the mentors willing to be useful across 16 chapters in Malappuram. Zero fees. Tamper-proof digital ID cards and democratic chapter governance.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">

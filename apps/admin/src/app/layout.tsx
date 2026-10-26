@@ -1,21 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono, Syne } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-});
-
-const syne = Syne({
-  variable: '--font-syne',
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
   display: 'swap',
 });
 
@@ -36,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased min-h-screen bg-[#f4f0e6] text-[#14161c]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-[#f4f0e6] text-[#14161c]`}>
         {children}
       </body>
     </html>

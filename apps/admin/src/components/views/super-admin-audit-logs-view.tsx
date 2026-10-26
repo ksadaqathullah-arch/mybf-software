@@ -146,10 +146,10 @@ export function SuperAdminAuditLogsView({
       {/* Filter and Export Toolbar Card */}
       <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
         <CardHeader className="p-5 pb-3 border-b-2 border-ink bg-paper-2/40">
-          <CardTitle className="font-display font-extrabold text-base text-ink uppercase tracking-tight flex items-center gap-2">
+          <CardTitle className="font-sans font-bold text-base text-ink tracking-tight flex items-center gap-2">
             <Filter className="h-4 w-4 text-blue" /> Query & Audit Filtering
           </CardTitle>
-          <CardDescription className="font-serif text-xs text-muted">
+          <CardDescription className="font-sans text-xs text-muted">
             Search across recorded events by action type, resource scope, actor, or date window.
           </CardDescription>
         </CardHeader>
@@ -157,7 +157,7 @@ export function SuperAdminAuditLogsView({
           <form onSubmit={handleApplyFilters} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 font-sans">
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   Action
                 </label>
                 <input
@@ -170,7 +170,7 @@ export function SuperAdminAuditLogsView({
               </div>
 
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   Resource
                 </label>
                 <input
@@ -183,7 +183,7 @@ export function SuperAdminAuditLogsView({
               </div>
 
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   Actor Email
                 </label>
                 <input
@@ -196,7 +196,7 @@ export function SuperAdminAuditLogsView({
               </div>
 
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   From Date
                 </label>
                 <input
@@ -208,7 +208,7 @@ export function SuperAdminAuditLogsView({
               </div>
 
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   To Date
                 </label>
                 <input
@@ -233,7 +233,7 @@ export function SuperAdminAuditLogsView({
                 >
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Reset
                 </Button>
-                <span className="text-xs font-serif text-muted ml-2">
+                <span className="text-xs font-sans text-muted ml-2">
                   Showing {logs.length} of {total} records
                 </span>
               </div>
@@ -266,7 +266,7 @@ export function SuperAdminAuditLogsView({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
                   <th className="py-3 px-4 text-paper">Timestamp (IST)</th>
                   <th className="py-3 px-4 text-paper">Action</th>
@@ -279,13 +279,13 @@ export function SuperAdminAuditLogsView({
               <tbody className="divide-y divide-ink/15 font-mono text-[11px]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-muted font-serif">
-                      Loading audit records from PostgreSQL...
+                    <td colSpan={6} className="py-12 text-center text-muted font-sans text-sm">
+                      Loading audit records from database...
                     </td>
                   </tr>
                 ) : logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-muted font-serif">
+                    <td colSpan={6} className="py-12 text-center text-muted font-sans text-sm">
                       No audit events match the specified query filters.
                     </td>
                   </tr>
@@ -395,11 +395,11 @@ export function SuperAdminAuditLogsView({
           <div className="max-w-2xl w-full border-2 border-ink bg-paper text-ink shadow-[12px_12px_0px_#14161c] p-6 space-y-4">
             <div className="flex items-center justify-between border-b-2 border-ink pb-3">
               <div>
-                <h3 className="font-display font-extrabold text-base text-ink uppercase tracking-tight flex items-center gap-2">
+                <h3 className="font-sans font-bold text-base text-ink tracking-tight flex items-center gap-2">
                   <FileText className="h-4 w-4 text-blue" />
                   Audit Event Diff & Payload
                 </h3>
-                <p className="font-serif text-xs text-muted">
+                <p className="font-sans text-xs text-muted">
                   Action: <strong className="text-ink">{selectedLog.action}</strong> • Resource: <strong className="text-ink">{selectedLog.resource}</strong>
                 </p>
               </div>

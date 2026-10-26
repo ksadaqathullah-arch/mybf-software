@@ -84,8 +84,8 @@ export default function ChaptersPage() {
             <Card className="h-full flex flex-col justify-between group-hover:border-[#035AFC] group-hover:shadow-md transition-all">
               <CardHeader className="p-6">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] text-slate-400 font-bold">{ch.code}</span>
-                  <Badge variant="secondary" className="text-[10px]">{ch.taluk}</Badge>
+                  <span className="font-mono text-xs text-slate-400 font-bold">{ch.code}</span>
+                  <Badge variant="secondary" className="text-xs">{ch.taluk}</Badge>
                 </div>
                 <CardTitle className="text-lg mt-3 group-hover:text-[#035AFC] transition-colors">
                   {ch.name}

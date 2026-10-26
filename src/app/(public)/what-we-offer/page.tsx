@@ -49,11 +49,11 @@ export default function OfferPage() {
                 }}
                 className="group lift relative flex flex-col overflow-hidden border-2 border-ink bg-paper p-7 max-sm:p-5"
               >
-                <span className="font-display text-7xl leading-none font-extrabold tracking-tighter text-transparent transition-colors duration-300 [-webkit-text-stroke:2px_var(--accent)] group-hover:text-[var(--accent)] max-sm:text-6xl">
+                <span className="font-sans text-6xl sm:text-7xl leading-none font-black tracking-tight text-transparent transition-colors duration-300 [-webkit-text-stroke:2px_var(--accent)] group-hover:text-[var(--accent)]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <h2 className="mt-6 text-3xl sm:text-4xl max-sm:mt-4">{item.title}</h2>
-                <p className="mt-3 text-lg leading-relaxed text-muted">{item.description}</p>
+                <h2 className="mt-6 text-2xl sm:text-3xl font-bold tracking-tight text-ink max-sm:mt-4">{item.title}</h2>
+                <p className="mt-3 text-base sm:text-lg leading-relaxed text-muted">{item.description}</p>
                 <span
                   aria-hidden="true"
                   className={`absolute inset-x-0 bottom-0 h-1.5 origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-x-100 ${accent.bar}`}

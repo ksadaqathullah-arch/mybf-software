@@ -33,23 +33,23 @@ export function PortalPageHeader({
     >
       <div className="space-y-1.5 max-w-3xl">
         {eyebrow && (
-          <span className="font-mono text-[10px] font-black uppercase tracking-widest text-ink/60 block">
+          <span className="font-mono text-xs font-semibold uppercase tracking-widest text-ink/60 block">
             {eyebrow}
           </span>
         )}
         <div className="flex items-center gap-2 flex-wrap">
           {displayBadge && (
-            <span className="px-2.5 py-0.5 bg-yellow text-ink border border-ink font-display text-[10px] font-black uppercase tracking-wider shadow-[1px_1px_0px_#14161c]">
+            <span className="px-2.5 py-0.5 bg-yellow text-ink border border-ink font-sans text-xs font-bold tracking-wide shadow-[1px_1px_0px_#14161c]">
               {displayBadge}
             </span>
           )}
           {tag && <Badge variant="primary">{tag}</Badge>}
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-ink uppercase">
+        <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-ink">
           {title}
         </h1>
         {description && (
-          <p className="font-serif text-sm sm:text-base text-muted leading-relaxed">
+          <p className="font-sans text-sm sm:text-base text-muted leading-relaxed">
             {description}
           </p>
         )}
@@ -110,7 +110,7 @@ export function PortalStatCard({
     >
       <div>
         <div className="flex items-start justify-between gap-2">
-          <span className="font-display text-[11px] font-black uppercase tracking-wider text-muted line-clamp-1">
+          <span className="font-sans text-xs font-semibold uppercase tracking-wider text-muted line-clamp-1">
             {label}
           </span>
           {Icon && (
@@ -121,18 +121,18 @@ export function PortalStatCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
-          <span className="font-display text-3xl sm:text-4xl font-black text-ink tracking-tight leading-none">
+          <span className="font-sans text-3xl sm:text-4xl font-extrabold text-ink tracking-tight leading-none">
             {value}
           </span>
           {unit && (
-            <span className="font-display text-xs font-bold uppercase text-ink/70 tracking-wider">
+            <span className="font-sans text-xs font-semibold text-ink/70 tracking-wide">
               {unit}
             </span>
           )}
           {activeBadge && (
             <span
               className={cn(
-                'font-display text-[10px] font-black uppercase px-2 py-0.5 border shadow-[1px_1px_0px_#14161c] whitespace-nowrap',
+                'font-sans text-xs font-semibold px-2 py-0.5 border shadow-[1px_1px_0px_#14161c] whitespace-nowrap',
                 badgeVariant === 'warning'
                   ? 'bg-amber-100 text-amber-950 border-amber-900'
                   : badgeVariant === 'primary'
@@ -151,7 +151,7 @@ export function PortalStatCard({
       </div>
 
       {activeDetail && (
-        <p className="font-serif text-xs text-muted mt-3 border-t border-ink/10 pt-2 leading-snug line-clamp-2">
+        <p className="font-sans text-xs text-muted mt-3 border-t border-ink/10 pt-2 leading-relaxed line-clamp-2">
           {activeDetail}
         </p>
       )}

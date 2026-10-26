@@ -7,8 +7,8 @@ export default function AdminGovernancePage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <PortalPageHeader
-        badge="ROOT TENANT GOVERNANCE"
-        tag="16 CHAPTERS MONITORED"
+        badge="Root Tenant Governance"
+        tag="16 Chapters Monitored"
         title="Global Membership Governance Oversight"
         description="Root tenant administration of identity corrections, chapter transfers, and emergency maker-checker overrides."
       />

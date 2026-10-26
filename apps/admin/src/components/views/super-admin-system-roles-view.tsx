@@ -193,17 +193,17 @@ export function SuperAdminSystemRolesView({
       {isAssigning && (
         <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c] animate-fade-in">
           <CardHeader className="p-4 border-b-2 border-ink bg-paper-2/50">
-            <CardTitle className="font-display font-extrabold text-base text-ink uppercase tracking-tight flex items-center gap-2">
+            <CardTitle className="font-sans font-bold text-base text-ink tracking-tight flex items-center gap-2">
               <Key className="h-4 w-4 text-blue" /> Assign System RBAC Role
             </CardTitle>
-            <CardDescription className="font-serif text-xs text-muted">
+            <CardDescription className="font-sans text-xs text-muted">
               Direct server authorization assignment. Self-elevation and self-demotion protections are enforced.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <form onSubmit={handleAssignRole} className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   Target User
                 </label>
                 <select
@@ -222,7 +222,7 @@ export function SuperAdminSystemRolesView({
               </div>
 
               <div>
-                <label className="block text-[11px] font-display font-bold uppercase tracking-wider text-ink mb-1">
+                <label className="block text-xs font-semibold text-ink mb-1.5">
                   System Role
                 </label>
                 <select
@@ -268,7 +268,7 @@ export function SuperAdminSystemRolesView({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
                   <th className="py-3 px-4 text-paper">User Details</th>
                   <th className="py-3 px-4 text-paper">Account Status</th>
@@ -279,7 +279,7 @@ export function SuperAdminSystemRolesView({
               <tbody className="divide-y divide-ink/15 font-sans">
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-12 text-center text-muted font-serif">
+                    <td colSpan={4} className="py-12 text-center text-muted font-sans text-sm">
                       No users match the search term.
                     </td>
                   </tr>
@@ -291,19 +291,19 @@ export function SuperAdminSystemRolesView({
                     >
                       <td className="py-3.5 px-4 font-semibold text-ink">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 bg-paper-2 border-2 border-ink text-ink flex items-center justify-center font-display font-black text-xs shadow-[1px_1px_0px_#14161c]">
+                          <div className="h-8 w-8 bg-paper-2 border-2 border-ink text-ink flex items-center justify-center font-sans font-bold text-xs shadow-[1px_1px_0px_#14161c]">
                             {(user.fullName[0] || 'U').toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-display font-extrabold text-sm text-ink uppercase">
+                            <p className="font-sans font-bold text-sm text-ink">
                               {user.fullName}
                               {user.id === currentAdminId && (
-                                <span className="ml-2 font-mono text-[10px] text-paper font-black bg-blue border border-ink px-1.5 py-0.2">
+                                <span className="ml-2 font-mono text-[10px] text-paper font-semibold bg-blue border border-ink px-1.5 py-0.5">
                                   You
                                 </span>
                               )}
                             </p>
-                            <span className="font-serif text-[11px] text-muted">
+                            <span className="font-sans text-xs text-muted">
                               {user.email || user.username || 'No email attached'}
                             </span>
                           </div>
@@ -364,7 +364,7 @@ export function SuperAdminSystemRolesView({
                             setSelectedUserId(user.id);
                             setIsAssigning(true);
                           }}
-                          className="h-7 px-2.5 text-[10px]"
+                          className="h-7 px-2.5 text-xs font-semibold"
                         >
                           + Assign
                         </Button>

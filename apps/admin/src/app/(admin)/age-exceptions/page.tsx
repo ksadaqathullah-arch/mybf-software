@@ -8,8 +8,8 @@ export default function AdminAgeExceptionsPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <PortalPageHeader
-        badge="BYLAW POLICY OVERSIGHT"
-        tag="AGE 36+ EXCEPTION REVIEW"
+        badge="Bylaw Policy Oversight"
+        tag="Age 36+ Exception Review"
         title="Age Exception Review Queue"
         description="Standard MYBF membership eligibility is open to candidates aged 35 years or below. Candidates aged above 35 require documented Super Admin exception approval before chapter leadership consideration."
       />

@@ -101,11 +101,11 @@ export function JoinForm() {
 
       <button
         type="submit"
-        className="inline-flex min-h-12 w-fit items-center bg-ink px-6 font-display text-sm font-extrabold tracking-[0.14em] text-paper uppercase hover:bg-blue max-sm:w-full max-sm:justify-center"
+        className="inline-flex min-h-11 w-fit items-center bg-ink px-6 font-sans text-sm font-semibold tracking-wide text-paper hover:bg-blue max-sm:w-full max-sm:justify-center cursor-pointer transition-colors shadow-[2px_2px_0px_#14161c] active:translate-x-0.5 active:translate-y-0.5"
       >
         Send on WhatsApp
       </button>
-      <p className="max-w-md text-base leading-relaxed text-muted">
+      <p className="max-w-md text-sm sm:text-base leading-relaxed text-muted">
         This opens WhatsApp with the note filled in. Nothing is stored on the site. Or write
         directly to{" "}
         <a href={`mailto:${site.email}`} className="text-ink underline decoration-yellow decoration-2 underline-offset-4">
@@ -134,14 +134,14 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="font-display text-[0.72rem] font-bold tracking-[0.16em] uppercase">
+      <label htmlFor={id} className="font-sans text-xs font-semibold tracking-wide uppercase text-ink">
         {label}
         {required ? <span className="text-magenta"> *</span> : null}
-        {hint ? <span className="ml-2 font-serif text-sm font-normal tracking-normal text-muted normal-case">{hint}</span> : null}
+        {hint ? <span className="ml-2 font-sans text-xs font-normal tracking-normal text-muted normal-case">{hint}</span> : null}
       </label>
       {children}
       {error ? (
-        <p role="alert" className="text-base text-magenta">
+        <p role="alert" className="text-xs font-medium text-magenta mt-0.5">
           {error}
         </p>
       ) : null}

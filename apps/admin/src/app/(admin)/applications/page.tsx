@@ -8,8 +8,8 @@ export default function AdminApplicationsPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <PortalPageHeader
-        badge="FINAL REVIEW AUTHORITY"
-        tag="MAKER-CHECKER WORKFLOW"
+        badge="Final Review Authority"
+        tag="Maker-Checker Workflow"
         title="Membership Application Governance Queue"
         description="Super Administrator final review authority. Validates chapter recommendations, verifies youth eligibility, issues permanent Member IDs, and enables member login."
       />

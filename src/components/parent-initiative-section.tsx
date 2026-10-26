@@ -52,17 +52,17 @@ export function ParentInitiativeSection({
             <div className="lg:col-span-7 space-y-6">
               {/* Eyebrow Badges */}
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-display text-[0.72rem] font-bold tracking-[0.24em] uppercase text-blue border border-blue/30 bg-blue/10 px-3 py-1">
+                <span className="font-sans text-xs font-bold tracking-wider uppercase text-blue border border-blue/30 bg-blue/10 px-3 py-1">
                   OUR PARENT INITIATIVE
                 </span>
-                <span className="inline-flex items-center gap-1.5 border border-ink/20 bg-paper px-3 py-1 font-display text-[0.68rem] font-bold tracking-[0.14em] uppercase text-ink">
+                <span className="inline-flex items-center gap-1.5 border border-ink/20 bg-paper px-3 py-1 font-sans text-xs font-semibold text-ink">
                   <span className="size-1.5 rounded-full bg-blue animate-pulse" />
                   Official Umbrella Movement
                 </span>
               </div>
 
               {/* Main Heading */}
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-ink leading-[0.95] text-balance">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-sans font-extrabold tracking-tight text-ink leading-tight text-balance">
                 Mission Malappuram 2050
               </h2>
 
@@ -82,7 +82,7 @@ export function ParentInitiativeSection({
               </div>
 
               {/* Supporting Description */}
-              <p className="max-w-xl text-xl sm:text-2xl leading-relaxed text-muted font-serif">
+              <p className="max-w-xl text-lg sm:text-xl leading-relaxed text-muted font-sans">
                 MYBF is an initiative under Mission Malappuram 2050, connecting young entrepreneurs, aspiring founders and business communities with a larger vision for Malappuram&apos;s future.
               </p>
 
@@ -92,7 +92,7 @@ export function ParentInitiativeSection({
                   href="https://www.missionmalappuram2050.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-blue text-sm min-h-14 px-8 max-sm:w-full max-sm:justify-center group/btn shadow-[4px_4px_0px_#14161c] hover:shadow-[6px_6px_0px_#14161c] transition-all focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue"
+                  className="btn btn-blue text-sm min-h-12 px-6 max-sm:w-full max-sm:justify-center group/btn shadow-[4px_4px_0px_#14161c] hover:shadow-[6px_6px_0px_#14161c] transition-all focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue font-semibold"
                   aria-label="Explore Mission Malappuram 2050 Official Website (opens in a new tab)"
                 >
                   <span>Explore Mission Malappuram 2050</span>
@@ -100,11 +100,11 @@ export function ParentInitiativeSection({
                 </a>
 
                 <div className="flex flex-col text-xs text-muted max-sm:text-center">
-                  <span className="font-display font-bold uppercase tracking-wider text-ink flex items-center gap-1.5 max-sm:justify-center">
+                  <span className="font-sans font-semibold text-ink flex items-center gap-1.5 max-sm:justify-center">
                     <span>Official External Website</span>
                     <span className="inline-block size-1.5 rounded-full bg-emerald-600" />
                   </span>
-                  <span className="font-mono text-[11px] text-muted">
+                  <span className="font-mono text-xs text-muted">
                     www.missionmalappuram2050.com
                   </span>
                 </div>
@@ -117,11 +117,11 @@ export function ParentInitiativeSection({
                 <div className="flex items-center justify-between pb-4 border-b border-ink/15">
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-yellow" />
-                    <span className="font-display text-xs font-bold tracking-[0.18em] uppercase text-ink">
+                    <span className="font-sans text-xs font-bold tracking-wide uppercase text-ink">
                       District Master Mandate
                     </span>
                   </div>
-                  <span className="font-mono text-[11px] font-bold text-blue uppercase">
+                  <span className="font-mono text-xs font-bold text-blue uppercase">
                     2050 Horizon
                   </span>
                 </div>
@@ -133,10 +133,10 @@ export function ParentInitiativeSection({
                         01
                       </span>
                       <div>
-                        <h4 className="font-display text-sm font-bold text-ink">
+                        <h4 className="font-sans text-base font-bold text-ink">
                           District Economic Blueprint
                         </h4>
-                        <p className="mt-1 font-serif text-sm text-muted leading-relaxed">
+                        <p className="mt-1 font-sans text-sm text-muted leading-relaxed">
                           A 25-year roadmap for Malappuram&apos;s commercial, technological, and infrastructure transformation.
                         </p>
                       </div>
@@ -148,10 +148,10 @@ export function ParentInitiativeSection({
                         02
                       </span>
                       <div>
-                        <h4 className="font-display text-sm font-bold text-ink">
+                        <h4 className="font-sans text-base font-bold text-ink">
                           Youth Innovation Catalysis
                         </h4>
-                        <p className="mt-1 font-serif text-sm text-muted leading-relaxed">
+                        <p className="mt-1 font-sans text-sm text-muted leading-relaxed">
                           Empowering youth through dedicated forums like MYBF to build generational wealth and local enterprise.
                         </p>
                       </div>
@@ -163,10 +163,10 @@ export function ParentInitiativeSection({
                         03
                       </span>
                       <div>
-                        <h4 className="font-display text-sm font-bold text-ink">
+                        <h4 className="font-sans text-base font-bold text-ink">
                           Global Diaspora Integration
                         </h4>
-                        <p className="mt-1 font-serif text-sm text-muted leading-relaxed">
+                        <p className="mt-1 font-sans text-sm text-muted leading-relaxed">
                           Channeling Malappuram&apos;s global NRI network and diaspora capital directly into grassroots ventures.
                         </p>
                       </div>
@@ -179,7 +179,7 @@ export function ParentInitiativeSection({
                     href="https://www.missionmalappuram2050.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group/link inline-flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wider text-blue hover:text-blue-deep transition-colors"
+                    className="group/link inline-flex items-center gap-1.5 font-sans text-xs font-bold text-blue hover:text-blue-deep transition-colors"
                   >
                     <span>Visit Official Portal: missionmalappuram2050.com</span>
                     <ExternalLink className="size-3.5 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />

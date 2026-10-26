@@ -89,7 +89,7 @@ export function LoginForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="login-identifier"
-              className="block text-xs font-bold uppercase tracking-wider text-ink font-display"
+              className="block text-xs font-semibold text-ink"
             >
               Username, Email or Mobile Number <span className="text-rose-600 font-bold ml-0.5" aria-hidden="true">*</span>
             </label>
@@ -113,13 +113,13 @@ export function LoginForm() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="login-password"
-                className="block text-xs font-bold uppercase tracking-wider text-ink font-display"
+                className="block text-xs font-semibold text-ink"
               >
                 Password <span className="text-rose-600 font-bold ml-0.5" aria-hidden="true">*</span>
               </label>
               <Link
                 href="/forgot-password"
-                className="text-xs font-bold text-blue hover:text-blue-deep hover:underline tracking-tight transition-colors"
+                className="text-xs font-semibold text-blue hover:text-blue-deep hover:underline tracking-tight transition-colors"
               >
                 Forgot password?
               </Link>

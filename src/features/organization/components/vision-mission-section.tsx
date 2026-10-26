@@ -102,7 +102,7 @@ export function MissionPillarCard({ pillar }: { pillar: StrategicPillar }) {
           </div>
           <div className="flex items-center gap-2">
             {pillar.highlightBadge && (
-              <Badge variant="secondary" className="text-[10px] py-0.5 px-2">
+              <Badge variant="secondary" className="text-xs py-0.5 px-2">
                 {pillar.highlightBadge}
               </Badge>
             )}

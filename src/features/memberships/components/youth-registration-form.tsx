@@ -469,7 +469,7 @@ export function YouthRegistrationForm({
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Index & Eyebrow like PageHero: "04 —— MEMBERSHIP" */}
             <div className="flex items-center gap-3">
-              <p className="flex items-center gap-2.5 font-display text-[0.72rem] font-bold tracking-[0.22em] uppercase text-ink">
+              <p className="flex items-center gap-2.5 font-sans text-xs font-semibold tracking-wider uppercase text-ink">
                 <span>04</span>
                 <span aria-hidden="true" className="h-px w-8 bg-current opacity-60" />
                 <span>Membership Application</span>
@@ -478,7 +478,7 @@ export function YouthRegistrationForm({
 
             <div className="flex items-center gap-2.5">
               {/* Step Pill */}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-ink text-paper font-display text-xs font-black uppercase tracking-wider border-2 border-ink shadow-[2px_2px_0px_#14161c]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-ink text-paper font-sans text-xs font-semibold border-2 border-ink shadow-[2px_2px_0px_#14161c]">
                 Step 0{step} of 05 <span className="opacity-75 font-mono font-normal">({progressPercent}%)</span>
               </span>
 
@@ -488,7 +488,7 @@ export function YouthRegistrationForm({
                   type="button"
                   onClick={onClose}
                   aria-label="Close application modal"
-                  className="inline-flex size-9 sm:size-10 items-center justify-center border-2 border-ink bg-paper text-ink font-display text-sm font-black uppercase hover:bg-ink hover:text-paper shadow-[2px_2px_0px_#14161c] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer shrink-0"
+                  className="inline-flex size-9 sm:size-10 items-center justify-center border-2 border-ink bg-paper text-ink font-sans text-sm font-bold hover:bg-ink hover:text-paper shadow-[2px_2px_0px_#14161c] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer shrink-0"
                 >
                   ✕
                 </button>
@@ -498,10 +498,10 @@ export function YouthRegistrationForm({
 
           {/* Large Hero Title & Lead like the Membership Page */}
           <div className="mt-3">
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-ink tracking-tight leading-[1.08]">
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-ink tracking-tight leading-tight">
               {currentStepMeta.title}
             </h2>
-            <p className="font-serif text-sm sm:text-base text-ink/90 mt-1.5 leading-relaxed max-w-2xl">
+            <p className="font-sans text-sm sm:text-base text-ink/80 mt-1.5 leading-relaxed max-w-2xl">
               {currentStepMeta.subtitle}
             </p>
           </div>
@@ -521,7 +521,7 @@ export function YouthRegistrationForm({
             {[...STRIP_WORDS, ...STRIP_WORDS].map((word, i) => (
               <li
                 key={`${word}-${i}`}
-                className="flex items-center gap-5 px-5 font-display text-xs font-bold tracking-[0.18em] whitespace-nowrap uppercase text-paper"
+                className="flex items-center gap-5 px-5 font-sans text-xs font-semibold tracking-wider whitespace-nowrap uppercase text-paper"
               >
                 {word}
                 <span className="size-1.5 rotate-45 bg-yellow" />
@@ -550,11 +550,11 @@ export function YouthRegistrationForm({
                 }}
                 disabled={!isCompleted && s.id !== step}
                 className={cn(
-                  'px-1.5 sm:px-2.5 py-1.5 sm:py-2 text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-xs font-display tracking-wider uppercase border-2',
+                  'px-1.5 sm:px-2.5 py-1.5 sm:py-2 text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-xs font-sans font-semibold border-2',
                   isCurrent
-                    ? 'bg-ink text-paper border-ink font-black shadow-[2px_2px_0px_#fcc000]'
+                    ? 'bg-ink text-paper border-ink shadow-[2px_2px_0px_#fcc000]'
                     : isCompleted
-                    ? 'bg-blue text-paper border-ink font-bold shadow-[1px_1px_0px_#14161c] hover:bg-blue-deep cursor-pointer'
+                    ? 'bg-blue text-paper border-ink shadow-[1px_1px_0px_#14161c] hover:bg-blue-deep cursor-pointer'
                     : 'bg-paper text-ink/40 border-ink/20 font-medium cursor-not-allowed'
                 )}
               >
@@ -611,7 +611,7 @@ export function YouthRegistrationForm({
             <div>
               <span
                 className={cn(
-                  'inline-flex px-3.5 py-1 text-xs font-display font-extrabold uppercase tracking-widest border-2 border-ink shadow-[2px_2px_0px_#14161c]',
+                  'inline-flex px-3.5 py-1 text-xs font-sans font-semibold border-2 border-ink shadow-[2px_2px_0px_#14161c]',
                   submissionResult?.isAgeException
                     ? 'bg-yellow text-ink'
                     : 'bg-emerald-100 text-emerald-950'
@@ -619,12 +619,12 @@ export function YouthRegistrationForm({
               >
                 {submissionResult?.isAgeException ? 'Special Age Exception Pending' : 'Youth Application Enrolled'}
               </span>
-              <h2 className="mt-4 font-display text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">
+              <h2 className="mt-4 font-sans text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">
                 {submissionResult?.isAgeException
                   ? 'Submitted for Super Admin Review'
                   : 'Application Registered Successfully'}
               </h2>
-              <p className="font-serif text-sm sm:text-base text-muted max-w-md mx-auto mt-2 leading-relaxed">
+              <p className="font-sans text-sm sm:text-base text-muted max-w-md mx-auto mt-2 leading-relaxed">
                 {submissionResult?.isAgeException
                   ? 'Standard youth eligibility ends at 35. Because your age exceeds 35, your application has been securely routed to the Super Administrator for exceptional authorization.'
                   : 'Your account credentials have been established. Your registration is now under chapter officer verification. Once approved, you can immediately access your digital member space.'}
@@ -635,7 +635,7 @@ export function YouthRegistrationForm({
             <div className="border-2 border-ink bg-white p-6 text-left text-xs sm:text-sm text-ink space-y-4 shadow-[4px_4px_0px_#14161c]">
               <div className="grid grid-cols-2 gap-4 pb-4 border-b-2 border-ink/15">
                 <div>
-                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
+                  <span className="text-xs font-sans font-semibold text-muted block">
                     Applicant & Username
                   </span>
                   <strong className="text-sm font-bold text-ink block mt-0.5">
@@ -646,10 +646,10 @@ export function YouthRegistrationForm({
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
+                  <span className="text-xs font-sans font-semibold text-muted block">
                     Official Reference ID
                   </span>
-                  <span className="font-mono text-xs font-black text-ink bg-yellow px-2.5 py-1 inline-block border-2 border-ink mt-1 shadow-[2px_2px_0px_#14161c]">
+                  <span className="font-mono text-xs font-bold text-ink bg-yellow px-2.5 py-1 inline-block border-2 border-ink mt-1 shadow-[2px_2px_0px_#14161c]">
                     {submissionResult?.referenceNumber || 'REF-REGISTERED'}
                   </span>
                 </div>
@@ -657,7 +657,7 @@ export function YouthRegistrationForm({
 
               <div className="grid grid-cols-2 gap-4 pb-4 border-b-2 border-ink/15">
                 <div>
-                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
+                  <span className="text-xs font-sans font-semibold text-muted block">
                     Enrolled Chapter
                   </span>
                   <strong className="text-xs sm:text-sm font-bold text-ink block mt-0.5">
@@ -665,7 +665,7 @@ export function YouthRegistrationForm({
                   </strong>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-display font-bold text-muted block tracking-wider">
+                  <span className="text-xs font-sans font-semibold text-muted block">
                     Age Standing
                   </span>
                   <span className="text-xs sm:text-sm font-semibold block mt-0.5 text-ink">
@@ -676,9 +676,9 @@ export function YouthRegistrationForm({
                 </div>
               </div>
 
-              <div className="pt-1 flex items-center justify-between text-xs font-bold font-display uppercase tracking-wide">
+              <div className="pt-1 flex items-center justify-between text-xs font-semibold font-sans">
                 <span className="text-muted">Status:</span>
-                <span className="text-blue">
+                <span className="text-blue font-bold">
                   {submissionResult?.isAgeException ? 'Super Admin Review Queue' : 'Under Chapter Review (Zero Fees)'}
                 </span>
               </div>

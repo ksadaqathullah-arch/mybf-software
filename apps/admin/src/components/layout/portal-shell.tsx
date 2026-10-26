@@ -58,11 +58,11 @@ export function PortalShell({
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <span className="font-display font-extrabold text-sm tracking-tight text-paper uppercase">
+          <span className="font-sans font-bold text-sm tracking-tight text-paper">
             {portalTitle}
           </span>
         </div>
-        <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 border border-ink shadow-[2px_2px_0px_#14161c]">
+        <span className="bg-yellow text-ink font-sans font-bold text-xs tracking-wide px-2.5 py-0.5 border border-ink shadow-[2px_2px_0px_#14161c]">
           {roleBadgeText}
         </span>
       </div>
@@ -79,10 +79,10 @@ export function PortalShell({
           <Link href="/" className="flex flex-col space-y-1.5 group" aria-label="MYBF - Malappuram Youth Business Forum">
             <MybfLogo size="sm" className="group-hover:opacity-90 transition-opacity" />
             <div className="flex items-center gap-1.5 pt-0.5">
-              <span className="text-[10px] font-display font-extrabold text-yellow uppercase tracking-[0.18em]">
+              <span className="text-xs font-sans font-bold text-yellow tracking-wide">
                 {portalTitle}
               </span>
-              <span className="text-[9px] font-display font-bold text-paper/60 uppercase tracking-widest">
+              <span className="text-xs font-sans font-medium text-paper/60">
                 • 2050
               </span>
             </div>
@@ -99,19 +99,19 @@ export function PortalShell({
         {/* Scope & Role Badge Box */}
         <div className="p-4 mx-3 my-3 border-2 border-white/15 bg-white/[0.04] space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-bold">
+            <span className="text-paper/60 font-sans text-xs font-semibold">
               Access Role
             </span>
-            <span className="bg-yellow text-ink font-display font-black text-[10px] uppercase tracking-wider px-2 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
+            <span className="bg-yellow text-ink font-sans font-bold text-xs px-2.5 py-0.5 border border-ink shadow-[1px_1px_0px_#14161c]">
               {roleBadgeText}
             </span>
           </div>
           {scopeBadgeText && (
             <div className="flex items-center justify-between text-xs pt-1 border-t border-white/10">
-              <span className="text-paper/60 font-display text-[10px] uppercase tracking-wider font-bold">
+              <span className="text-paper/60 font-sans text-xs font-semibold">
                 Scope
               </span>
-              <span className="text-[11px] font-mono font-bold text-paper truncate max-w-[150px]" title={scopeBadgeText}>
+              <span className="text-xs font-mono font-semibold text-paper truncate max-w-[150px]" title={scopeBadgeText}>
                 {scopeBadgeText}
               </span>
             </div>
@@ -135,10 +135,10 @@ export function PortalShell({
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'flex items-center justify-between px-3 py-2.5 text-xs font-display font-bold uppercase tracking-wider transition-all border-2',
+                  'flex items-center justify-between px-3 py-2.5 text-sm font-sans font-medium tracking-normal transition-all border-2',
                   isActive
-                    ? 'bg-blue text-paper border-ink shadow-[3px_3px_0px_#fcc000]'
-                    : 'border-transparent text-paper/75 hover:bg-white/10 hover:text-yellow hover:border-white/20'
+                    ? 'bg-blue text-paper font-semibold border-ink shadow-[3px_3px_0px_#fcc000]'
+                    : 'border-transparent text-paper/80 hover:bg-white/10 hover:text-yellow hover:border-white/20'
                 )}
               >
                 <div className="flex items-center space-x-3">
@@ -148,7 +148,7 @@ export function PortalShell({
                 {item.badge && (
                   <span
                     className={cn(
-                      'text-[10px] px-1.5 py-0.5 font-mono font-bold border border-ink',
+                      'text-xs px-1.5 py-0.5 font-mono font-semibold border border-ink',
                       isActive ? 'bg-yellow text-ink' : 'bg-white/15 text-paper'
                     )}
                   >
@@ -164,12 +164,12 @@ export function PortalShell({
         <div className="p-4 border-t-2 border-white/10 bg-black/25">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2.5 truncate">
-              <div className="h-8 w-8 shrink-0 bg-yellow text-ink border-2 border-ink flex items-center justify-center font-display font-black text-xs shadow-[2px_2px_0px_#14161c]">
+              <div className="h-8 w-8 shrink-0 bg-yellow text-ink border-2 border-ink flex items-center justify-center font-sans font-bold text-xs shadow-[2px_2px_0px_#14161c]">
                 MY
               </div>
               <div className="truncate">
-                <p className="text-xs font-display font-bold text-paper truncate uppercase">Authenticated</p>
-                <p className="text-[10px] text-paper/60 truncate font-mono">Mission Malappuram 2050</p>
+                <p className="text-xs font-sans font-semibold text-paper truncate">Authenticated</p>
+                <p className="text-xs text-paper/60 truncate font-mono">Mission Malappuram 2050</p>
               </div>
             </div>
             <button

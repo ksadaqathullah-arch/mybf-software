@@ -62,7 +62,7 @@ export function Header() {
                 className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0A0F1D] p-2 shadow-xl z-50 text-xs"
                 onClick={() => setPortalsOpen(false)}
               >
-                <div className="px-3 py-1.5 font-bold uppercase tracking-wider text-slate-400 text-[10px]">
+                <div className="px-3 py-1.5 font-semibold uppercase tracking-wider text-slate-400 text-xs">
                   Authorized Spaces
                 </div>
                 <Link

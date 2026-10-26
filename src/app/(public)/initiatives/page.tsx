@@ -40,11 +40,11 @@ export default function InitiativesPage() {
             />
           </div>
           <div>
-            <p className="font-display text-[0.72rem] font-bold tracking-[0.22em] text-magenta uppercase">
+            <p className="font-sans text-xs font-bold tracking-widest text-magenta uppercase">
               Out in the district
             </p>
-            <h2 className="mt-3 text-4xl sm:text-5xl">Kakkadampoyil</h2>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed">
+            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-ink">Kakkadampoyil</h2>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted">
               Not every MYBF day is a hotel ballroom. The Kakkadampoyil poster carries the three
               lines the forum keeps returning to: building ideas, creating connections, designing
               the future. The place changes. The brief does not.
@@ -73,18 +73,18 @@ export default function InitiativesPage() {
                       aria-hidden="true"
                       className={`absolute inset-0 -z-10 origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-x-100 ${band}`}
                     />
-                    <span className="font-display text-sm font-bold tracking-[0.18em] text-blue transition-[transform,color] duration-300 group-hover:translate-x-2 group-hover:text-ink sm:col-span-2">
+                    <span className="font-sans text-sm font-bold tracking-wider text-blue transition-[transform,color] duration-300 group-hover:translate-x-2 group-hover:text-ink sm:col-span-2">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <h2
-                      className={`text-3xl tracking-tight transition-[transform,color] duration-300 group-hover:translate-x-2 sm:col-span-4 sm:text-4xl ${
-                        band === "bg-magenta" ? "group-hover:text-paper" : ""
+                      className={`text-2xl sm:text-3xl font-bold tracking-tight transition-[transform,color] duration-300 group-hover:translate-x-2 sm:col-span-4 ${
+                        band === "bg-magenta" ? "group-hover:text-paper" : "text-ink"
                       }`}
                     >
                       {item.title}
                     </h2>
                     <p
-                      className={`text-lg leading-relaxed text-muted transition-colors sm:col-span-6 ${
+                      className={`text-base sm:text-lg leading-relaxed text-muted transition-colors sm:col-span-6 ${
                         band === "bg-magenta" ? "group-hover:text-paper" : "group-hover:text-ink"
                       }`}
                     >

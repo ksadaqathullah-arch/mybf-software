@@ -112,7 +112,7 @@ export default async function ChapterDetailPage({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <OpenMembershipModalButton className="btn btn-yellow min-h-12 px-6 text-sm font-display font-extrabold uppercase tracking-wider cursor-pointer justify-center">
+            <OpenMembershipModalButton className="btn btn-yellow min-h-12 px-6 text-sm font-sans font-semibold cursor-pointer justify-center">
               Apply for Chapter Membership
             </OpenMembershipModalButton>
             <Link href={`/chapter/${dbChapter?.slug || staticChapter?.slug || slug}`}>
@@ -161,7 +161,7 @@ export default async function ChapterDetailPage({
                     <CardHeader className="p-5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-[#035AFC] font-black text-sm flex items-center justify-center font-display border border-blue-200 dark:border-blue-800">
+                          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-[#035AFC] font-bold text-sm flex items-center justify-center font-sans border border-blue-200 dark:border-blue-800">
                             {initial}
                           </div>
                           <div>

@@ -237,14 +237,14 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-xl font-black font-display uppercase tracking-wider text-ink flex items-center gap-2">
+              <CardTitle className="text-lg sm:text-xl font-bold font-sans tracking-tight text-ink flex items-center gap-2">
                 <Users className="h-5 w-5 text-blue" /> {chapterName} Active Member Directory
               </CardTitle>
               <Badge variant="primary" className="border-ink shadow-[1px_1px_0px_#14161c]">
-                {members.length} {members.length === 1 ? 'MEMBER' : 'MEMBERS'}
+                {members.length} {members.length === 1 ? 'Member' : 'Members'}
               </Badge>
             </div>
-            <CardDescription className="text-xs text-ink/70 font-serif mt-1">
+            <CardDescription className="text-xs sm:text-sm text-muted font-sans mt-1 leading-relaxed">
               Authorized chapter roster showing active verified members, classifications, and governance status.
             </CardDescription>
           </div>
@@ -263,7 +263,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
           <div className="mt-4 p-3 bg-emerald-50 border-2 border-emerald-800 text-emerald-950 text-xs flex items-start justify-between gap-2 shadow-[2px_2px_0px_#14161c]">
             <div className="flex items-start gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-800 mt-0.5 shrink-0" />
-              <p className="font-serif leading-snug">{feedbackMessage.text}</p>
+              <p className="font-sans leading-relaxed">{feedbackMessage.text}</p>
             </div>
             <button
               onClick={() => setFeedbackMessage(null)}
@@ -277,13 +277,13 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
         {/* Toolbar */}
         <div className="mt-4 pt-4 border-t-2 border-ink/10 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
           <div className="sm:col-span-4 space-y-1">
-            <label className="text-[11px] font-black font-display uppercase tracking-wider text-ink flex items-center gap-1">
+            <label className="text-xs font-semibold font-sans text-ink flex items-center gap-1">
               <Filter className="h-3 w-3 text-blue" /> Member Category
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-display font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
+              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-sans font-medium focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
             >
               <option value="ALL">All Categories</option>
               {MEMBER_CATEGORIES.map((c) => (
@@ -295,13 +295,13 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
           </div>
 
           <div className="sm:col-span-4 space-y-1">
-            <label className="text-[11px] font-black font-display uppercase tracking-wider text-ink flex items-center gap-1">
+            <label className="text-xs font-semibold font-sans text-ink flex items-center gap-1">
               <Filter className="h-3 w-3 text-yellow" /> Current Position
             </label>
             <select
               value={selectedPosition}
               onChange={(e) => setSelectedPosition(e.target.value)}
-              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-display font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
+              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink font-sans font-medium focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
             >
               <option value="ALL">All Positions</option>
               {CURRENT_POSITIONS.map((p) => (
@@ -313,7 +313,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
           </div>
 
           <div className="sm:col-span-3 space-y-1">
-            <label className="text-[11px] font-black font-display uppercase tracking-wider text-ink flex items-center gap-1">
+            <label className="text-xs font-semibold font-sans text-ink flex items-center gap-1">
               <Search className="h-3 w-3 text-ink/40" /> Search Directory
             </label>
             <input
@@ -321,7 +321,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
               placeholder="Search name, ID, company..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink placeholder:text-ink/40 font-serif focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
+              className="w-full border-2 border-ink bg-paper px-2.5 py-1.5 text-xs text-ink placeholder:text-ink/40 font-sans focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
             />
           </div>
 
@@ -331,7 +331,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                 variant="ghost"
                 size="sm"
                 onClick={resetFilters}
-                className="w-full h-8 text-[11px] px-2 text-ink/70 hover:text-ink border border-ink/20 hover:border-ink"
+                className="w-full h-8 text-xs font-medium px-2 text-ink/70 hover:text-ink border border-ink/20 hover:border-ink"
                 title="Reset filters"
               >
                 <RotateCcw className="h-3 w-3 mr-1" /> Reset
@@ -340,12 +340,12 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
           </div>
         </div>
 
-        <div className="mt-2 text-[11px] text-ink/70 font-serif flex items-center justify-between">
+        <div className="mt-2 text-xs text-ink/70 font-sans flex items-center justify-between">
           <span>
             Showing <strong>{filteredMembers.length}</strong> of {members.length} members
           </span>
-          <span className="text-[10px] text-ink/50 uppercase font-display tracking-wider">
-            All records cryptographically signed & archived
+          <span className="text-xs text-ink/50 font-sans">
+            All records cryptographically signed &amp; archived
           </span>
         </div>
       </CardHeader>
@@ -353,22 +353,22 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse">
-            <thead className="border-b-2 border-ink bg-paper-sunken text-ink font-display font-extrabold uppercase text-[10px] tracking-wider">
+            <thead className="border-b-2 border-ink bg-ink text-paper font-sans font-semibold uppercase text-xs tracking-wider">
               <tr>
-                <th className="py-3 px-4">Member</th>
-                <th className="py-3 px-4">Membership ID</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Position</th>
-                <th className="py-3 px-4">Company / Sector</th>
-                <th className="py-3 px-4">Joined</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Governance Actions</th>
+                <th className="py-3 px-4 text-paper">Member</th>
+                <th className="py-3 px-4 text-paper">Membership ID</th>
+                <th className="py-3 px-4 text-paper">Category</th>
+                <th className="py-3 px-4 text-paper">Position</th>
+                <th className="py-3 px-4 text-paper">Company / Sector</th>
+                <th className="py-3 px-4 text-paper">Joined</th>
+                <th className="py-3 px-4 text-paper">Status</th>
+                <th className="py-3 px-4 text-paper text-right">Governance Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-ink/10 font-mono text-[11px] bg-paper">
+            <tbody className="divide-y divide-ink/10 font-sans text-xs bg-paper">
               {filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-ink/50 font-serif italic text-sm">
+                  <td colSpan={8} className="py-8 text-center text-ink/50 font-sans italic text-sm">
                     No active members found matching current filters for {chapterName}.
                   </td>
                 </tr>
@@ -376,8 +376,8 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                 filteredMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-yellow/10 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-bold text-ink font-sans text-xs">{m.fullName}</div>
-                      <div className="text-[10px] text-ink/70 font-mono">
+                      <div className="font-bold text-ink font-sans text-sm">{m.fullName}</div>
+                      <div className="text-xs text-ink/70 font-sans mt-0.5">
                         {m.email || 'Contact on file'}
                       </div>
                     </td>
@@ -385,16 +385,16 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                       {m.membershipNumber}
                     </td>
                     <td className="py-3 px-4">
-                      <Badge variant="primary" className="text-[10px]">
+                      <Badge variant="primary">
                         {getMemberCategoryLabel(m.memberCategory)}
                       </Badge>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge variant="secondary" className="text-[10px]">
+                      <Badge variant="secondary">
                         {getCurrentPositionLabel(m.currentPosition)}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-ink font-serif">
+                    <td className="py-3 px-4 text-ink font-sans">
                       {m.companyName ? `${m.companyName} (${m.businessSector})` : m.businessSector}
                     </td>
                     <td className="py-3 px-4 text-ink/70">
@@ -405,11 +405,11 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                     </td>
                     <td className="py-3 px-4">
                       {m.hasPendingDeactivation ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-950 border border-amber-900 font-display text-[10px] font-black uppercase tracking-wider shadow-[1px_1px_0px_#14161c]">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-950 border border-amber-900 font-sans text-xs font-semibold shadow-[1px_1px_0px_#14161c]">
                           <Clock className="h-3 w-3" /> Deactivation Pending
                         </span>
                       ) : (
-                        <Badge variant="success" className="text-[10px]">
+                        <Badge variant="success">
                           {m.status}
                         </Badge>
                       )}
@@ -420,7 +420,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                           variant="outline"
                           size="sm"
                           onClick={() => setViewingMember(m)}
-                          className="h-7 px-2 text-[10px] font-display font-black uppercase tracking-wider border border-ink/40 bg-paper hover:bg-paper-2 shadow-[1px_1px_0px_#14161c]"
+                          className="h-8 px-2.5 text-xs font-medium font-sans border border-ink/40 bg-paper hover:bg-paper-2 shadow-[1px_1px_0px_#14161c]"
                           title="View Member Profile"
                         >
                           <Eye className="h-3 w-3 mr-1" /> View
@@ -428,7 +428,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
 
                         {m.hasPendingDeactivation ? (
                           <span
-                            className="text-[10px] text-amber-900 font-serif italic cursor-help"
+                            className="text-xs text-amber-900 font-sans italic cursor-help"
                             title={m.pendingDeactivationReason || 'Awaiting District & Super Admin review'}
                           >
                             Review in progress
@@ -438,7 +438,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                             variant="outline"
                             size="sm"
                             onClick={() => openDeactivationModal(m)}
-                            className="h-7 px-2 text-[10px] font-display font-black uppercase tracking-wider text-destructive border-destructive/60 hover:bg-destructive/10 bg-paper shadow-[1px_1px_0px_#14161c]"
+                            className="h-8 px-2.5 text-xs font-medium font-sans text-destructive border-destructive/60 hover:bg-destructive/10 bg-paper shadow-[1px_1px_0px_#14161c]"
                             title="Request Member Deactivation"
                           >
                             <UserX className="h-3 w-3 mr-1" /> Deactivate
@@ -461,14 +461,14 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
             <div className="p-5 border-b-2 border-ink bg-paper flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-[10px] font-black uppercase px-2 py-0.5 bg-yellow text-ink border border-ink shadow-[1px_1px_0px_#14161c]">
+                  <span className="font-sans text-xs font-semibold px-2 py-0.5 bg-yellow text-ink border border-ink shadow-[1px_1px_0px_#14161c]">
                     Verified Member Profile
                   </span>
                   <Badge variant={viewingMember.hasPendingDeactivation ? 'warning' : 'success'}>
-                    {viewingMember.hasPendingDeactivation ? 'DEACTIVATION PENDING' : viewingMember.status}
+                    {viewingMember.hasPendingDeactivation ? 'Deactivation Pending' : viewingMember.status}
                   </Badge>
                 </div>
-                <h3 className="font-display text-xl font-black uppercase tracking-tight text-ink mt-1.5">
+                <h3 className="font-sans text-xl font-bold tracking-tight text-ink mt-1.5">
                   {viewingMember.fullName}
                 </h3>
                 <p className="font-mono text-xs text-blue font-bold">
@@ -486,36 +486,36 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
             <div className="p-5 space-y-4 text-xs font-sans">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 border border-ink/20 bg-paper-sunken">
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Category</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Category</span>
                   <span className="font-bold text-ink">{getMemberCategoryLabel(viewingMember.memberCategory)}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Position</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Position</span>
                   <span className="font-bold text-ink">{getCurrentPositionLabel(viewingMember.currentPosition)}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Email Address</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Email Address</span>
                   <span className="font-mono text-ink">{viewingMember.email || 'None on file'}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Phone Number</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Phone Number</span>
                   <span className="font-mono text-ink">{viewingMember.phone || 'None on file'}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Company / Business</span>
-                  <span className="font-serif text-ink">{viewingMember.companyName || 'Not specified'}</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Company / Business</span>
+                  <span className="font-sans text-ink">{viewingMember.companyName || 'Not specified'}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Business Sector</span>
-                  <span className="font-serif text-ink">{viewingMember.businessSector}</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Business Sector</span>
+                  <span className="font-sans text-ink">{viewingMember.businessSector}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Occupation</span>
-                  <span className="font-serif text-ink">{viewingMember.occupation || 'Entrepreneur'}</span>
+                  <span className="font-sans text-xs font-semibold text-muted block">Occupation</span>
+                  <span className="font-sans text-ink">{viewingMember.occupation || 'Entrepreneur'}</span>
                 </div>
                 <div>
-                  <span className="font-display text-[10px] font-black uppercase text-ink/60 block">Member Since</span>
-                  <span className="font-serif text-ink">
+                  <span className="font-sans text-xs font-semibold text-muted block">Member Since</span>
+                  <span className="font-sans text-ink">
                     {new Date(viewingMember.joinedDate).toLocaleDateString('en-IN', {
                       day: 'numeric',
                       month: 'long',
@@ -527,22 +527,22 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
 
               {viewingMember.hasPendingDeactivation && (
                 <div className="p-3 bg-amber-50 border-2 border-amber-900 text-amber-950 shadow-[2px_2px_0px_#14161c]">
-                  <div className="flex items-center gap-1.5 font-display text-[11px] font-black uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 font-sans text-xs font-bold">
                     <AlertTriangle className="h-4 w-4 text-amber-800" /> Active Governance Request
                   </div>
-                  <p className="mt-1 font-serif text-xs">
+                  <p className="mt-1 font-sans text-xs">
                     A membership removal request is currently under multi-tier review.
                   </p>
                   {viewingMember.pendingDeactivationReason && (
-                    <p className="mt-1 font-mono text-[11px] bg-amber-100/80 p-2 border border-amber-800/40">
+                    <p className="mt-1 font-mono text-xs bg-amber-100/80 p-2 border border-amber-800/40">
                       Reason: {viewingMember.pendingDeactivationReason}
                     </p>
                   )}
                 </div>
               )}
 
-              <div className="p-3 bg-paper border border-ink/20 text-ink/70 font-serif text-[11px] leading-relaxed">
-                <strong>Data Retention & Integrity:</strong> In accordance with MYBF governance bylaws and Mission Malappuram 2050 standards, member history, attendance logs, and financial records are preserved permanently.
+              <div className="p-3 bg-paper border border-ink/20 text-muted font-sans text-xs leading-relaxed">
+                <strong className="text-ink">Data Retention &amp; Integrity:</strong> In accordance with MYBF governance bylaws and Mission Malappuram 2050 standards, member history, attendance logs, and financial records are preserved permanently.
               </div>
             </div>
 
@@ -557,7 +557,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                       setViewingMember(null);
                       openDeactivationModal(m);
                     }}
-                    className="text-destructive border-destructive/60 hover:bg-destructive/10 text-xs font-display uppercase tracking-wider font-bold"
+                    className="text-destructive border-destructive/60 hover:bg-destructive/10 text-xs font-medium"
                   >
                     <UserX className="h-3.5 w-3.5 mr-1" /> Request Deactivation
                   </Button>
@@ -567,7 +567,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                 variant="default"
                 size="sm"
                 onClick={() => setViewingMember(null)}
-                className="text-xs font-display font-black uppercase tracking-wider"
+                className="text-xs font-medium"
               >
                 Close
               </Button>
@@ -583,17 +583,17 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
             <div className="p-5 border-b-2 border-ink bg-paper flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-display text-[10px] font-black uppercase px-2 py-0.5 bg-rose-600 text-white border border-ink shadow-[1px_1px_0px_#14161c]">
+                  <span className="font-sans text-xs font-semibold px-2 py-0.5 bg-rose-600 text-white border border-ink shadow-[1px_1px_0px_#14161c]">
                     Controlled Governance Action
                   </span>
-                  <span className="font-display text-[10px] font-black uppercase px-2 py-0.5 bg-yellow text-ink border border-ink shadow-[1px_1px_0px_#14161c]">
+                  <span className="font-sans text-xs font-semibold px-2 py-0.5 bg-yellow text-ink border border-ink shadow-[1px_1px_0px_#14161c]">
                     Maker-Checker
                   </span>
                 </div>
-                <h3 className="font-display text-lg font-black uppercase tracking-tight text-ink mt-1.5">
+                <h3 className="font-sans text-lg font-bold tracking-tight text-ink mt-1.5">
                   Request Membership Removal
                 </h3>
-                <p className="font-serif text-xs text-ink/70">
+                <p className="font-sans text-xs text-muted">
                   Target Member: <strong>{deactivatingMember.fullName}</strong> ({deactivatingMember.membershipNumber})
                 </p>
               </div>
@@ -609,13 +609,13 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
             <form onSubmit={handleConfirmDeactivation} className="p-5 space-y-4">
               {/* Governance Warning Box */}
               <div className="p-3 bg-amber-50 border-2 border-amber-900 text-amber-950 shadow-[2px_2px_0px_#14161c]">
-                <div className="flex items-center gap-1.5 font-display text-[11px] font-black uppercase tracking-wider text-amber-950">
+                <div className="flex items-center gap-1.5 font-sans text-xs font-bold text-amber-950">
                   <ShieldAlert className="h-4 w-4 text-amber-800" /> Multi-Tier Approval Protocol
                 </div>
-                <p className="mt-1 font-serif text-xs text-amber-900 leading-relaxed">
+                <p className="mt-1 font-sans text-xs text-amber-900 leading-relaxed">
                   Chapter Executives initiate removal requests for invalid, duplicate, fraudulent, or ineligible memberships. The request is recorded with actor timestamp and forwarded to the <strong>District Admin</strong> for review and <strong>Super Admin</strong> for final authorization.
                 </p>
-                <p className="mt-1.5 font-serif text-[11px] text-amber-950 font-bold">
+                <p className="mt-1.5 font-sans text-xs text-amber-950 font-bold">
                   ✓ Historical data (Member ID, attendance, audit history) will NOT be deleted.
                 </p>
               </div>
@@ -623,20 +623,20 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
               {submitError && (
                 <div className="p-3 bg-rose-50 border-2 border-rose-900 text-rose-950 text-xs shadow-[2px_2px_0px_#14161c]">
                   <p className="font-bold font-sans">Submission Error:</p>
-                  <p className="font-serif mt-0.5">{submitError}</p>
+                  <p className="font-sans mt-0.5">{submitError}</p>
                 </div>
               )}
 
               {/* Reason Category */}
               <div className="space-y-1">
-                <label className="text-[11px] font-black font-display uppercase tracking-wider text-ink block">
+                <label className="text-xs font-semibold font-sans text-ink block">
                   Grounds for Removal / Category *
                 </label>
                 <select
                   value={reasonCategory}
                   onChange={(e) => setReasonCategory(e.target.value)}
                   disabled={isSubmitting}
-                  className="w-full border-2 border-ink bg-paper px-3 py-2 text-xs text-ink font-display font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
+                  className="w-full border-2 border-ink bg-paper px-3 py-2 text-xs text-ink font-sans font-medium focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
                 >
                   {DEACTIVATION_CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -648,8 +648,8 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
 
               {/* Detailed Justification */}
               <div className="space-y-1">
-                <label className="text-[11px] font-black font-display uppercase tracking-wider text-ink block">
-                  Administrative Justification & Details *
+                <label className="text-xs font-semibold font-sans text-ink block">
+                  Administrative Justification &amp; Details *
                 </label>
                 <textarea
                   rows={3}
@@ -657,17 +657,17 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                   onChange={(e) => setJustification(e.target.value)}
                   disabled={isSubmitting}
                   placeholder="Provide specific facts, circumstances, or committee references justifying this deactivation..."
-                  className="w-full border-2 border-ink bg-paper p-2.5 text-xs text-ink placeholder:text-ink/40 font-serif focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
+                  className="w-full border-2 border-ink bg-paper p-2.5 text-xs text-ink placeholder:text-ink/40 font-sans focus:outline-none focus:ring-2 focus:ring-blue shadow-[1px_1px_0px_#14161c]"
                   required
                 />
-                <span className="text-[10px] text-ink/60 font-serif block">
+                <span className="text-xs text-muted font-sans block">
                   Minimum 10 characters required. Recorded in the immutable audit trail.
                 </span>
               </div>
 
               {/* Policy Confirmation Checkbox */}
               <div className="p-3 border-2 border-ink/20 bg-paper-sunken">
-                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-ink font-serif">
+                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-ink font-sans">
                   <input
                     type="checkbox"
                     checked={confirmedPolicy}
@@ -689,7 +689,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                   size="sm"
                   onClick={closeDeactivationModal}
                   disabled={isSubmitting}
-                  className="border-2 border-ink bg-paper text-xs font-display uppercase tracking-wider font-bold"
+                  className="border-2 border-ink bg-paper text-xs font-medium"
                 >
                   Cancel
                 </Button>
@@ -698,7 +698,7 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
                   variant="danger"
                   size="sm"
                   disabled={isSubmitting || !confirmedPolicy || justification.trim().length < 10}
-                  className="text-xs font-display uppercase tracking-wider font-black shadow-[2px_2px_0px_#14161c]"
+                  className="text-xs font-semibold shadow-[2px_2px_0px_#14161c]"
                 >
                   {isSubmitting ? 'Submitting Request...' : 'Submit Removal Request'}
                 </Button>

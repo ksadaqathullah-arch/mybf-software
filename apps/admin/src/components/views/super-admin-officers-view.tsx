@@ -222,10 +222,10 @@ export function SuperAdminOfficersView({
       {/* Appointment Form */}
       <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
         <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
-          <CardTitle className="font-display font-extrabold text-lg text-ink uppercase tracking-tight flex items-center gap-2">
+          <CardTitle className="font-sans font-bold text-lg text-ink tracking-tight flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-blue" /> Appoint Chapter Executive Officer
           </CardTitle>
-          <CardDescription className="font-serif text-xs text-muted">
+          <CardDescription className="font-sans text-xs text-muted">
             Grant chapter executive authority to an active MYBF member across any of the 16 constituency chapters with an immutable audit trail.
           </CardDescription>
         </CardHeader>
@@ -234,7 +234,7 @@ export function SuperAdminOfficersView({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Member Selection with Live Filter */}
               <div className="lg:col-span-2 space-y-1">
-                <label className="block font-display font-bold uppercase tracking-wider text-ink text-[11px]">
+                <label className="block font-sans font-semibold text-ink text-xs mb-1">
                   Select Eligible Member / Candidate *
                 </label>
                 <div className="flex gap-2">
@@ -275,7 +275,7 @@ export function SuperAdminOfficersView({
 
               {/* Chapter Selection */}
               <div>
-                <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
+                <label className="block font-sans font-semibold text-ink mb-1 text-xs">
                   Constituency Chapter *
                 </label>
                 <select
@@ -295,7 +295,7 @@ export function SuperAdminOfficersView({
 
               {/* Canonical Role Selection */}
               <div>
-                <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
+                <label className="block font-sans font-semibold text-ink mb-1 text-xs">
                   Canonical Role *
                 </label>
                 <select
@@ -315,7 +315,7 @@ export function SuperAdminOfficersView({
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
+                <label className="block font-sans font-semibold text-ink mb-1 text-xs">
                   Custom Title (Optional)
                 </label>
                 <input
@@ -328,7 +328,7 @@ export function SuperAdminOfficersView({
               </div>
 
               <div>
-                <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
+                <label className="block font-sans font-semibold text-ink mb-1 text-xs">
                   Tenure Start Date *
                 </label>
                 <input
@@ -341,7 +341,7 @@ export function SuperAdminOfficersView({
               </div>
 
               <div>
-                <label className="block font-display font-bold uppercase tracking-wider text-ink mb-1 text-[11px]">
+                <label className="block font-sans font-semibold text-ink mb-1 text-xs">
                   Tenure End Date (Optional)
                 </label>
                 <input
@@ -359,7 +359,7 @@ export function SuperAdminOfficersView({
                 variant="primary"
                 size="md"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto px-6 font-display font-extrabold uppercase tracking-wider"
+                className="w-full sm:w-auto px-6 font-sans font-semibold tracking-normal"
               >
                 {isSubmitting ? 'Registering Appointment...' : 'Appoint Chapter Officer'}
               </Button>
@@ -373,10 +373,10 @@ export function SuperAdminOfficersView({
         <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
+              <CardTitle className="font-sans font-bold text-xl text-ink tracking-tight">
                 Active Constituency Chapter Leadership ({filteredOfficers.length})
               </CardTitle>
-              <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+              <CardDescription className="font-sans text-xs sm:text-sm text-muted">
                 All current chapter executives endowed with regional membership review authority.
               </CardDescription>
             </div>
@@ -396,7 +396,7 @@ export function SuperAdminOfficersView({
               <select
                 value={filterChapterId}
                 onChange={(e) => setFilterChapterId(e.target.value)}
-                className="px-3 py-1.5 text-xs border-2 border-ink bg-white font-display font-bold uppercase tracking-wider shadow-[2px_2px_0px_#14161c] focus:outline-none"
+                className="px-3 py-1.5 text-xs border-2 border-ink bg-white font-sans font-semibold shadow-[2px_2px_0px_#14161c] focus:outline-none"
               >
                 <option value="ALL">All Chapters ({chapters.length})</option>
                 {chapters.map((c) => (
@@ -411,7 +411,7 @@ export function SuperAdminOfficersView({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
                   <th className="py-3 px-4 text-paper">Officer Name</th>
                   <th className="py-3 px-4 text-paper">Chapter</th>
@@ -432,16 +432,16 @@ export function SuperAdminOfficersView({
                   filteredOfficers.map((officer) => (
                     <tr key={officer.id} className="hover:bg-yellow/15 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-ink">
-                        <div className="font-display font-extrabold text-sm uppercase">
+                        <div className="font-sans font-bold text-sm text-ink">
                           {officer.user.profile?.fullName || officer.user.username || 'Unnamed'}
                         </div>
-                        <div className="font-serif text-[11px] text-muted">
+                        <div className="font-sans text-xs text-muted">
                           {officer.user.email} • {officer.user.profile?.primaryPhone || 'No Phone'}
                         </div>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <div className="font-display font-bold text-xs uppercase">{officer.chapter.name}</div>
+                        <div className="font-sans font-semibold text-xs text-ink">{officer.chapter.name}</div>
                         <div className="font-mono text-[10px] text-muted">{officer.chapter.code}</div>
                       </td>
 
@@ -450,7 +450,7 @@ export function SuperAdminOfficersView({
                           {officer.role.replace(/_/g, ' ')}
                         </Badge>
                         {officer.title && (
-                          <div className="font-serif text-[11px] text-muted">{officer.title}</div>
+                          <div className="font-sans text-xs text-muted">{officer.title}</div>
                         )}
                       </td>
 
@@ -475,7 +475,7 @@ export function SuperAdminOfficersView({
                             setRevokingOfficer(officer);
                             setRevocationReason('Executive restructuring / Central administrative mandate');
                           }}
-                          className="h-7 px-2.5 text-rose-700 border-rose-700 hover:bg-rose-50 font-display font-extrabold uppercase text-[10px]"
+                          className="h-7 px-2.5 text-rose-700 border-rose-700 hover:bg-rose-50 font-sans font-semibold text-xs"
                         >
                           <Trash2 className="h-3 w-3 mr-1" /> Revoke
                         </Button>
@@ -496,7 +496,7 @@ export function SuperAdminOfficersView({
             <div className="flex items-center justify-between border-b-2 border-ink pb-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-rose-600" />
-                <h4 className="font-display font-extrabold text-base text-ink uppercase">
+                <h4 className="font-sans font-bold text-base text-ink">
                   Revoke Officer Appointment
                 </h4>
               </div>
@@ -508,7 +508,7 @@ export function SuperAdminOfficersView({
               </button>
             </div>
 
-            <div className="text-xs space-y-2 bg-paper-2 p-3 border border-ink/30 font-serif">
+            <div className="text-xs space-y-2 bg-paper-2 p-3 border border-ink/30 font-sans">
               <p>
                 <strong>Officer:</strong>{' '}
                 {revokingOfficer.user.profile?.fullName || revokingOfficer.user.username}
@@ -522,7 +522,7 @@ export function SuperAdminOfficersView({
             </div>
 
             <div className="space-y-1">
-              <label className="block font-display font-bold uppercase text-[10px] tracking-wider text-ink">
+              <label className="block font-sans font-semibold text-xs text-ink mb-1">
                 Revocation Reason (Mandatory for Audit Log) *
               </label>
               <textarea

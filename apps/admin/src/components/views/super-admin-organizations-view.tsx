@@ -97,8 +97,8 @@ export function SuperAdminOrganizationsView({
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <PortalPageHeader
-        badge="GLOBAL HIERARCHY"
-        tag="16 CONSTITUENCY CHAPTERS"
+        badge="Global Hierarchy"
+        tag="16 Constituency Chapters"
         title="Organizations, Districts & Chapter Roster"
         description="Canonical governance over MYBF parent organization, district boundaries, and all 16 Assembly Constituency Chapters."
       />
@@ -144,15 +144,15 @@ export function SuperAdminOrganizationsView({
           <div className="flex items-center gap-4">
             <MybfLogo size="sm" />
             <div>
-              <h3 className="font-display font-extrabold text-lg text-ink uppercase tracking-tight">
+              <h3 className="font-sans font-bold text-lg text-ink tracking-tight">
                 {organization?.name || 'Malappuram Youth Business Forum'}
               </h3>
-              <p className="font-serif text-xs text-muted mt-0.5">
+              <p className="font-sans text-xs text-muted mt-0.5">
                 Canonical Code: <strong className="text-ink">{organization?.code || 'MYBF'}</strong> • Jurisdiction: {districts[0]?.name || 'Malappuram'}, {districts[0]?.state || 'Kerala'}, India
               </p>
             </div>
           </div>
-          <Badge variant="secondary">ROOT REGISTERED NGO</Badge>
+          <Badge variant="secondary">Root Registered NGO</Badge>
         </div>
       </div>
 
@@ -161,10 +161,10 @@ export function SuperAdminOrganizationsView({
         <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight">
+              <CardTitle className="font-sans font-bold text-xl text-ink tracking-tight">
                 16 Constituency Chapters Roster
               </CardTitle>
-              <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+              <CardDescription className="font-sans text-xs sm:text-sm text-muted">
                 Real database records linked to Chapter Executive Hubs and regional application workflows.
               </CardDescription>
             </div>
@@ -186,13 +186,13 @@ export function SuperAdminOrganizationsView({
                   <button
                     key={filter}
                     onClick={() => setStatusFilter(filter)}
-                    className={`px-3 py-1 font-display text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    className={`px-3 py-1 font-sans text-xs font-semibold tracking-normal transition-colors cursor-pointer ${
                       statusFilter === filter
                         ? 'bg-ink text-paper shadow-[2px_2px_0px_#fcc000]'
                         : 'text-ink hover:bg-ink/10'
                     }`}
                   >
-                    {filter}
+                    {filter === 'ALL' ? 'All' : filter === 'ACTIVE' ? 'Active' : 'Inactive'}
                   </button>
                 ))}
               </div>
@@ -203,7 +203,7 @@ export function SuperAdminOrganizationsView({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
                   <th className="py-3 px-4 text-paper">Chapter Code & Name</th>
                   <th className="py-3 px-4 text-paper">Constituency Jurisdiction</th>
@@ -233,11 +233,11 @@ export function SuperAdminOrganizationsView({
                       >
                         <td className="py-3.5 px-4 font-semibold text-ink">
                           <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 bg-blue text-paper border-2 border-ink flex items-center justify-center font-display font-black text-xs shadow-[1px_1px_0px_#14161c]">
+                            <div className="h-8 w-8 bg-blue text-paper border-2 border-ink flex items-center justify-center font-sans font-bold text-xs shadow-[1px_1px_0px_#14161c]">
                               {chapter.code.replace('CHP-', '').split('-')[0] || 'CH'}
                             </div>
                             <div>
-                              <p className="font-display font-extrabold text-sm text-ink uppercase">
+                              <p className="font-sans font-bold text-sm text-ink">
                                 {chapter.name}
                               </p>
                               <span className="font-mono text-[10px] text-muted font-bold">
@@ -258,11 +258,11 @@ export function SuperAdminOrganizationsView({
 
                         <td className="py-3.5 px-4">
                           {chapter.leadership.length === 0 ? (
-                            <span className="font-display text-[10px] font-bold uppercase text-amber-800 bg-amber-100 px-2 py-0.5 border border-amber-700">
+                            <span className="font-sans text-xs font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 border border-amber-700">
                               Vacant
                             </span>
                           ) : (
-                            <div className="space-y-0.5 font-serif text-[11px]">
+                            <div className="space-y-0.5 font-sans text-xs">
                               {president && (
                                 <p className="text-ink">
                                   <strong className="font-sans font-bold text-muted">Pres:</strong>{' '}
@@ -279,7 +279,7 @@ export function SuperAdminOrganizationsView({
                           )}
                         </td>
 
-                        <td className="py-3.5 px-4 text-center font-display font-black text-sm text-ink">
+                        <td className="py-3.5 px-4 text-center font-sans font-bold text-sm text-ink">
                           {chapter.activeMembersCount}
                         </td>
 
@@ -301,7 +301,7 @@ export function SuperAdminOrganizationsView({
                               variant="secondary"
                               size="sm"
                               onClick={() => setManagingChapter(chapter)}
-                              className="h-7 text-[10px] px-2.5 font-display font-extrabold uppercase tracking-wider"
+                              className="h-7 text-xs px-2.5 font-sans font-semibold tracking-normal"
                             >
                               <Shield className="h-3 w-3 mr-1 text-ink" /> Manage Officers
                             </Button>
@@ -309,7 +309,7 @@ export function SuperAdminOrganizationsView({
                               href={`${resolvedBaseUrl}/chapter/${encodeURIComponent(chapter.slug.toLowerCase())}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center font-display font-extrabold uppercase tracking-wider border-2 border-ink transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow cursor-pointer shadow-[2px_2px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 bg-paper text-ink hover:bg-ink hover:text-paper h-7 px-2.5 text-[10px]"
+                              className="inline-flex items-center justify-center font-sans font-semibold tracking-normal border-2 border-ink transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow cursor-pointer shadow-[2px_2px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 bg-paper text-ink hover:bg-ink hover:text-paper h-7 px-2.5 text-xs"
                               title={`Open ${chapter.name} Executive Hub on Main Application (new tab)`}
                             >
                               Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />

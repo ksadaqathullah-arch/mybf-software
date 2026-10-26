@@ -39,9 +39,10 @@ export const BRAND_TOKENS = {
     },
   },
   typography: {
-    fontSans: 'var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
-    fontHeading: 'var(--font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
-    fontMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSans: 'var(--font-sans, var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif)',
+    fontHeading: 'var(--font-heading, var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif)',
+    fontDisplay: 'var(--font-display, var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif)',
+    fontMono: 'var(--font-geist-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace)',
   },
   elevation: {
     sm: '0 1px 2px 0 rgb(3 4 5 / 0.05)',

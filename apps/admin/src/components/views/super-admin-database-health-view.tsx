@@ -49,8 +49,8 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <PortalPageHeader
-        badge="DATABASE TELEMETRY & CAPACITY"
-        tag={data.status === 'HEALTHY' ? 'SYSTEM HEALTHY' : 'LATENCY DEGRADED'}
+        badge="Database Telemetry & Capacity"
+        tag={data.status === 'HEALTHY' ? 'System Healthy' : 'Latency Degraded'}
         title="Database & Infrastructure Metrics"
         description="Real-time PostgreSQL engine status, query round-trip latency, table row counts, and architectural scalability status."
         actions={
@@ -71,11 +71,11 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
         <div className="flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-ink shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="font-display font-extrabold text-sm text-ink uppercase tracking-wider">
+            <h4 className="font-sans font-bold text-sm text-ink tracking-tight">
               Architectural Target vs. Measured Present Capacity
             </h4>
-            <p className="font-serif text-xs text-muted leading-relaxed">
-              The 5,000,000 member capacity is an <strong className="text-ink">architectural target</strong> supported by 10-digit unencoded numeric ID formats (e.g. <code className="font-mono text-[11px] bg-white border border-ink px-1 py-0.2 shadow-[1px_1px_0px_#14161c]">MYBF-0000000001</code>) and BigInt database sequence keys. Live records currently reflect {data.verifiedCurrentCapacity}.
+            <p className="font-sans text-xs text-muted leading-relaxed">
+              The 5,000,000 member capacity is an <strong className="text-ink">architectural target</strong> supported by 10-digit unencoded numeric ID formats (e.g. <code className="font-mono text-xs bg-white border border-ink px-1 py-0.5 shadow-[1px_1px_0px_#14161c]">MYBF-0000000001</code>) and BigInt database sequence keys. Live records currently reflect {data.verifiedCurrentCapacity}.
             </p>
           </div>
         </div>
@@ -119,17 +119,17 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
       {/* Database Tables Telemetry Breakdown */}
       <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
         <CardHeader className="p-5 sm:p-6 pb-4 border-b-2 border-ink bg-paper-2/40">
-          <CardTitle className="font-display font-extrabold text-xl text-ink uppercase tracking-tight flex items-center gap-2">
+          <CardTitle className="font-sans font-bold text-lg sm:text-xl text-ink tracking-tight flex items-center gap-2">
             <Server className="h-5 w-5 text-blue" /> PostgreSQL Entity Table Row Breakdown
           </CardTitle>
-          <CardDescription className="font-serif text-xs sm:text-sm text-muted">
+          <CardDescription className="font-sans text-xs sm:text-sm text-muted leading-relaxed">
             Live counts across core identity, governance, chapter, application, and immutable audit logs.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="border-b-2 border-ink bg-ink text-paper font-display text-[11px] font-extrabold uppercase tracking-wider">
+              <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-4 text-paper">Table Name</th>
                   <th className="py-3 px-4 text-paper">Domain Classification</th>
@@ -153,10 +153,10 @@ export function SuperAdminDatabaseHealthView({ initialData }: SuperAdminDatabase
                       <td className="py-3 px-4 font-mono font-bold text-ink">
                         {table}
                       </td>
-                      <td className="py-3 px-4 font-serif text-muted">
+                      <td className="py-3 px-4 font-sans text-muted">
                         {domain}
                       </td>
-                      <td className="py-3 px-4 text-right font-mono font-black text-sm text-ink">
+                      <td className="py-3 px-4 text-right font-mono font-bold text-sm text-ink">
                         {count.toLocaleString()}
                       </td>
                     </tr>
