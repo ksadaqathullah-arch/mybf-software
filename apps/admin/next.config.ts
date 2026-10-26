@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 import path from 'node:path';
 
 const nextConfig: NextConfig = {
+  env: {
+    MYBF_PORTAL_SCOPE: 'admin',
+  },
   transpilePackages: ['lucide-react'],
   outputFileTracingRoot: path.resolve(__dirname, '../..'),
   webpack: (config) => {

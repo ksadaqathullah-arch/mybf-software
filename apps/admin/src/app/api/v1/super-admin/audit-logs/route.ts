@@ -5,20 +5,12 @@ import { SuperAdminService } from '@shared/features/super-admin/server/super-adm
 export async function GET(request: NextRequest) {
   try {
     const admin = await getCurrentAdmin();
-    if (!admin) {
+    if (!admin || !admin.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
       );
     }
-
-    const actor = {
-      userId: admin.id,
-      email: admin.email,
-      phone: admin.phone,
-      status: 'ACTIVE' as const,
-      roles: admin.roles as any,
-    };
 
 
     const { searchParams } = new URL(request.url);
@@ -32,7 +24,7 @@ export async function GET(request: NextRequest) {
     const exportFormat = searchParams.get('export');
 
     if (exportFormat === 'csv') {
-      const data = await SuperAdminService.getAuditLogs(actor, {
+      const data = await SuperAdminService.getAuditLogs(admin, {
         page: 1,
         pageSize: 1000,
         action,
@@ -59,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (exportFormat === 'json') {
-      const data = await SuperAdminService.getAuditLogs(actor, {
+      const data = await SuperAdminService.getAuditLogs(admin, {
         page: 1,
         pageSize: 1000,
         action,
@@ -77,7 +69,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const result = await SuperAdminService.getAuditLogs(actor, {
+    const result = await SuperAdminService.getAuditLogs(admin, {
       page,
       pageSize,
       action,

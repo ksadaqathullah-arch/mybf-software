@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { getCurrentAdmin } from '@/server/auth';
 import { AdminLoginForm } from '@/components/auth/admin-login-form';
 import { MybfLogo } from '@/components/brand/mybf-logo';
 
@@ -7,7 +9,13 @@ export const metadata: Metadata = {
   description: 'Official Administrative Sign In for MYBF Central Workspace and Super Administrators.',
 };
 
-export default function AdminLoginPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function AdminLoginPage() {
+  const admin = await getCurrentAdmin();
+  if (admin && (admin.roles.includes('SUPER_ADMIN') || admin.roles.includes('ORGANIZATION_ADMIN'))) {
+    redirect('/');
+  }
   return (
     <div className="min-h-screen bg-[#030405] text-slate-100 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-md text-center flex flex-col items-center">

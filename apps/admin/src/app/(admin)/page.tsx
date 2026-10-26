@@ -27,15 +27,7 @@ export default async function AdminDashboardPage() {
   const admin = await getCurrentAdmin();
   if (!admin) return null;
 
-  const actor = {
-    userId: admin.id,
-    email: admin.email,
-    phone: admin.phone,
-    status: 'ACTIVE' as const,
-    roles: admin.roles as any,
-  };
-
-  const metrics = await SuperAdminService.getSystemOverviewMetrics(actor);
+  const metrics = await SuperAdminService.getSystemOverviewMetrics(admin);
 
   return (
     <div className="space-y-8 animate-fade-in">

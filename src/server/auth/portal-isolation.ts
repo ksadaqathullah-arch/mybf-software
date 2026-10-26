@@ -51,8 +51,20 @@ export function getPortalScope(headersOrHost?: Headers | Record<string, string |
     }
 
     if (hostStr) {
+      const lowerHost = hostStr.toLowerCase();
       // Port 4000 match (e.g. localhost:4000 or 127.0.0.1:4000 or custom host:4000)
-      if (hostStr.includes(':4000') || hostStr.startsWith('admin.') || hostStr.includes('admin-mybf')) {
+      // or dedicated admin domain / subdomain:
+      // Examples: mybf-admin.vercel.app, admin.mybf.in, admin-mybf.vercel.app, *.admin.*, *-admin.*
+      if (
+        lowerHost.includes(':4000') ||
+        lowerHost.startsWith('admin.') ||
+        lowerHost.includes('admin-mybf') ||
+        lowerHost.includes('mybf-admin') ||
+        lowerHost.includes('-admin.') ||
+        lowerHost.includes('.admin.') ||
+        lowerHost.startsWith('admin-') ||
+        lowerHost.startsWith('mybf-admin')
+      ) {
         return 'ADMIN';
       }
     }

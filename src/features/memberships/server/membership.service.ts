@@ -323,7 +323,7 @@ export class MembershipService {
         referenceNumber: application.id,
         username: input.username,
       };
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**
@@ -443,7 +443,7 @@ export class MembershipService {
 
         return { status: 'REJECTED', application: updated };
       }
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**
@@ -796,7 +796,7 @@ export class MembershipService {
           application: updatedApp,
         };
       }
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**
@@ -1105,7 +1105,7 @@ export class MembershipService {
       }
 
       throw new Error(`Unsupported review action: ${input.action}`);
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**
@@ -1281,7 +1281,7 @@ export class MembershipService {
         membershipNumber: verified.membershipNumber,
         message: 'Account successfully activated! You may now sign in with your username or email.',
       };
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**
@@ -1705,7 +1705,7 @@ export class MembershipService {
           participationPreferences: true,
         },
       });
-    });
+    }, { maxWait: 15000, timeout: 30000 });
   }
 
   /**

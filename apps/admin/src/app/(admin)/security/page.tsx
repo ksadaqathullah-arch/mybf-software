@@ -9,15 +9,7 @@ export default async function AdminSecurityPage() {
   const admin = await getCurrentAdmin();
   if (!admin) return null;
 
-  const actor = {
-    userId: admin.id,
-    email: admin.email,
-    phone: admin.phone,
-    status: 'ACTIVE' as const,
-    roles: admin.roles as any,
-  };
-
-  const data = await SuperAdminService.getSecurityHealth(actor);
+  const data = await SuperAdminService.getSecurityHealth(admin);
 
   return <SuperAdminSecurityView initialData={data} />;
 }

@@ -7,20 +7,12 @@ import type { SystemRoleCode } from '@shared/server/auth/types';
 export async function GET(request: NextRequest) {
   try {
     const admin = await getCurrentAdmin();
-    if (!admin) {
+    if (!admin || !admin.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
       );
     }
-
-    const actor = {
-      userId: admin.id,
-      email: admin.email,
-      phone: admin.phone,
-      status: 'ACTIVE' as const,
-      roles: admin.roles as any,
-    };
 
 
     const [users, availableRoles] = await Promise.all([
@@ -76,20 +68,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const admin = await getCurrentAdmin();
-    if (!admin) {
+    if (!admin || !admin.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
       );
     }
-
-    const actor = {
-      userId: admin.id,
-      email: admin.email,
-      phone: admin.phone,
-      status: 'ACTIVE' as const,
-      roles: admin.roles as any,
-    };
 
     const body = await request.json();
     const { targetUserId, roleCode, chapterId } = body;
@@ -102,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await SuperAdminService.assignSystemRole(
-      actor,
+      admin,
       targetUserId,
       roleCode as SystemRoleCode,
       undefined,
@@ -123,20 +107,12 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const admin = await getCurrentAdmin();
-    if (!admin) {
+    if (!admin || !admin.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
       );
     }
-
-    const actor = {
-      userId: admin.id,
-      email: admin.email,
-      phone: admin.phone,
-      status: 'ACTIVE' as const,
-      roles: admin.roles as any,
-    };
 
     const { searchParams } = new URL(request.url);
     const targetUserId = searchParams.get('targetUserId');
@@ -149,7 +125,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await SuperAdminService.revokeSystemRole(actor, targetUserId, roleCode);
+    const result = await SuperAdminService.revokeSystemRole(admin, targetUserId, roleCode);
 
     return NextResponse.json(result);
   } catch (error: any) {

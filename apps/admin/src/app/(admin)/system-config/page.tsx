@@ -9,15 +9,7 @@ export default async function AdminSystemConfigPage() {
   const admin = await getCurrentAdmin();
   if (!admin) return null;
 
-  const actor = {
-    userId: admin.id,
-    email: admin.email,
-    phone: admin.phone,
-    status: 'ACTIVE' as const,
-    roles: admin.roles as any,
-  };
-
-  const metrics = await SuperAdminService.getDatabaseHealth(actor);
+  const metrics = await SuperAdminService.getDatabaseHealth(admin);
 
   return <SuperAdminDatabaseHealthView initialData={metrics} />;
 }

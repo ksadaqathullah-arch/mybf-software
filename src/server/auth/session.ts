@@ -69,6 +69,9 @@ export async function getSessionActor(sessionToken: string): Promise<AuthActor |
   }
 
   const user = session.user;
+  if (user.status !== 'ACTIVE') {
+    return null;
+  }
   const now = new Date();
 
   // 1. Filter active, unexpired role assignments
@@ -137,7 +140,7 @@ export async function getSessionActor(sessionToken: string): Promise<AuthActor |
 
 /**
  * Helper to get the current actor from Next.js cookies.
- * Dispatches to the port-isolated cookie (mybf_admin_session on Port 4000, mybf_session on Port 3000).
+ * Dispatches to the port-isolated cookie (mybf_admin_session on Port 4000 / admin subdomain, mybf_session on Port 3000).
  */
 export async function getCurrentActor(): Promise<AuthActor | null> {
   try {
@@ -150,9 +153,14 @@ export async function getCurrentActor(): Promise<AuthActor | null> {
       const cookieName = getSessionCookieNameForScope(scope);
       token = cookieStore.get(cookieName)?.value;
 
-      // In admin scope (Port 4000), never fall back to public session
+      // In admin scope (Port 4000 / admin subdomain), strictly never fall back to public session
       if (!token && scope === 'ADMIN') {
         return null;
+      }
+
+      // If in public scope and no public session cookie exists, check if an admin session is active
+      if (!token && scope === 'PUBLIC') {
+        token = cookieStore.get(SESSION_COOKIE_ADMIN_NAME)?.value;
       }
     } catch {
       token = cookieStore.get(SESSION_COOKIE_ADMIN_NAME)?.value || cookieStore.get(SESSION_COOKIE_NAME)?.value;

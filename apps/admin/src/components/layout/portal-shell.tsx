@@ -32,6 +32,19 @@ export function PortalShell({
 }: PortalShellProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [loggingOut, setLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore network errors and proceed with redirect
+    } finally {
+      window.location.href = '/login';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-paper text-ink flex flex-col md:flex-row font-sans selection:bg-yellow selection:text-ink">
@@ -159,14 +172,16 @@ export function PortalShell({
                 <p className="text-[10px] text-paper/60 truncate font-mono">Mission Malappuram 2050</p>
               </div>
             </div>
-            <Link
-              href="/"
-              className="text-paper/70 hover:text-yellow hover:bg-white/10 p-2 border border-white/20 transition-colors"
-              title="Exit to Public Site"
-              aria-label="Exit to Public Site"
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="text-paper/70 hover:text-yellow hover:bg-white/10 p-2 border border-white/20 transition-colors cursor-pointer disabled:opacity-50"
+              title="Sign Out of Central Workspace"
+              aria-label="Sign Out of Central Workspace"
             >
               <LogOut className="h-4 w-4" />
-            </Link>
+            </button>
           </div>
         </div>
       </aside>

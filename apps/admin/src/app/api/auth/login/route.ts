@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
-import { db } from '@/server/db';
 import { MembershipService } from '@shared/features/memberships/server/membership.service';
 import { ADMIN_SESSION_COOKIE } from '@/server/auth';
-
-const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
+import { createSession, SESSION_MAX_AGE_SECONDS } from '@shared/server/auth/session';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,21 +33,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create session in database
-    const sessionToken = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
+    // Create session in database via trusted session engine
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     const userAgent = request.headers.get('user-agent');
-
-    await db.session.create({
-      data: {
-        userId: authResult.user.id,
-        sessionToken,
-        expiresAt,
-        ipAddress: ipAddress ?? null,
-        userAgent: userAgent ?? null,
-      },
-    });
+    const sessionToken = await createSession(authResult.user.id, ipAddress, userAgent);
 
     const response = NextResponse.json({
       success: true,

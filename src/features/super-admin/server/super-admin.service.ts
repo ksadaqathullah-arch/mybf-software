@@ -446,7 +446,7 @@ export class SuperAdminService {
       });
 
       return created;
-    });
+    }, { maxWait: 15000, timeout: 30000 });
 
     return {
       success: true,
@@ -503,7 +503,7 @@ export class SuperAdminService {
           },
         },
       });
-    });
+    }, { maxWait: 15000, timeout: 30000 });
 
     return {
       success: true,

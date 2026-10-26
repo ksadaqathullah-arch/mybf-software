@@ -10,15 +10,7 @@ export default async function AdminAuditLogsPage() {
   const admin = await getCurrentAdmin();
   if (!admin) return null;
 
-  const actor = {
-    userId: admin.id,
-    email: admin.email,
-    phone: admin.phone,
-    status: 'ACTIVE' as const,
-    roles: admin.roles as any,
-  };
-
-  const data = await SuperAdminService.getAuditLogs(actor, {
+  const data = await SuperAdminService.getAuditLogs(admin, {
     page: 1,
     pageSize: 20,
   });

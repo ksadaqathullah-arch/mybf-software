@@ -7,8 +7,11 @@ import { LeadershipRole } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized: Super Admin access required' }, { status: 403 });
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Super Administrator credentials required.' },
+        { status: 403 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
@@ -41,8 +44,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized: Super Admin access required' }, { status: 403 });
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Super Administrator credentials required.' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();

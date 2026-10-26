@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
-    if (!actor || !actor.roles.includes('SUPER_ADMIN')) {
+    if (!actor || actor.status !== 'ACTIVE' || !actor.roles.includes('SUPER_ADMIN')) {
       return NextResponse.json(
         { success: false, error: 'Forbidden: Super Administrator credentials required.' },
         { status: 403 }
