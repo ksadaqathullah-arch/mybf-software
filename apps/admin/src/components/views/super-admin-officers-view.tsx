@@ -409,7 +409,8 @@ export function SuperAdminOfficersView({
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
@@ -486,13 +487,80 @@ export function SuperAdminOfficersView({
               </tbody>
             </table>
           </div>
+
+          {/* Smartphone Card View (< md) */}
+          <div className="md:hidden space-y-3 p-3">
+            {filteredOfficers.length === 0 ? (
+              <div className="py-8 text-center text-muted font-serif">
+                No chapter leadership appointments found matching criteria.
+              </div>
+            ) : (
+              filteredOfficers.map((officer) => (
+                <div
+                  key={officer.id}
+                  className="border-2 border-ink bg-white p-4 shadow-[3px_3px_0px_#14161c] space-y-3 text-xs"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-sans font-bold text-base text-ink">
+                        {officer.user.profile?.fullName || officer.user.username || 'Unnamed'}
+                      </h4>
+                      <div className="text-xs text-muted mt-0.5">
+                        {officer.user.email} • {officer.user.profile?.primaryPhone || 'No Phone'}
+                      </div>
+                    </div>
+                    <Badge variant={officer.isActive ? 'success' : 'neutral'}>
+                      {officer.isActive ? 'ACTIVE' : 'INACTIVE'}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 border-t border-b border-ink/10 py-2.5">
+                    <div>
+                      <span className="text-muted block text-[11px]">Position</span>
+                      <span className="font-bold text-ink">{officer.role.replace(/_/g, ' ')}</span>
+                      {officer.title && (
+                        <span className="text-[11px] text-muted block mt-0.5">{officer.title}</span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-muted block text-[11px]">Chapter</span>
+                      <span className="font-bold text-ink">{officer.chapter.name}</span>
+                      <span className="font-mono text-[10px] text-muted block">{officer.chapter.code}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-muted block text-[11px]">Tenure</span>
+                      <span className="font-mono text-ink text-[11px]">
+                        Since {new Date(officer.startDate).toLocaleDateString()}
+                        {officer.endDate ? ` until ${new Date(officer.endDate).toLocaleDateString()}` : ' (Ongoing)'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setRevokingOfficer(officer);
+                        setRevocationReason('Executive restructuring / Central administrative mandate');
+                      }}
+                      className="w-full min-h-11 text-rose-700 border-2 border-rose-700 hover:bg-rose-50 font-sans font-bold text-xs shadow-[2px_2px_0px_#14161c]"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1.5" /> Revoke Appointment
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
 
       {/* Revocation Modal */}
       {revokingOfficer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-4 backdrop-blur-xs animate-fade-in">
-          <div className="bg-paper border-2 border-ink shadow-[8px_8px_0px_#14161c] max-w-lg w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-3 sm:p-4 backdrop-blur-xs animate-fade-in">
+          <div className="bg-paper border-2 border-ink shadow-[6px_6px_0px_#14161c] sm:shadow-[8px_8px_0px_#14161c] max-w-lg w-full p-4 sm:p-6 space-y-4 max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b-2 border-ink pb-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-rose-600" />

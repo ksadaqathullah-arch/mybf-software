@@ -465,7 +465,43 @@ export function YouthRegistrationForm({
       {/* MEMBERSHIP PAGE HERO HEADER (Yellow & Ink Signature Identity) */}
       {/* ==================================================== */}
       <header className="shrink-0 border-b-2 border-ink bg-yellow text-ink">
-        <div className="px-5 pt-5 pb-4 sm:px-8 sm:pt-6 sm:pb-5">
+        {/* Smartphone-First App Header (< sm) */}
+        <div className="sm:hidden flex items-center justify-between px-3.5 py-2.5">
+          <div className="flex items-center gap-2 min-w-0">
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="p-1.5 border-2 border-ink bg-paper text-ink font-bold text-xs flex items-center shadow-[1px_1px_0px_#14161c] cursor-pointer"
+                aria-label="Previous step"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            ) : null}
+            <div className="truncate">
+              <span className="text-[10px] font-mono font-bold text-ink/75 block leading-tight">
+                STEP 0{step} OF 05 ({progressPercent}%)
+              </span>
+              <h2 className="text-sm font-bold text-ink truncate leading-tight">
+                {currentStepMeta.shortLabel}: {currentStepMeta.title.split('&')[0]}
+              </h2>
+            </div>
+          </div>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close application"
+              className="inline-flex size-8 items-center justify-center border-2 border-ink bg-paper text-ink font-bold hover:bg-ink hover:text-paper shadow-[2px_2px_0px_#14161c] cursor-pointer shrink-0 ml-2"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Desktop Header (sm:block) */}
+        <div className="hidden sm:block px-5 pt-5 pb-4 sm:px-8 sm:pt-6 sm:pb-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Index & Eyebrow like PageHero: "04 —— MEMBERSHIP" */}
             <div className="flex items-center gap-3">
@@ -505,18 +541,18 @@ export function YouthRegistrationForm({
               {currentStepMeta.subtitle}
             </p>
           </div>
-
-          {/* Progress Bar (Ink fill with ink/20 track) */}
-          <div className="mt-4 w-full bg-ink/15 h-2 border border-ink/25 overflow-hidden">
-            <div
-              className="h-full bg-ink transition-all duration-300 ease-out shadow-[0_0_8px_rgba(20,22,28,0.3)]"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
         </div>
 
-        {/* Marquee Ticker Strip: Exact replica of the Membership Page Marquee Strip */}
-        <div className="overflow-hidden border-t-2 border-ink bg-ink text-paper py-2">
+        {/* Progress Bar (Visible on both mobile & desktop) */}
+        <div className="w-full bg-ink/15 h-1.5 sm:h-2 border-t border-ink/20 overflow-hidden">
+          <div
+            className="h-full bg-ink transition-all duration-300 ease-out shadow-[0_0_8px_rgba(20,22,28,0.3)]"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Marquee Ticker Strip: Desktop only */}
+        <div className="hidden sm:block overflow-hidden border-t-2 border-ink bg-ink text-paper py-2">
           <ul aria-hidden="true" className="marquee-track flex w-max">
             {[...STRIP_WORDS, ...STRIP_WORDS].map((word, i) => (
               <li
@@ -530,10 +566,10 @@ export function YouthRegistrationForm({
           </ul>
         </div>
 
-        {/* Step Separations Stepper Navigation */}
+        {/* Step Separations Stepper Navigation: Desktop only */}
         <nav
           aria-label="Registration steps"
-          className="grid grid-cols-5 gap-1 sm:gap-2 px-3 sm:px-8 py-2 bg-paper-2 border-t-2 border-ink"
+          className="hidden sm:grid grid-cols-5 gap-1 sm:gap-2 px-3 sm:px-8 py-2 bg-paper-2 border-t-2 border-ink"
         >
           {STEPS.map((s) => {
             const isCompleted = s.id < step;
@@ -576,8 +612,8 @@ export function YouthRegistrationForm({
       <div
         ref={formBodyRef}
         className={cn(
-          'px-5 py-6 sm:px-8 sm:py-8 space-y-6 bg-paper text-ink',
-          asModal ? 'flex-1 overflow-y-auto' : ''
+          'px-3.5 py-4 sm:px-8 sm:py-8 space-y-6 bg-paper text-ink',
+          asModal ? 'flex-1 overflow-y-auto overscroll-contain' : ''
         )}
       >
         {/* Global Error Banner */}
@@ -717,7 +753,7 @@ export function YouthRegistrationForm({
             {/* STEP 1: Personal & Contact Identity */}
             {/* ==================================================== */}
             {step === 1 && (
-              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+              <div className="border-2 border-ink bg-white p-4 sm:p-8 shadow-[4px_4px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
                 <div className="border-b-2 border-ink/15 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -975,7 +1011,7 @@ export function YouthRegistrationForm({
             {/* STEP 2: Location & Chapter Selection */}
             {/* ==================================================== */}
             {step === 2 && (
-              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+              <div className="border-2 border-ink bg-white p-4 sm:p-8 shadow-[4px_4px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
                 <div className="border-b-2 border-ink/15 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -1095,7 +1131,7 @@ export function YouthRegistrationForm({
             {/* STEP 3: Professional Profile */}
             {/* ==================================================== */}
             {step === 3 && (
-              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+              <div className="border-2 border-ink bg-white p-4 sm:p-8 shadow-[4px_4px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
                 <div className="border-b-2 border-ink/15 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -1254,7 +1290,7 @@ export function YouthRegistrationForm({
             {/* STEP 4: Goals, Talents & Interests */}
             {/* ==================================================== */}
             {step === 4 && (
-              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+              <div className="border-2 border-ink bg-white p-4 sm:p-8 shadow-[4px_4px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
                 <div className="border-b-2 border-ink/15 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -1439,7 +1475,7 @@ export function YouthRegistrationForm({
             {/* STEP 5: Account Credentials & Consent */}
             {/* ==================================================== */}
             {step === 5 && (
-              <div className="border-2 border-ink bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#14161c] space-y-6 animate-in fade-in duration-200">
+              <div className="border-2 border-ink bg-white p-4 sm:p-8 shadow-[4px_4px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
                 <div className="border-b-2 border-ink/15 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -1651,74 +1687,133 @@ export function YouthRegistrationForm({
       </div>
 
       {/* ==================================================== */}
-      {/* ACTION CONTROLS FOOTER ("NEXT SEPARATIONS") */}
+      {/* ACTION CONTROLS FOOTER */}
       {/* ==================================================== */}
       {!submitted && (
-        <footer className="shrink-0 border-t-2 border-ink bg-paper-2 px-5 py-4 sm:px-8 flex flex-wrap items-center justify-between gap-4 shadow-[0_-4px_12px_rgba(20,22,28,0.06)]">
-          <div>
-            {step > 1 ? (
-              <button
-                type="button"
-                onClick={handlePrev}
-                className="btn btn-outline-dark min-h-12 px-6 border-2 border-ink cursor-pointer"
-              >
-                <ArrowLeft className="h-4 w-4" /> Previous Step
-              </button>
-            ) : (
-              <span className="font-display text-xs font-bold uppercase tracking-wider text-muted">
-                Step 01 of 05 &bull; Personal Identity
-              </span>
+        <>
+          {/* Mobile Sticky Action Bar */}
+          <footer className="sm:hidden shrink-0 border-t-2 border-ink bg-paper p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(20,22,28,0.08)] flex flex-col gap-2 z-10">
+            {Object.keys(fieldErrors).length > 0 && (
+              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 px-2.5 py-1.5 shadow-[1px_1px_0px_#14161c]">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span className="truncate">Please check marked fields above</span>
+              </div>
             )}
-          </div>
-
-          {Object.keys(fieldErrors).length > 0 && (
-            <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 px-3 py-1.5 shadow-[1px_1px_0px_#14161c]">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Please check required fields</span>
-            </div>
-          )}
-
-          <div className="flex items-center gap-3">
-            {step < 5 ? (
-              <div className="flex items-center gap-3">
-                <span className="hidden md:inline font-display text-xs font-bold uppercase tracking-wider text-muted">
-                  Next up: <strong className="text-ink font-black">0{step + 1}. {STEPS[step].shortLabel}</strong>
-                </span>
+            <div className="flex items-center gap-2">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="btn btn-outline-dark min-h-11 px-3.5 border-2 border-ink font-display text-xs font-bold shrink-0 flex items-center gap-1"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Back</span>
+                </button>
+              )}
+              {step < 5 ? (
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="btn btn-yellow min-h-12 px-8 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
+                  className="btn btn-yellow flex-1 min-h-11 px-4 border-2 border-ink shadow-[2px_2px_0px_#14161c] font-display text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5"
                 >
-                  <span>Continue to Step 0{step + 1}</span> <Arrow />
+                  <span>Continue (Step {step}/5)</span>
+                  <Arrow className="h-4 w-4" />
                 </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="btn btn-yellow flex-1 min-h-11 px-4 border-2 border-ink shadow-[2px_2px_0px_#14161c] disabled:opacity-50 font-display text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Submitting...</span>
+                    </>
+                  ) : formData.requestAgeException ? (
+                    <>
+                      <span>Submit for Review</span>
+                      <Arrow className="h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      <span>Complete Enrollment</span>
+                      <Arrow className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </footer>
+
+          {/* Desktop Footer */}
+          <footer className="hidden sm:flex shrink-0 border-t-2 border-ink bg-paper-2 px-5 py-4 sm:px-8 flex-wrap items-center justify-between gap-4 shadow-[0_-4px_12px_rgba(20,22,28,0.06)]">
+            <div>
+              {step > 1 ? (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="btn btn-outline-dark min-h-12 px-6 border-2 border-ink cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Previous Step
+                </button>
+              ) : (
+                <span className="font-display text-xs font-bold uppercase tracking-wider text-muted">
+                  Step 01 of 05 &bull; Personal Identity
+                </span>
+              )}
+            </div>
+
+            {Object.keys(fieldErrors).length > 0 && (
+              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 px-3 py-1.5 shadow-[1px_1px_0px_#14161c]">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>Please check required fields</span>
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading}
-                className="btn btn-yellow min-h-12 px-9 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 disabled:opacity-50 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Submitting Application...</span>
-                  </>
-                ) : formData.requestAgeException ? (
-                  <>
-                    <span>Submit for Super Admin Review</span>
-                    <Arrow />
-                  </>
-                ) : (
-                  <>
-                    <span>Complete Enrollment</span>
-                    <Arrow />
-                  </>
-                )}
-              </button>
             )}
-          </div>
-        </footer>
+
+            <div className="flex items-center gap-3">
+              {step < 5 ? (
+                <div className="flex items-center gap-3">
+                  <span className="hidden md:inline font-display text-xs font-bold uppercase tracking-wider text-muted">
+                    Next up: <strong className="text-ink font-black">0{step + 1}. {STEPS[step].shortLabel}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="btn btn-yellow min-h-12 px-8 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
+                  >
+                    <span>Continue to Step 0{step + 1}</span> <Arrow />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="btn btn-yellow min-h-12 px-9 border-2 border-ink shadow-[4px_4px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 disabled:opacity-50 cursor-pointer font-display text-xs font-black uppercase tracking-wider"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Submitting Application...</span>
+                    </>
+                  ) : formData.requestAgeException ? (
+                    <>
+                      <span>Submit for Super Admin Review</span>
+                      <Arrow />
+                    </>
+                  ) : (
+                    <>
+                      <span>Complete Enrollment</span>
+                      <Arrow />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </footer>
+        </>
       )}
     </div>
   );
@@ -1728,7 +1823,7 @@ export function YouthRegistrationForm({
 
     return (
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-ink/80 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 md:p-6 bg-ink/80 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) onClose();
         }}
@@ -1737,7 +1832,7 @@ export function YouthRegistrationForm({
         aria-label="MYBF Official Youth Membership Application"
       >
         <div
-          className="relative flex flex-col w-full max-w-4xl h-[95vh] sm:h-[90vh] max-h-[880px] border-2 border-ink bg-paper text-ink shadow-[12px_12px_0px_#14161c] overflow-hidden my-auto"
+          className="relative flex flex-col w-full h-[100dvh] sm:h-[90vh] sm:max-w-4xl sm:max-h-[880px] border-0 sm:border-2 border-ink bg-paper text-ink sm:shadow-[12px_12px_0px_#14161c] overflow-hidden my-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {formElement}

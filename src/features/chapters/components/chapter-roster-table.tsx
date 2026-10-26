@@ -351,7 +351,8 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View (>= md) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse">
             <thead className="border-b-2 border-ink bg-ink text-paper font-sans font-semibold uppercase text-xs tracking-wider">
               <tr>
@@ -452,12 +453,105 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
             </tbody>
           </table>
         </div>
+
+        {/* Smartphone Card View (< md) */}
+        <div className="md:hidden space-y-3 p-3">
+          {filteredMembers.length === 0 ? (
+            <div className="py-8 text-center text-ink/50 font-sans italic text-sm">
+              No active members found matching current filters for {chapterName}.
+            </div>
+          ) : (
+            filteredMembers.map((m) => (
+              <div
+                key={m.id}
+                className="border-2 border-ink bg-white p-4 shadow-[3px_3px_0px_#14161c] space-y-3 text-xs"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-ink font-sans text-base leading-tight">{m.fullName}</h4>
+                    <span className="font-mono text-blue font-bold text-xs mt-0.5 block">
+                      {m.membershipNumber}
+                    </span>
+                    <div className="text-xs text-ink/70 font-sans mt-0.5">
+                      {m.email || 'Contact on file'}
+                    </div>
+                  </div>
+                  {m.hasPendingDeactivation ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-950 border border-amber-900 font-sans text-[11px] font-semibold shadow-[1px_1px_0px_#14161c] shrink-0">
+                      <Clock className="h-3 w-3" /> Deactivation Pending
+                    </span>
+                  ) : (
+                    <Badge variant="success">
+                      {m.status}
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
+                  <Badge variant="primary" className="text-[10px]">
+                    {getMemberCategoryLabel(m.memberCategory)}
+                  </Badge>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {getCurrentPositionLabel(m.currentPosition)}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 border-t border-b border-ink/10 py-2.5 text-xs">
+                  <div>
+                    <span className="text-muted block text-[11px]">Business / Sector</span>
+                    <span className="font-semibold text-ink">
+                      {m.companyName ? `${m.companyName} (${m.businessSector})` : m.businessSector}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-[11px]">Joined</span>
+                    <span className="font-semibold text-ink">
+                      {new Date(m.joinedDate).toLocaleDateString('en-IN', {
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Touch Actions */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setViewingMember(m)}
+                    className="flex-1 min-h-11 text-xs font-semibold font-sans border-2 border-ink bg-paper hover:bg-paper-2 shadow-[2px_2px_0px_#14161c]"
+                    title="View Member Profile"
+                  >
+                    <Eye className="h-4 w-4 mr-1.5" /> Full Profile
+                  </Button>
+
+                  {m.hasPendingDeactivation ? (
+                    <div className="flex-1 min-h-11 flex items-center justify-center text-xs text-amber-900 font-sans italic bg-amber-50 border border-amber-200">
+                      Review in progress
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openDeactivationModal(m)}
+                      className="flex-1 min-h-11 text-xs font-semibold font-sans text-destructive border-2 border-destructive/60 hover:bg-destructive/10 bg-paper shadow-[2px_2px_0px_#14161c]"
+                      title="Request Member Deactivation"
+                    >
+                      <UserX className="h-4 w-4 mr-1.5" /> Deactivate
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </CardContent>
 
       {/* VIEW MEMBER DETAILS MODAL */}
       {viewingMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs overflow-y-auto animate-in fade-in">
-          <div className="bg-paper border-2 border-ink shadow-[6px_6px_0px_#14161c] max-w-xl w-full max-h-[90vh] overflow-y-auto my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto animate-in fade-in">
+          <div className="bg-paper border-2 border-ink shadow-[6px_6px_0px_#14161c] max-w-xl w-full max-h-[95vh] overflow-y-auto my-auto">
             <div className="p-5 border-b-2 border-ink bg-paper flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2">
@@ -578,8 +672,8 @@ export function ChapterRosterTable({ initialMembers, chapterName }: ChapterRoste
 
       {/* MEMBER DEACTIVATION GOVERNANCE MODAL */}
       {deactivatingMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs overflow-y-auto animate-in fade-in">
-          <div className="bg-paper border-2 border-ink shadow-[6px_6px_0px_#14161c] max-w-lg w-full max-h-[90vh] overflow-y-auto my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto animate-in fade-in">
+          <div className="bg-paper border-2 border-ink shadow-[6px_6px_0px_#14161c] max-w-lg w-full max-h-[95vh] overflow-y-auto my-auto">
             <div className="p-5 border-b-2 border-ink bg-paper flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-1.5">

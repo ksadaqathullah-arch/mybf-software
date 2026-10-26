@@ -39,7 +39,7 @@ export function ParentInitiativeSection({
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 relative z-10">
         <div
           style={{ ["--lift-shadow" as string]: "#005bff" }}
-          className="group lift relative overflow-hidden border-2 border-ink bg-paper-2 p-8 sm:p-12 lg:p-16 shadow-[8px_8px_0px_#14161c]"
+          className="group lift relative overflow-hidden border-2 border-ink bg-paper-2 p-5 sm:p-12 lg:p-16 shadow-[4px_4px_0px_#14161c] sm:shadow-[8px_8px_0px_#14161c]"
         >
           {/* Top 3-Tone Brand Accent Strip */}
           <div
@@ -68,7 +68,7 @@ export function ParentInitiativeSection({
 
               {/* Official Logo Banner */}
               <div className="pt-1 pb-2">
-                <div className="inline-block p-4 border-2 border-ink bg-paper shadow-[3px_3px_0px_#14161c] max-w-sm">
+                <div className="inline-block p-3 sm:p-4 border-2 border-ink bg-paper shadow-[2px_2px_0px_#14161c] sm:shadow-[3px_3px_0px_#14161c] max-w-sm">
                   <div className="relative aspect-[607/188] w-full h-auto max-h-16 flex items-center select-none">
                     <Image
                       src="/logos/mission-malappuram-2050-logo.png"
@@ -113,7 +113,7 @@ export function ParentInitiativeSection({
 
             {/* Right Column: Architectural Parent Initiative Showcase Card */}
             <div className="lg:col-span-5">
-              <div className="border-2 border-ink bg-paper p-6 sm:p-7 shadow-[4px_4px_0px_#14161c]">
+              <div className="border-2 border-ink bg-paper p-4 sm:p-7 shadow-[3px_3px_0px_#14161c] sm:shadow-[4px_4px_0px_#14161c]">
                 <div className="flex items-center justify-between pb-4 border-b border-ink/15">
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-yellow" />

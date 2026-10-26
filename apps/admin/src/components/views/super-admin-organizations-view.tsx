@@ -201,7 +201,8 @@ export function SuperAdminOrganizationsView({
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
@@ -322,6 +323,101 @@ export function SuperAdminOrganizationsView({
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Smartphone Card View (< md) */}
+          <div className="md:hidden space-y-3 p-3">
+            {filteredChapters.length === 0 ? (
+              <div className="py-8 text-center text-muted font-serif">
+                No chapters found matching filter criteria.
+              </div>
+            ) : (
+              filteredChapters.map((chapter) => {
+                const president = chapter.leadership.find((l) => l.role === 'PRESIDENT');
+                const secretary = chapter.leadership.find((l) => l.role === 'SECRETARY');
+
+                return (
+                  <div
+                    key={chapter.id}
+                    className="border-2 border-ink bg-white p-4 shadow-[3px_3px_0px_#14161c] space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-9 w-9 bg-blue text-paper border-2 border-ink flex items-center justify-center font-sans font-bold text-xs shadow-[1px_1px_0px_#14161c] shrink-0">
+                          {chapter.code.replace('CHP-', '').split('-')[0] || 'CH'}
+                        </div>
+                        <div>
+                          <h4 className="font-sans font-bold text-base text-ink leading-tight">
+                            {chapter.name}
+                          </h4>
+                          <span className="font-mono text-[10px] text-muted font-bold block">
+                            {chapter.code} • /{chapter.slug}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge variant={chapter.status === 'ACTIVE' ? 'success' : 'neutral'}>
+                        {chapter.status}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs border-t border-b border-ink/10 py-2.5">
+                      <div>
+                        <span className="text-muted block text-[11px]">Active Members</span>
+                        <span className="font-bold text-ink text-sm">{chapter.activeMembersCount}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted block text-[11px]">Applications</span>
+                        <span className="font-mono font-bold text-xs bg-yellow/30 px-2 py-0.5 border border-ink inline-block">
+                          {chapter.applicationsCount}
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-muted block text-[11px]">Leadership</span>
+                        {chapter.leadership.length === 0 ? (
+                          <span className="font-sans text-[11px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 border border-amber-700 inline-block mt-0.5">
+                            Vacant (No Officers Appointed)
+                          </span>
+                        ) : (
+                          <div className="space-y-0.5 text-xs text-ink mt-0.5">
+                            {president && (
+                              <p>
+                                <strong className="text-muted">President:</strong> {president.fullName}
+                              </p>
+                            )}
+                            {secretary && (
+                              <p>
+                                <strong className="text-muted">Secretary:</strong> {secretary.fullName}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Touch Actions */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setManagingChapter(chapter)}
+                        className="min-h-11 text-xs font-semibold px-2.5 shadow-[2px_2px_0px_#14161c]"
+                      >
+                        <Shield className="h-3.5 w-3.5 mr-1 text-ink" /> Manage Officers
+                      </Button>
+                      <a
+                        href={`${resolvedBaseUrl}/chapter/${encodeURIComponent(chapter.slug.toLowerCase())}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-h-11 inline-flex items-center justify-center font-sans font-semibold tracking-normal border-2 border-ink transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow cursor-pointer shadow-[2px_2px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 bg-paper text-ink hover:bg-ink hover:text-paper px-2.5 text-xs text-center"
+                        title={`Open ${chapter.name} Executive Hub on Main Application (new tab)`}
+                      >
+                        Chapter Hub <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>

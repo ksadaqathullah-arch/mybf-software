@@ -35,7 +35,7 @@ export function DigitalIdCard({ card, className }: DigitalIdCardProps) {
   return (
     <div
       id="mybf-digital-id-card"
-      className={`relative w-full max-w-[360px] overflow-hidden rounded-3xl bg-gradient-to-b from-[#07173E] via-[#03236A] to-[#02102E] text-white shadow-2xl border border-blue-400/30 ring-1 ring-white/10 p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-blue-500/10 ${className || ''}`}
+      className={`relative w-full max-w-[360px] overflow-hidden rounded-3xl bg-gradient-to-b from-[#07173E] via-[#03236A] to-[#02102E] text-white shadow-2xl border border-blue-400/30 ring-1 ring-white/10 p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-blue-500/10 ${className || ''}`}
       style={{
         printColorAdjust: 'exact',
         WebkitPrintColorAdjust: 'exact',

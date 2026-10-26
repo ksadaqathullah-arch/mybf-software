@@ -264,7 +264,8 @@ export function SuperAdminAuditLogsView({
       {/* Audit Log Table */}
       <Card className="border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c]">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead className="border-b-2 border-ink bg-ink text-paper font-sans text-xs font-semibold tracking-wide">
                 <tr>
@@ -349,6 +350,58 @@ export function SuperAdminAuditLogsView({
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Smartphone Card View (< md) */}
+          <div className="md:hidden space-y-2.5 p-3">
+            {loading ? (
+              <div className="py-12 text-center text-muted font-sans text-sm">
+                Loading audit records...
+              </div>
+            ) : logs.length === 0 ? (
+              <div className="py-12 text-center text-muted font-sans text-sm">
+                No audit events match filters.
+              </div>
+            ) : (
+              logs.map((log) => (
+                <div
+                  key={log.id}
+                  className="border-2 border-ink bg-white p-3.5 shadow-[2px_2px_0px_#14161c] space-y-2 text-xs"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-blue block">
+                        {log.action}
+                      </span>
+                      <span className="font-sans font-bold text-xs text-ink mt-0.5 block">
+                        {log.resource} {log.resourceId ? `• ${log.resourceId.slice(0, 16)}...` : ''}
+                      </span>
+                    </div>
+                    {log.diffJson && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedLog(log)}
+                        className="h-7 px-2 text-[10px] shrink-0"
+                      >
+                        <Eye className="h-3 w-3 mr-1" /> Diff
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-muted border-t border-ink/10 pt-2 font-mono">
+                    <span className="truncate max-w-[170px]">{log.actorEmail || 'System / Auto'}</span>
+                    <span className="shrink-0">
+                      {new Date(log.createdAt).toLocaleTimeString('en-IN', {
+                        timeZone: 'Asia/Kolkata',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Pagination Controls */}

@@ -377,12 +377,12 @@ export function LocationSelector({
   const isEditorial = variant === 'editorial';
 
   const inputBaseClass = isEditorial
-    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-xs text-ink placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60 font-sans'
-    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all font-sans';
+    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-base sm:text-xs text-ink placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60 font-sans'
+    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all font-sans';
 
   const monoInputBaseClass = isEditorial
-    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-xs text-ink font-mono placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60'
-    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all';
+    ? 'w-full border-2 border-ink bg-white px-3.5 py-2.5 text-base sm:text-xs text-ink font-mono placeholder:text-muted/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow shadow-[2px_2px_0px_#14161c] transition-all disabled:opacity-60'
+    : 'w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5 py-2.5 text-base sm:text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#035AFC] focus:ring-2 focus:ring-[#035AFC]/10 focus:outline-none disabled:opacity-60 transition-all';
 
   const labelBaseClass = isEditorial
     ? 'text-xs font-display font-bold uppercase tracking-wider text-ink flex items-center gap-1.5'
@@ -395,10 +395,10 @@ export function LocationSelector({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Mode Switcher Banner / Top Control */}
-      <div className={`flex items-center justify-between pb-2 border-b-2 ${isEditorial ? 'border-ink/15 text-ink' : 'border-slate-100 dark:border-slate-800/80'}`}>
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2 border-b-2 ${isEditorial ? 'border-ink/15 text-ink' : 'border-slate-100 dark:border-slate-800/80'}`}>
         <div className={labelBaseClass}>
-          <MapPin className="h-3.5 w-3.5 text-blue" />
-          <span>
+          <MapPin className="h-3.5 w-3.5 text-blue shrink-0" />
+          <span className="truncate">
             {isLocationFirstMode
               ? 'Administrative Location-First Mode'
               : 'Smart PIN Code-First Address System'}
@@ -410,9 +410,9 @@ export function LocationSelector({
             setIsLocationFirstMode(!isLocationFirstMode);
             setPostalMessage(null);
           }}
-          className={`text-[11px] font-display font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer ${isEditorial ? 'text-blue hover:text-ink underline' : 'text-[#035AFC] hover:underline font-medium'}`}
+          className={`text-[11px] font-display font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer self-start sm:self-auto ${isEditorial ? 'text-blue hover:text-ink underline' : 'text-[#035AFC] hover:underline font-medium'}`}
         >
-          <ArrowUpDown className="h-3 w-3" />
+          <ArrowUpDown className="h-3 w-3 shrink-0" />
           {isLocationFirstMode ? 'Lookup by PIN Code Instead' : 'Search by Location Instead'}
         </button>
       </div>

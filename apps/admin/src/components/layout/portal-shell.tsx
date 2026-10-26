@@ -749,9 +749,59 @@ export function PortalShell({
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-20 md:pb-8">
           {children}
         </main>
+
+        {/* Smartphone-First Bottom Navigation Bar (< md) */}
+        <nav
+          aria-label="Mobile Bottom Navigation"
+          className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-ink border-t-2 border-ink text-paper z-30 flex items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_12px_rgba(20,22,28,0.2)]"
+        >
+          {navItems.slice(0, 3).map((item) => {
+            const Icon = item.icon;
+            const active = isItemActive(item);
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={cn(
+                  'flex flex-col items-center justify-center flex-1 py-1 transition-colors relative min-h-[44px]',
+                  active ? 'text-yellow' : 'text-paper/70 hover:text-paper'
+                )}
+                aria-current={active ? 'page' : undefined}
+              >
+                <div className="relative">
+                  <Icon className="h-5 w-5" />
+                  {item.badge && (
+                    <span className="absolute -top-1 -right-2.5 px-1 py-0.2 min-w-4 text-[9px] font-mono font-bold bg-yellow text-ink border border-ink rounded-full text-center leading-none">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <span className={cn('text-[10px] font-sans font-medium tracking-tight mt-1 truncate max-w-[70px]', active && 'font-bold')}>
+                  {item.label.split(' ')[0]}
+                </span>
+                {active && (
+                  <span className="absolute bottom-1 w-6 h-0.5 bg-yellow rounded-full" />
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Drawer Trigger Button for all remaining modules */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="flex flex-col items-center justify-center flex-1 py-1 text-paper/70 hover:text-yellow transition-colors min-h-[44px] cursor-pointer"
+            aria-label="Open full modules menu drawer"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="text-[10px] font-sans font-medium tracking-tight mt-1">
+              Modules
+            </span>
+          </button>
+        </nav>
       </div>
     </div>
   );

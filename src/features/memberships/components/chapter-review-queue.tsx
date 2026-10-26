@@ -496,7 +496,8 @@ export function ChapterReviewQueue({ initialApplications, chapterName }: Chapter
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead className="border-b-2 border-ink bg-paper-2 text-ink font-display font-black uppercase text-[10px] tracking-wider">
                 <tr>
@@ -668,13 +669,113 @@ export function ChapterReviewQueue({ initialApplications, chapterName }: Chapter
               </tbody>
             </table>
           </div>
+
+          {/* Smartphone Card View (< md) */}
+          <div className="md:hidden space-y-3 p-3">
+            {filteredApplications.length === 0 ? (
+              <div className="py-12 text-center text-ink/60 font-serif italic text-sm">
+                {activeTab === 'PENDING'
+                  ? 'All clear! There are currently no pending applications awaiting chapter executive recommendation.'
+                  : activeTab === 'FORWARDED'
+                  ? 'No applications currently forwarded to Super Admin.'
+                  : activeTab === 'HISTORY'
+                  ? 'No approved or rejected application history in this chapter.'
+                  : 'No applications match your filter criteria.'}
+              </div>
+            ) : (
+              filteredApplications.map((app) => {
+                const isAlreadyRecommended =
+                  app.status === 'UNDER_REVIEW' ||
+                  Boolean(app.chapterRecommendation && app.chapterRecommendation.decision === 'RECOMMENDED');
+                const isApproved = app.status === 'APPROVED';
+                const isRejected = app.status === 'REJECTED';
+
+                return (
+                  <div
+                    key={app.id}
+                    className="border-2 border-ink bg-white p-4 shadow-[3px_3px_0px_#14161c] space-y-3 text-xs"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="font-display font-extrabold text-base text-ink">{app.fullName}</h4>
+                        <div className="text-[11px] text-ink/80 font-mono mt-0.5">
+                          {app.email} • {app.phone}
+                        </div>
+                      </div>
+                      <Badge
+                        variant={
+                          isApproved ? 'success' : isRejected ? 'danger' : isAlreadyRecommended ? 'primary' : 'warning'
+                        }
+                      >
+                        {app.status || 'SUBMITTED'}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      <Badge variant="primary" className="text-[10px]">
+                        {getMemberCategoryLabel(app.memberCategory)}
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        {getCurrentPositionLabel(app.currentPosition)}
+                      </Badge>
+                      {app.requiresAgeException && app.ageExceptionStatus === 'PENDING' && (
+                        <Badge variant="warning" className="text-[9px]">
+                          Age Exception Pending
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 border-t border-b border-ink/10 py-2.5 text-xs">
+                      <div>
+                        <span className="text-muted block text-[11px]">Business</span>
+                        <span className="font-semibold text-ink">{app.companyName || 'Not specified'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted block text-[11px]">Sector</span>
+                        <span className="font-semibold text-ink">{app.businessSector || 'General Enterprise'}</span>
+                      </div>
+                    </div>
+
+                    {/* Touch Action Buttons */}
+                    <div className="flex items-center gap-2 pt-1">
+                      {!isAlreadyRecommended && !isApproved && !isRejected ? (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={submittingId === app.id}
+                          onClick={() => handleRecommendApproval(app.id, app.fullName)}
+                          className="flex-1 min-h-11 text-xs font-display font-black uppercase tracking-wider shadow-[2px_2px_0px_#14161c]"
+                        >
+                          <Send className="h-4 w-4 mr-1.5" />
+                          {submittingId === app.id ? 'Recommending...' : 'Recommend'}
+                        </Button>
+                      ) : isAlreadyRecommended ? (
+                        <div className="flex-1 min-h-11 flex items-center justify-center text-xs font-mono text-blue font-bold bg-blue/10 border-2 border-blue/30">
+                          Recommended ✓
+                        </div>
+                      ) : null}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openInspector(app)}
+                        className="flex-1 min-h-11 text-xs font-display font-bold border-2 border-ink text-ink hover:bg-paper-2 shadow-[2px_2px_0px_#14161c]"
+                      >
+                        <Eye className="h-4 w-4 mr-1.5" /> Full File
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </CardContent>
       </Card>
 
       {/* Complete Application Inspector Modal (High Contrast & Editorial) */}
       {inspectingApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/70 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto border-2 border-ink bg-paper text-ink shadow-[8px_8px_0px_#14161c] p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/70 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-2xl max-h-[95vh] overflow-y-auto border-2 border-ink bg-paper text-ink shadow-[6px_6px_0px_#14161c] sm:shadow-[8px_8px_0px_#14161c] p-4 sm:p-6">
             {/* Modal Header */}
             <div className="flex items-start justify-between pb-4 border-b-2 border-ink">
               <div>

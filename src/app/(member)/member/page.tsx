@@ -144,7 +144,7 @@ export default function MemberDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Digital ID Card Preview */}
         <div className="lg:col-span-5 flex flex-col items-center">
-          <div className="w-full flex justify-center p-6 border-2 border-ink bg-paper shadow-[6px_6px_0px_#14161c]">
+          <div className="w-full flex justify-center p-3 sm:p-6 border-2 border-ink bg-paper shadow-[3px_3px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c]">
             <DigitalIdCard card={memberProfile} />
           </div>
           <div className="mt-3 flex items-center gap-2 text-xs font-mono font-bold text-ink/70 uppercase">
@@ -177,7 +177,7 @@ export default function MemberDashboardPage() {
           </div>
 
           {/* Chapter Quick Access Editorial Banner */}
-          <div className="border-2 border-ink bg-blue text-paper p-6 shadow-[6px_6px_0px_#14161c]">
+          <div className="border-2 border-ink bg-blue text-paper p-4 sm:p-6 shadow-[3px_3px_0px_#14161c] sm:shadow-[6px_6px_0px_#14161c]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center space-x-4">
                 <div className="h-12 w-12 border-2 border-ink bg-yellow text-ink flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#14161c]">

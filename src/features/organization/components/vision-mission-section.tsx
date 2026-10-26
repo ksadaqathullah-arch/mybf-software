@@ -35,7 +35,7 @@ const PILLAR_ICONS = {
 export function VisionSection({ className = '' }: { className?: string }) {
   return (
     <section id="vision" className={`space-y-6 ${className}`}>
-      <div className="relative overflow-hidden rounded-3xl border border-blue-500/25 bg-gradient-to-br from-blue-50/70 via-white to-amber-50/20 dark:from-[#0B132B] dark:via-[#070D1F] dark:to-[#040711] p-8 sm:p-12 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl border border-blue-500/25 bg-gradient-to-br from-blue-50/70 via-white to-amber-50/20 dark:from-[#0B132B] dark:via-[#070D1F] dark:to-[#040711] p-5 sm:p-12 shadow-xl">
         {/* Subtle decorative glow */}
         <div className="absolute top-0 right-0 h-80 w-80 rounded-full bg-[#035AFC]/10 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 h-60 w-60 rounded-full bg-[#FBC206]/10 blur-3xl pointer-events-none" />
@@ -94,7 +94,7 @@ export function MissionPillarCard({ pillar }: { pillar: StrategicPillar }) {
 
   return (
     <Card className="flex flex-col justify-between border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0A0F1D] shadow-sm hover:border-[#035AFC] dark:hover:border-blue-500/50 hover:shadow-lg transition-all duration-200 h-full group">
-      <CardHeader className="p-6 pb-4 space-y-4">
+      <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4 space-y-4">
         {/* Top Header Row: Icon + Pillar Number */}
         <div className="flex items-center justify-between">
           <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#035AFC] dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center group-hover:scale-105 group-hover:bg-[#035AFC] group-hover:text-white transition-all">
@@ -118,7 +118,7 @@ export function MissionPillarCard({ pillar }: { pillar: StrategicPillar }) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-6 pt-0 space-y-4 flex-1 flex flex-col justify-between">
+      <CardContent className="p-4 sm:p-6 pt-0 space-y-4 flex-1 flex flex-col justify-between">
         {/* Strategic Intent Text */}
         <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           {paragraphs.map((p, idx) => (

@@ -102,7 +102,7 @@ export default async function MemberIdCardPage() {
       </div>
 
       <div className="flex flex-col items-center justify-center py-4 print:py-0 print:m-0">
-        <div className="p-8 border-2 border-ink bg-paper shadow-[8px_8px_0px_#14161c]">
+        <div className="p-3 sm:p-8 border-2 border-ink bg-paper shadow-[4px_4px_0px_#14161c] sm:shadow-[8px_8px_0px_#14161c] w-full max-w-sm flex justify-center">
           <DigitalIdCard card={cardData} className="max-w-[380px]" />
         </div>
       </div>
