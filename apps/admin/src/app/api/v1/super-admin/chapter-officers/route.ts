@@ -4,6 +4,16 @@ import { ChapterService } from '@/features/chapters/server/chapter.service';
 import { db } from '@/server/db';
 import { LeadershipRole } from '@prisma/client';
 
+const CANONICAL_ROLES: LeadershipRole[] = [
+  'PRESIDENT',
+  'SECRETARY',
+  'TREASURER',
+  'VICE_PRESIDENT',
+  'JOINT_SECRETARY',
+  'COORDINATOR',
+  'DIRECTOR',
+];
+
 export async function GET(request: NextRequest) {
   try {
     const actor = await getCurrentActor();
@@ -16,9 +26,13 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const chapterId = searchParams.get('chapterId');
+    const includeHistory = searchParams.get('includeHistory') === 'true';
 
     const leadership = await db.chapterLeadership.findMany({
-      where: chapterId ? { chapterId } : undefined,
+      where: {
+        ...(chapterId ? { chapterId } : {}),
+        ...(includeHistory ? {} : { isActive: true }),
+      },
       include: {
         chapter: {
           select: { id: true, code: true, name: true, slug: true },
@@ -35,7 +49,22 @@ export async function GET(request: NextRequest) {
       orderBy: { startDate: 'desc' },
     });
 
-    return NextResponse.json({ success: true, leadership });
+    // If a specific chapterId is requested, compute active officers and vacant roles
+    let vacantRoles: LeadershipRole[] = [];
+    if (chapterId) {
+      const activeRoles = new Set(
+        leadership.filter((l) => l.isActive).map((l) => l.role)
+      );
+      vacantRoles = CANONICAL_ROLES.filter((r) => !activeRoles.has(r));
+    }
+
+    return NextResponse.json({
+      success: true,
+      leadership,
+      active: leadership.filter((l) => l.isActive),
+      history: leadership.filter((l) => !l.isActive),
+      vacantRoles,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Failed to list chapter leadership' }, { status: 500 });
   }
@@ -61,19 +90,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validRoles: LeadershipRole[] = [
-      'PRESIDENT',
-      'SECRETARY',
-      'TREASURER',
-      'VICE_PRESIDENT',
-      'JOINT_SECRETARY',
-      'COORDINATOR',
-      'DIRECTOR',
-    ];
-
-    if (!validRoles.includes(role)) {
+    if (!CANONICAL_ROLES.includes(role)) {
       return NextResponse.json(
-        { error: `Invalid role. Must be one of: ${validRoles.join(', ')}` },
+        { error: `Invalid role. Must be one of: ${CANONICAL_ROLES.join(', ')}` },
         { status: 400 }
       );
     }
@@ -119,11 +138,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    if (!reason || typeof reason !== 'string' || reason.trim().length < 5) {
+      return NextResponse.json(
+        { error: 'A mandatory revocation reason of at least 5 characters is required for administrative audit logging.' },
+        { status: 400 }
+      );
+    }
+
     const revoked = await ChapterService.revokeLeader(
       actor,
       chapterId,
       appointmentId,
-      reason
+      reason.trim()
     );
 
     return NextResponse.json({

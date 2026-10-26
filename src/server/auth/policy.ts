@@ -64,6 +64,15 @@ export function authorize(context: AuthorizationContext): AuthorizationResult {
   if (isChapterLeader) {
     // Must strictly match chapterId
     if (chapterId && chapterId === actor.chapterId) {
+      // Security: Chapter leadership appointments are centrally reserved to the Super Administrator
+      if (action === 'chapter.manage_leadership') {
+        return {
+          allowed: false,
+          reason: 'Chapter leadership appointments are centrally reserved to the Super Administrator.',
+          evaluatedScope: 'NONE',
+        };
+      }
+
       // Treasurer specific permissions
       if (action.startsWith('finance.') && !actor.roles.includes('CHAPTER_TREASURER') && !actor.roles.includes('CHAPTER_PRESIDENT')) {
         return {

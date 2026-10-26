@@ -12,9 +12,14 @@ import {
   Search,
   ExternalLink,
   ShieldCheck,
+  Shield,
   Layers,
 } from 'lucide-react';
 import { MybfLogo } from '@/components/brand/mybf-logo';
+import {
+  SuperAdminManageOfficersDialog,
+  UserCandidate,
+} from './super-admin-manage-officers-dialog';
 
 interface ChapterItem {
   id: string;
@@ -57,15 +62,18 @@ interface SuperAdminOrganizationsViewProps {
     chaptersCount: number;
   }>;
   chapters: ChapterItem[];
+  eligibleUsers?: UserCandidate[];
 }
 
 export function SuperAdminOrganizationsView({
   organization,
   districts,
   chapters,
+  eligibleUsers,
 }: SuperAdminOrganizationsViewProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
+  const [managingChapter, setManagingChapter] = React.useState<ChapterItem | null>(null);
 
   const filteredChapters = React.useMemo(() => {
     return chapters.filter((c) => {
@@ -284,11 +292,21 @@ export function SuperAdminOrganizationsView({
                         </td>
 
                         <td className="py-3.5 px-4 text-right">
-                          <Link href={`/chapter/${chapter.slug}`}>
-                            <Button variant="outline" size="sm" className="h-7 text-[10px] px-2.5">
-                              Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => setManagingChapter(chapter)}
+                              className="h-7 text-[10px] px-2.5 font-display font-extrabold uppercase tracking-wider"
+                            >
+                              <Shield className="h-3 w-3 mr-1 text-ink" /> Manage Officers
                             </Button>
-                          </Link>
+                            <Link href={`/chapter/${chapter.slug}`}>
+                              <Button variant="outline" size="sm" className="h-7 text-[10px] px-2.5">
+                                Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />
+                              </Button>
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -299,6 +317,18 @@ export function SuperAdminOrganizationsView({
           </div>
         </CardContent>
       </Card>
+
+      {/* Central Chapter Officer Management Dialog */}
+      {managingChapter && (
+        <SuperAdminManageOfficersDialog
+          chapter={managingChapter}
+          eligibleUsers={eligibleUsers || []}
+          onClose={() => setManagingChapter(null)}
+          onOfficerChange={() => {
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -554,7 +554,15 @@ export class ChapterService {
     });
 
     return await db.$transaction(async (tx) => {
-      // 1. Deactivate prior leader in this specific role
+      // 1. Deactivate prior leader in this specific role and clean up their role assignments
+      const priorLeaders = await tx.chapterLeadership.findMany({
+        where: {
+          chapterId,
+          role,
+          isActive: true,
+        },
+      });
+
       await tx.chapterLeadership.updateMany({
         where: {
           chapterId,
@@ -566,6 +574,30 @@ export class ChapterService {
           endDate: new Date(),
         },
       });
+
+      for (const prior of priorLeaders) {
+        if (prior.userId !== targetUserId) {
+          const priorRoleCode =
+            prior.role === 'PRESIDENT'
+              ? 'CHAPTER_PRESIDENT'
+              : prior.role === 'SECRETARY'
+              ? 'CHAPTER_SECRETARY'
+              : prior.role === 'TREASURER'
+              ? 'CHAPTER_TREASURER'
+              : 'CHAPTER_COORDINATOR';
+
+          const priorSysRole = await tx.role.findUnique({ where: { code: priorRoleCode } });
+          if (priorSysRole) {
+            await tx.userRoleAssignment.deleteMany({
+              where: {
+                userId: prior.userId,
+                roleId: priorSysRole.id,
+                chapterId,
+              },
+            });
+          }
+        }
+      }
 
       // 2. Create ChapterLeadership record
       const appointment = await tx.chapterLeadership.create({
@@ -591,9 +623,20 @@ export class ChapterService {
           ? 'CHAPTER_TREASURER'
           : 'CHAPTER_COORDINATOR';
 
-      const systemRole = await tx.role.findUnique({
+      let systemRole = await tx.role.findUnique({
         where: { code: roleCode },
       });
+
+      if (!systemRole) {
+        systemRole = await tx.role.create({
+          data: {
+            code: roleCode,
+            name: roleCode.replace(/_/g, ' '),
+            description: `Constituency Chapter ${role} Role`,
+            isSystem: true,
+          },
+        });
+      }
 
       if (systemRole) {
         const chapterRecord = await tx.chapter.findUnique({
@@ -643,6 +686,9 @@ export class ChapterService {
       });
 
       return appointment;
+    }, {
+      maxWait: 15000,
+      timeout: 30000,
     });
   }
 
@@ -713,6 +759,9 @@ export class ChapterService {
       });
 
       return updated;
+    }, {
+      maxWait: 15000,
+      timeout: 30000,
     });
   }
 }

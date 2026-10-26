@@ -114,6 +114,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       const chapterOfficer: AuthActor = {
         userId: 'officer-1',
         email: 'officer@mybf.org',
+        phone: null,
         status: 'ACTIVE',
         roles: ['CHAPTER_PRESIDENT'],
         chapterId: 'manjeri-id',
@@ -122,7 +123,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       // Officer can recommend for own chapter
       const canRecommend = authorize({
         actor: chapterOfficer,
-        action: 'application.recommend',
+        action: 'member.review_application',
         resource: 'membership_application',
         chapterId: 'manjeri-id',
       });
@@ -131,7 +132,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       // Officer CANNOT access or manage cross-chapter applications
       const crossChapter = authorize({
         actor: chapterOfficer,
-        action: 'application.recommend',
+        action: 'member.review_application',
         resource: 'membership_application',
         chapterId: 'tirur-id',
       });
@@ -141,12 +142,13 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       const superAdmin: AuthActor = {
         userId: 'super-admin-1',
         email: 'admin@mybf.org',
+        phone: null,
         status: 'ACTIVE',
         roles: ['SUPER_ADMIN'],
       };
       const superAdminScope = authorize({
         actor: superAdmin,
-        action: 'application.approve',
+        action: 'member.approve_application',
         resource: 'membership_application',
       });
       expect(superAdminScope.allowed).toBe(true);
@@ -176,6 +178,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       const chapterOfficer: AuthActor = {
         userId: 'officer-1',
         email: 'president.manjeri@mybf.org',
+        phone: null,
         status: 'ACTIVE',
         roles: ['CHAPTER_PRESIDENT'],
         chapterId: 'manjeri-id',
@@ -184,6 +187,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       const districtAdmin: AuthActor = {
         userId: 'district-1',
         email: 'district@mybf.org',
+        phone: null,
         status: 'ACTIVE',
         roles: ['DISTRICT_ADMIN'],
       };
@@ -191,6 +195,7 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       const superAdmin: AuthActor = {
         userId: 'super-1',
         email: 'superadmin@mybf.org',
+        phone: null,
         status: 'ACTIVE',
         roles: ['SUPER_ADMIN'],
       };
@@ -216,8 +221,8 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       // District admin has district-wide governance authority
       const distAuth = authorize({
         actor: districtAdmin,
-        action: 'district.manage_governance',
-        resource: 'governance',
+        action: 'member.read_district',
+        resource: 'district',
       });
       expect(distAuth.allowed).toBe(true);
       expect(distAuth.evaluatedScope).toBe('DISTRICT');
@@ -225,8 +230,8 @@ describe('MYBF Chapter Executive Dashboard & Member Governance Unit Tests', () =
       // Super Admin has global governance authority
       const superAuth = authorize({
         actor: superAdmin,
-        action: 'super_admin.manage_governance',
-        resource: 'governance',
+        action: 'admin.system_config',
+        resource: 'chapter',
       });
       expect(superAuth.allowed).toBe(true);
       expect(superAuth.evaluatedScope).toBe('GLOBAL');

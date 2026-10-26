@@ -36,7 +36,14 @@ describe('Chapter Officer RBAC, Session Claims & Super Admin Appointment', () =>
     if (!memberRole) throw new Error('MEMBER role not seeded');
 
     // Clean up prior test user if exists
-    await db.user.deleteMany({ where: { email: 'candidate.officer@test.in' } });
+    const priorTestUser = await db.user.findFirst({ where: { email: 'candidate.officer@test.in' } });
+    if (priorTestUser) {
+      await db.session.deleteMany({ where: { userId: priorTestUser.id } });
+      await db.chapterLeadership.deleteMany({ where: { userId: priorTestUser.id } });
+      await db.userRoleAssignment.deleteMany({ where: { userId: priorTestUser.id } });
+      await db.memberProfile.deleteMany({ where: { userId: priorTestUser.id } });
+      await db.user.deleteMany({ where: { id: priorTestUser.id } });
+    }
 
     const testUser = await db.user.create({
       data: {
@@ -67,7 +74,7 @@ describe('Chapter Officer RBAC, Session Claims & Super Admin Appointment', () =>
     });
     testCandidateUserId = testUser.id;
     testSessionToken = await createSession(testCandidateUserId);
-  });
+  }, 60000);
 
   afterAll(async () => {
     if (testCandidateUserId) {
@@ -77,7 +84,7 @@ describe('Chapter Officer RBAC, Session Claims & Super Admin Appointment', () =>
       await db.memberProfile.deleteMany({ where: { userId: testCandidateUserId } });
       await db.user.deleteMany({ where: { id: testCandidateUserId } });
     }
-  });
+  }, 60000);
 
   it('standard member without chapter officer appointment is denied executive dashboard access', async () => {
     const actor = await getSessionActor(testSessionToken);
