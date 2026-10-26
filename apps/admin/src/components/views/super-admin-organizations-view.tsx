@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,7 @@ import {
   SuperAdminManageOfficersDialog,
   UserCandidate,
 } from './super-admin-manage-officers-dialog';
+import { getMainAppBaseUrl } from '@/lib/main-app-url';
 
 interface ChapterItem {
   id: string;
@@ -63,6 +63,7 @@ interface SuperAdminOrganizationsViewProps {
   }>;
   chapters: ChapterItem[];
   eligibleUsers?: UserCandidate[];
+  mainAppBaseUrl?: string;
 }
 
 export function SuperAdminOrganizationsView({
@@ -70,10 +71,13 @@ export function SuperAdminOrganizationsView({
   districts,
   chapters,
   eligibleUsers,
+  mainAppBaseUrl,
 }: SuperAdminOrganizationsViewProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const [managingChapter, setManagingChapter] = React.useState<ChapterItem | null>(null);
+
+  const resolvedBaseUrl = mainAppBaseUrl || getMainAppBaseUrl();
 
   const filteredChapters = React.useMemo(() => {
     return chapters.filter((c) => {
@@ -301,11 +305,15 @@ export function SuperAdminOrganizationsView({
                             >
                               <Shield className="h-3 w-3 mr-1 text-ink" /> Manage Officers
                             </Button>
-                            <Link href={`/chapter/${chapter.slug}`}>
-                              <Button variant="outline" size="sm" className="h-7 text-[10px] px-2.5">
-                                Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />
-                              </Button>
-                            </Link>
+                            <a
+                              href={`${resolvedBaseUrl}/chapter/${encodeURIComponent(chapter.slug.toLowerCase())}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center font-display font-extrabold uppercase tracking-wider border-2 border-ink transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow cursor-pointer shadow-[2px_2px_0px_#14161c] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 bg-paper text-ink hover:bg-ink hover:text-paper h-7 px-2.5 text-[10px]"
+                              title={`Open ${chapter.name} Executive Hub on Main Application (new tab)`}
+                            >
+                              Chapter Hub <ExternalLink className="h-3 w-3 ml-1" />
+                            </a>
                           </div>
                         </td>
                       </tr>

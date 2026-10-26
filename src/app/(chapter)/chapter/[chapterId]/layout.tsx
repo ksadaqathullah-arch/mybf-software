@@ -37,7 +37,9 @@ export default async function ChapterExecutiveLayout({
     return (
       <ChapterAccessDenied
         chapterName={chapter.name}
-        reason="Authentication required. Please sign in with an authorized MYBF chapter executive account to access this hub."
+        chapterSlug={chapter.slug}
+        isUnauthenticated={true}
+        reason="Authentication required. Please sign in with an authorized MYBF chapter executive or administrator account to access this hub."
       />
     );
   }

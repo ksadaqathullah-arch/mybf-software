@@ -6,10 +6,19 @@ import { ShieldAlert, ArrowLeft, Home } from 'lucide-react';
 
 interface ChapterAccessDeniedProps {
   chapterName: string;
+  chapterSlug?: string;
   reason?: string;
+  isUnauthenticated?: boolean;
 }
 
-export function ChapterAccessDenied({ chapterName, reason }: ChapterAccessDeniedProps) {
+export function ChapterAccessDenied({
+  chapterName,
+  chapterSlug,
+  reason,
+  isUnauthenticated,
+}: ChapterAccessDeniedProps) {
+  const needsAuth = isUnauthenticated || reason?.toLowerCase().includes('authentication required');
+
   return (
     <div className="min-h-screen bg-paper flex items-center justify-center p-4">
       <Card className="max-w-md w-full border-2 border-ink shadow-[8px_8px_0px_#14161c] bg-paper">
@@ -31,15 +40,25 @@ export function ChapterAccessDenied({ chapterName, reason }: ChapterAccessDenied
           </div>
 
           <p className="text-xs text-ink/70 font-serif leading-relaxed">
-            If you are an appointed chapter officer for this constituency, please ensure you are signed in with your official MYBF officer credentials.
+            {needsAuth
+              ? 'Please sign in with your official MYBF chapter executive or administrator account to access this hub.'
+              : 'If you are an appointed chapter officer for this constituency, please ensure you are signed in with your official MYBF officer credentials.'}
           </p>
 
-          <div className="flex gap-3 justify-center pt-2">
-            <Link href="/member">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-1.5" /> Member Portal
-              </Button>
-            </Link>
+          <div className="flex flex-wrap gap-3 justify-center pt-2">
+            {needsAuth ? (
+              <Link href={`/login?callbackUrl=/chapter/${encodeURIComponent(chapterSlug || '')}`}>
+                <Button variant="primary" size="sm">
+                  Sign In to Chapter Hub
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/member">
+                <Button variant="outline" size="sm">
+                  <ArrowLeft className="w-4 h-4 mr-1.5" /> Member Portal
+                </Button>
+              </Link>
+            )}
             <Link href="/">
               <Button variant="secondary" size="sm">
                 <Home className="w-4 h-4 mr-1.5" /> Home

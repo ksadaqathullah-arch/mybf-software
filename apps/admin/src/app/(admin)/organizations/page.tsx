@@ -2,6 +2,7 @@ import * as React from 'react';
 import { getCurrentAdmin } from '@/server/auth';
 import { SuperAdminService } from '@shared/features/super-admin/server/super-admin.service';
 import { SuperAdminOrganizationsView } from '@/components/views/super-admin-organizations-view';
+import { getMainAppBaseUrl } from '@/lib/main-app-url';
 import { db } from '@/server/db';
 
 export const dynamic = 'force-dynamic';
@@ -33,12 +34,15 @@ export default async function AdminOrganizationsPage() {
     fullName: u.profile?.fullName || u.username || u.email || 'Unnamed Member',
   }));
 
+  const mainAppBaseUrl = getMainAppBaseUrl();
+
   return (
     <SuperAdminOrganizationsView
       organization={data.organization}
       districts={data.districts}
       chapters={data.chapters}
       eligibleUsers={eligibleUsers}
+      mainAppBaseUrl={mainAppBaseUrl}
     />
   );
 }
